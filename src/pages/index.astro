@@ -71,11 +71,9 @@ const defenses = [
       </button>
       <nav class="nav-links" id="primaryNav" aria-label="Primary navigation">
         <span class="menu-label">Menu</span>
-        <a href="#sociology">Sociology</a>
-        <a href="#psychology">Psychology</a>
-        <a href="#technology">Brain + Tech</a>
+        <a href="/">Home</a>
         <a href="/blog/">Blog</a>
-        <a href="#defense">Defense</a>
+        <a href="/quotes/">Quotes</a>
       </nav>
     </header>
 
@@ -83,23 +81,26 @@ const defenses = [
       <section class="hero-section">
         <div class="hero-bg" aria-hidden="true"></div>
         <div class="hero-inner reveal-on-scroll">
-          <p class="badge">Public accountability streak</p>
-          <h1>NoArousal: building distance from <span class="text-gradient">PMO loops.</span></h1>
+          <p class="badge">Public streak. Private discipline.</p>
+          <h1>Protect the streak. <span class="text-gradient">Rebuild control.</span></h1>
           <p class="hero-copy">
-            This page publishes only the streak. No check-ins, notes, relapse logs, triggers, or private recovery data are collected here.
+            Only the streak is published here. Everything else stays off the record: no logs, no triggers, no notes, no private recovery data.
           </p>
 
           <article class="streak-panel" aria-live="polite">
-            <div>
+            <div class="streak-main">
               <span class="panel-label">Current streak</span>
               <strong id="streakDays">0 days</strong>
+              <p>Every clean day is one more vote for the person you said you would become.</p>
             </div>
-            <div class="clock-grid" aria-label="Detailed streak time">
-              <span><strong id="streakHours">00</strong>hours</span>
-              <span><strong id="streakMinutes">00</strong>minutes</span>
-              <span><strong id="streakSeconds">00</strong>seconds</span>
+            <div class="streak-detail">
+              <div class="clock-grid" aria-label="Detailed streak time">
+                <span><strong id="streakHours">00</strong>hours</span>
+                <span><strong id="streakMinutes">00</strong>minutes</span>
+                <span><strong id="streakSeconds">00</strong>seconds</span>
+              </div>
+              <p>Streak locked since June 6, 2026 at 12:00 PM GMT+7.</p>
             </div>
-            <p>Started June 6, 2026, 12:00 PM GMT+7.</p>
           </article>
         </div>
       </section>
@@ -183,6 +184,20 @@ const defenses = [
         <a class="read-link" href="/blog/">Open blog</a>
       </section>
     </main>
+    <footer class="site-footer">
+      <div>
+        <a class="brand" href="/" aria-label="NoArousal home">
+          <span class="brand-mark">N</span>
+          <span class="brand-text">NoArousal</span>
+        </a>
+        <p>Public streak. Private discipline. No logs, no triggers, no private recovery data.</p>
+      </div>
+      <nav aria-label="Footer navigation">
+        <a href="/">Home</a>
+        <a href="/blog/">Blog</a>
+        <a href="/quotes/">Quotes</a>
+      </nav>
+    </footer>
     <script>
       import "../scripts/app.js";
     </script>

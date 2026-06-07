@@ -1,0 +1,117 @@
+---
+import "@fontsource-variable/inter";
+import "@fontsource-variable/space-grotesk";
+import "../styles/global.css";
+
+const quotes = [
+  { text: "You vs you. Win that fight first.", tag: "identity" },
+  { text: "Refuse to lose.", tag: "resolve" },
+  { text: "Do the hard thing before the urge gets loud.", tag: "discipline" },
+  { text: "If the chance is 1%, fight for that 1%.", tag: "hope" },
+  { text: "No private bargain is worth your public promise.", tag: "accountability" },
+  { text: "The old loop wants comfort. The new you needs proof.", tag: "proof" },
+  { text: "Pain now. Pride later. Choose the order.", tag: "choice" },
+  { text: "Your future does not negotiate with your craving.", tag: "future" },
+  { text: "A clean day is built one refusal at a time.", tag: "streak" },
+  { text: "Urges are temporary. Standards are permanent.", tag: "standards" },
+  { text: "Make relapse harder than recovery.", tag: "system" },
+  { text: "You do not need motivation. You need a rule.", tag: "rules" },
+  { text: "The phone can wait. Your life cannot.", tag: "friction" },
+  { text: "Your brain learns what you repeat. Repeat strength.", tag: "training" },
+  { text: "No cue, no debate. Remove the trigger.", tag: "environment" },
+  { text: "The hardest minute is still only a minute.", tag: "endurance" },
+  { text: "Win tonight so tomorrow starts clean.", tag: "night" },
+  { text: "Do not feed what you are trying to kill.", tag: "focus" },
+  { text: "The urge asks for now. Discipline answers for years.", tag: "long game" },
+  { text: "A slip is data. A pattern is a warning.", tag: "reset" },
+  { text: "Protect your attention like it is money.", tag: "attention" },
+  { text: "You are not bored. You are under-challenged.", tag: "challenge" },
+  { text: "Leave the room. Change the state. Break the chain.", tag: "action" },
+  { text: "Every clean choice makes the next one less lonely.", tag: "momentum" },
+  { text: "Be stronger than the tab, the feed, and the fantasy.", tag: "strength" },
+  { text: "Your standard is proven when nobody is watching.", tag: "integrity" },
+  { text: "Less escape. More life.", tag: "clarity" },
+  { text: "Craving is not command.", tag: "control" },
+  { text: "Build a life that makes the loop look small.", tag: "growth" },
+  { text: "The comeback starts before the damage happens.", tag: "defense" },
+  { text: "Choose discomfort once, or regret it twice.", tag: "cost" }
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Hard NoArousal quotes for discipline, no-PMO recovery, urges, standards, and accountability." />
+    <title>Quotes | NoArousal</title>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="NoArousal home">
+        <span class="brand-mark">N</span>
+        <span class="brand-text">NoArousal</span>
+      </a>
+      <button class="menu-toggle" type="button" aria-label="Open menu" aria-controls="primaryNav" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <nav class="nav-links" id="primaryNav" aria-label="Primary navigation">
+        <span class="menu-label">Menu</span>
+        <a href="/">Home</a>
+        <a href="/blog/">Blog</a>
+        <a href="/quotes/">Quotes</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="quotes-shell quotes-hero reveal-on-scroll">
+        <p class="badge">Hard reminders</p>
+        <h1>Quotes for the fight.</h1>
+        <p>
+          Short lines for the moment when comfort starts negotiating and the standard needs to speak louder.
+        </p>
+      </section>
+
+      <section class="quote-deck reveal-on-scroll" aria-label="NoArousal discipline quote slides">
+        <div class="quote-slide-frame" aria-live="polite">
+          {quotes.map((quote, index) => (
+          <article
+            class={`quote-card${index === 0 ? " is-active" : ""}`}
+            style={`--quote-bg: url('/quotes/inner-war-${(index % 3) + 1}.png')`}
+            data-quote-slide
+          >
+            <strong>{quote.text}</strong>
+            <span>{quote.tag}</span>
+          </article>
+          ))}
+        </div>
+        <div class="quote-controls">
+          <button type="button" data-quote-next>Next</button>
+          <button type="button" data-quote-shuffle>Shuffle</button>
+          <button type="button" data-quote-fullscreen aria-pressed="false">Fullscreen</button>
+        </div>
+        <p class="quote-count"><span data-quote-current>1</span> / {quotes.length}</p>
+      </section>
+    </main>
+    <footer class="site-footer">
+      <div>
+        <a class="brand" href="/" aria-label="NoArousal home">
+          <span class="brand-mark">N</span>
+          <span class="brand-text">NoArousal</span>
+        </a>
+        <p>Public streak. Private discipline. No logs, no triggers, no private recovery data.</p>
+      </div>
+      <nav aria-label="Footer navigation">
+        <a href="/">Home</a>
+        <a href="/blog/">Blog</a>
+        <a href="/quotes/">Quotes</a>
+      </nav>
+    </footer>
+    <script>
+      import "../scripts/app.js";
+      import "../scripts/quotes.js";
+    </script>
+  </body>
+</html>

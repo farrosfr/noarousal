@@ -28,10 +28,9 @@ const sortedPosts = [...posts].sort((a, b) => new Date(b.date).valueOf() - new D
       </button>
       <nav class="nav-links" id="primaryNav" aria-label="Primary navigation">
         <span class="menu-label">Menu</span>
-        <a href="/#sociology">Sociology</a>
-        <a href="/#psychology">Psychology</a>
-        <a href="/#technology">Brain + Tech</a>
+        <a href="/">Home</a>
         <a href="/blog/">Blog</a>
+        <a href="/quotes/">Quotes</a>
       </nav>
     </header>
 
@@ -67,6 +66,20 @@ const sortedPosts = [...posts].sort((a, b) => new Date(b.date).valueOf() - new D
         ))}
       </section>
     </main>
+    <footer class="site-footer">
+      <div>
+        <a class="brand" href="/" aria-label="NoArousal home">
+          <span class="brand-mark">N</span>
+          <span class="brand-text">NoArousal</span>
+        </a>
+        <p>Public streak. Private discipline. No logs, no triggers, no private recovery data.</p>
+      </div>
+      <nav aria-label="Footer navigation">
+        <a href="/">Home</a>
+        <a href="/blog/">Blog</a>
+        <a href="/quotes/">Quotes</a>
+      </nav>
+    </footer>
     <script>
       import "../../scripts/app.js";
     </script>
