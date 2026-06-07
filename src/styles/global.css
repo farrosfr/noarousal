@@ -835,11 +835,18 @@ h1 {
   }
 
   .clock-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
   }
 
   .clock-grid span {
-    min-height: 88px;
+    min-height: 74px;
+    padding: 8px 4px;
+    font-size: 0.78rem;
+  }
+
+  .clock-grid strong {
+    font-size: clamp(1.35rem, 8vw, 2.25rem);
   }
 }
 
