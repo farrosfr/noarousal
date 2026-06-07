@@ -1,7 +1,6 @@
 import { defineConfig } from "astro/config";
 
 export default defineConfig({
-  site: "https://farrosfr.github.io",
-  base: "/noarousal",
+  site: "https://noa.farros.co",
   output: "static"
 });

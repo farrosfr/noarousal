@@ -25,7 +25,7 @@ const relatedPosts = posts.filter((item) => item.slug !== post.slug).slice(0, 3)
   </head>
   <body>
     <header class="site-header">
-      <a class="brand" href="/noarousal/" aria-label="NoArousal home">
+      <a class="brand" href="/" aria-label="NoArousal home">
         <span class="brand-mark">N</span>
         <span class="brand-text">NoArousal</span>
       </a>
@@ -36,16 +36,16 @@ const relatedPosts = posts.filter((item) => item.slug !== post.slug).slice(0, 3)
       </button>
       <nav class="nav-links" id="primaryNav" aria-label="Primary navigation">
         <span class="menu-label">Menu</span>
-        <a href="/noarousal/#sociology">Sociology</a>
-        <a href="/noarousal/#psychology">Psychology</a>
-        <a href="/noarousal/#technology">Brain + Tech</a>
-        <a href="/noarousal/blog/">Blog</a>
+        <a href="/#sociology">Sociology</a>
+        <a href="/#psychology">Psychology</a>
+        <a href="/#technology">Brain + Tech</a>
+        <a href="/blog/">Blog</a>
       </nav>
     </header>
 
     <main>
       <article class="article-shell reveal-on-scroll">
-        <a class="back-link" href="/noarousal/blog/">Back to blog</a>
+        <a class="back-link" href="/blog/">Back to blog</a>
         <div class="post-meta">
           <span>{post.category}</span>
           <time datetime={post.date}>
@@ -93,7 +93,7 @@ const relatedPosts = posts.filter((item) => item.slug !== post.slug).slice(0, 3)
         <h2>Related articles</h2>
         <div class="related-grid">
           {relatedPosts.map((item) => (
-            <a href={`/noarousal/blog/${item.slug}/`}>
+            <a href={`/blog/${item.slug}/`}>
               <span>{item.category}</span>
               <strong>{item.title}</strong>
               <p>{item.description}</p>
@@ -102,6 +102,8 @@ const relatedPosts = posts.filter((item) => item.slug !== post.slug).slice(0, 3)
         </div>
       </section>
     </main>
-    <script src="../../scripts/app.js"></script>
+    <script>
+      import "../../scripts/app.js";
+    </script>
   </body>
 </html>
