@@ -1,0 +1,199 @@
+---
+import "../styles/global.css";
+
+const startDateTime = "2026-06-06T12:00:00+07:00";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="NoArousal is a private PMO recovery dashboard with streak tracking, emergency urge tools, check-ins, and trigger analysis." />
+    <title>NoArousal</title>
+  </head>
+  <body data-start={startDateTime}>
+    <main class="app-shell">
+      <aside class="sidebar" aria-label="Recovery navigation">
+        <a class="brand" href="#dashboard" aria-label="NoArousal home">
+          <span class="brand-mark">N</span>
+          <span>
+            <strong>NoArousal</strong>
+            <small>PMO defense lab</small>
+          </span>
+        </a>
+        <nav class="nav-list">
+          <a href="#dashboard">Dashboard</a>
+          <a href="#urge">Urge Mode</a>
+          <a href="#checkin">Check-In</a>
+          <a href="#triggers">Triggers</a>
+          <a href="#knowledge">Knowledge</a>
+          <a href="#reset">Reset Log</a>
+        </nav>
+        <section class="privacy-note">
+          <strong>Local only</strong>
+          <span>Your data stays in this browser unless you export it.</span>
+        </section>
+      </aside>
+
+      <section class="workspace">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Started June 6, 2026, 12:00 PM</p>
+            <h1>NoArousal</h1>
+          </div>
+          <div class="topbar-actions">
+            <button class="icon-button" id="exportData" type="button" title="Export backup" aria-label="Export backup">⇩</button>
+            <label class="icon-button file-button" title="Import backup" aria-label="Import backup">
+              ⇧
+              <input id="importData" type="file" accept="application/json" />
+            </label>
+          </div>
+        </header>
+
+        <section class="dashboard-grid" id="dashboard">
+          <article class="metric-panel primary-metric">
+            <span class="panel-label">Current streak</span>
+            <strong id="streakDays">0 days</strong>
+            <span id="streakClock">00:00:00</span>
+          </article>
+          <article class="metric-panel">
+            <span class="panel-label">Risk level</span>
+            <strong id="riskLevel">Low</strong>
+            <span id="riskReason">Based on today's check-in.</span>
+          </article>
+          <article class="metric-panel">
+            <span class="panel-label">Check-in</span>
+            <strong id="checkinStatus">Open</strong>
+            <span id="checkinSummary">No check-in yet today.</span>
+          </article>
+          <article class="metric-panel">
+            <span class="panel-label">Resisted urges</span>
+            <strong id="resistedCount">0</strong>
+            <span>Total logged wins.</span>
+          </article>
+        </section>
+
+        <section class="two-column">
+          <article class="tool-panel" id="urge">
+            <div class="section-heading">
+              <span class="eyebrow">Emergency</span>
+              <h2>Urge Mode</h2>
+            </div>
+            <div class="timer-display" id="urgeTimer">90</div>
+            <div class="button-row">
+              <button class="command primary" id="startUrgeTimer" type="button">Start 90s</button>
+              <button class="command" id="logResisted" type="button">Log Resisted</button>
+            </div>
+            <ul class="action-list" id="emergencyActions">
+              <li><label><input type="checkbox" /> Put phone away</label></li>
+              <li><label><input type="checkbox" /> Leave private room</label></li>
+              <li><label><input type="checkbox" /> Drink water</label></li>
+              <li><label><input type="checkbox" /> Walk for 5 minutes</label></li>
+            </ul>
+          </article>
+
+          <article class="tool-panel">
+            <div class="section-heading">
+              <span class="eyebrow">Reasons</span>
+              <h2>Commitment Stack</h2>
+            </div>
+            <form id="reasonForm" class="inline-form">
+              <input id="reasonInput" type="text" placeholder="Add a reason to stop PMO" maxlength="120" />
+              <button class="command" type="submit">Add</button>
+            </form>
+            <ul class="reason-list" id="reasonList"></ul>
+          </article>
+        </section>
+
+        <section class="tool-panel" id="checkin">
+          <div class="section-heading">
+            <span class="eyebrow">Daily</span>
+            <h2>Check-In</h2>
+          </div>
+          <form class="checkin-form" id="checkinForm">
+            <label>Mood <input name="mood" type="range" min="1" max="10" value="6" /></label>
+            <label>Stress <input name="stress" type="range" min="1" max="10" value="4" /></label>
+            <label>Sleep <input name="sleep" type="range" min="1" max="10" value="7" /></label>
+            <label>Urge <input name="urge" type="range" min="1" max="10" value="3" /></label>
+            <label class="wide-field">Notes <textarea name="notes" rows="4" placeholder="What is the pattern today?"></textarea></label>
+            <button class="command primary" type="submit">Save Check-In</button>
+          </form>
+        </section>
+
+        <section class="two-column">
+          <article class="tool-panel" id="triggers">
+            <div class="section-heading">
+              <span class="eyebrow">Intel</span>
+              <h2>Trigger Log</h2>
+            </div>
+            <form id="triggerForm" class="stack-form">
+              <select name="triggerType">
+                <option>Boredom</option>
+                <option>Stress</option>
+                <option>Loneliness</option>
+                <option>Social media</option>
+                <option>Late night</option>
+                <option>Fatigue</option>
+                <option>Explicit content</option>
+              </select>
+              <input name="context" type="text" placeholder="Context or chain of events" maxlength="160" />
+              <select name="outcome">
+                <option value="resisted">Resisted</option>
+                <option value="slipped">Slipped</option>
+                <option value="relapsed">Relapsed</option>
+              </select>
+              <button class="command" type="submit">Add Trigger</button>
+            </form>
+            <div class="log-list" id="triggerLog"></div>
+          </article>
+
+          <article class="tool-panel analytics-panel">
+            <div class="section-heading">
+              <span class="eyebrow">Patterns</span>
+              <h2>Defense Analytics</h2>
+            </div>
+            <div id="analytics" class="analytics-grid"></div>
+          </article>
+        </section>
+
+        <section class="knowledge-grid" id="knowledge">
+          <article>
+            <span class="eyebrow">Model</span>
+            <h2>PMO Threat Model</h2>
+            <p>Assets: attention, time, confidence, energy, relationships, and focus.</p>
+            <p>Attack vectors: idle browsing, private phone use, fatigue, social feeds, loneliness, stress, and novelty loops.</p>
+            <p>Defense layers: environment rules, blocker friction, sleep discipline, exercise, accountability, and immediate incident response.</p>
+          </article>
+          <article>
+            <span class="eyebrow">Loop</span>
+            <h2>Cue → Craving → Response → Reward</h2>
+            <p>Recovery improves when the cue is detected early and the response is replaced before the reward loop completes.</p>
+            <p>Do not debate an urge at peak intensity. Change location, add friction, and let the nervous system come down first.</p>
+          </article>
+          <article>
+            <span class="eyebrow">Rules</span>
+            <h2>Baseline Defenses</h2>
+            <p>No phone in bed. No private browsing when tired. No social feeds after 9 PM. Exercise before long screen sessions.</p>
+            <p>Every slip becomes data: identify the failed defense, then add one concrete rule.</p>
+          </article>
+        </section>
+
+        <section class="tool-panel" id="reset">
+          <div class="section-heading">
+            <span class="eyebrow">Incident Response</span>
+            <h2>Reset Log</h2>
+          </div>
+          <form id="resetForm" class="stack-form">
+            <input name="cause" type="text" placeholder="What happened?" maxlength="160" />
+            <textarea name="chain" rows="3" placeholder="Describe the chain of events"></textarea>
+            <input name="newRule" type="text" placeholder="What rule changes now?" maxlength="160" />
+            <button class="command danger" type="submit">Record Reset</button>
+          </form>
+          <div class="log-list" id="resetLog"></div>
+        </section>
+      </section>
+    </main>
+    <script src="../scripts/app.js"></script>
+  </body>
+</html>
