@@ -19,7 +19,7 @@ const sortedPosts = [...posts].sort((a, b) => new Date(b.date).valueOf() - new D
     <header class="site-header">
       <a class="brand" href="/noarousal/" aria-label="NoArousal home">
         <span class="brand-mark">N</span>
-        <span>NoArousal</span>
+        <span class="brand-text">NoArousal</span>
       </a>
       <button class="menu-toggle" type="button" aria-label="Open menu" aria-controls="primaryNav" aria-expanded="false">
         <span></span>
@@ -27,6 +27,7 @@ const sortedPosts = [...posts].sort((a, b) => new Date(b.date).valueOf() - new D
         <span></span>
       </button>
       <nav class="nav-links" id="primaryNav" aria-label="Primary navigation">
+        <span class="menu-label">Menu</span>
         <a href="/noarousal/#sociology">Sociology</a>
         <a href="/noarousal/#psychology">Psychology</a>
         <a href="/noarousal/#technology">Brain + Tech</a>
