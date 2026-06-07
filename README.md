@@ -1,6 +1,6 @@
 # NoArousal
 
-NoArousal is a private PMO recovery dashboard built with Astro. It tracks a streak from June 6, 2026 at 12:00 PM Asia/Jakarta, provides an emergency urge mode, stores daily check-ins, logs triggers, and keeps reset notes for incident review.
+NoArousal is a public PMO-free streak and education site built with Astro. It publishes only the streak from June 6, 2026 at 12:00 PM Asia/Jakarta and explains PMO risk through sociology, psychology, and brain technology lenses.
 
 ## Commands
 
@@ -13,4 +13,4 @@ npm run preview
 
 ## Privacy
 
-The app is local-first. Recovery data is stored in the browser with `localStorage` and can be exported or imported as JSON.
+The site does not collect recovery data. It removes the old private tracker storage key, `noarousal-state-v1`, on page load and keeps only a hardcoded public streak.

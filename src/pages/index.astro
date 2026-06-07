@@ -1,7 +1,53 @@
 ---
+import "@fontsource-variable/inter";
+import "@fontsource-variable/space-grotesk";
 import "../styles/global.css";
 
 const startDateTime = "2026-06-06T12:00:00+07:00";
+
+const categories = [
+  {
+    id: "sociology",
+    eyebrow: "Sociology",
+    title: "How PMO Can Reshape Social Life",
+    points: [
+      "Secrecy can shrink honest conversation and make support harder to ask for.",
+      "High novelty media can distort expectations about intimacy, consent, and ordinary relationships.",
+      "Social comparison can become harsher when real people are measured against edited, optimized content.",
+      "Isolation is both a trigger and a consequence: boredom, shame, and private device use can reinforce each other."
+    ]
+  },
+  {
+    id: "psychology",
+    eyebrow: "Psychology",
+    title: "Habit Loops And Compulsion Risk",
+    points: [
+      "PMO can become a cue-craving-response-reward loop, especially during stress, loneliness, fatigue, or boredom.",
+      "The strongest habit chains often start before the explicit decision: opening feeds, staying up late, or browsing alone.",
+      "Shame after use can increase stress, and stress can become the next trigger if there is no healthier response.",
+      "Problematic use is not defined by moral guilt alone; loss of control, distress, and life impairment matter."
+    ]
+  },
+  {
+    id: "technology",
+    eyebrow: "Brain + Technology",
+    title: "Novelty, Reward, And Platforms",
+    points: [
+      "Novelty and anticipation can train attention toward quick reward instead of slower goals.",
+      "Recommendation systems, infinite scroll, private browsing, and autoplay reduce friction at exactly the wrong moment.",
+      "Repeated cue exposure can make urges feel automatic, even when the long-term goal is to stop.",
+      "Recovery improves when technology is redesigned: fewer cues, more blockers, public-device rules, and planned offline time."
+    ]
+  }
+];
+
+const defenses = [
+  "No phone in bed or bathroom.",
+  "Block high-risk sites and feeds before the urge appears.",
+  "Replace late-night browsing with sleep, walking, reading, or training.",
+  "Use accountability when loss of control or distress becomes persistent.",
+  "Treat slips as data: identify the trigger, add one rule, continue."
+];
 ---
 
 <!doctype html>
@@ -9,189 +55,114 @@ const startDateTime = "2026-06-06T12:00:00+07:00";
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="NoArousal is a private PMO recovery dashboard with streak tracking, emergency urge tools, check-ins, and trigger analysis." />
+    <meta name="description" content="NoArousal is a public PMO-free streak and evidence-based education page about sociology, psychology, and brain technology risks." />
     <title>NoArousal</title>
   </head>
   <body data-start={startDateTime}>
-    <main class="app-shell">
-      <aside class="sidebar" aria-label="Recovery navigation">
-        <a class="brand" href="#dashboard" aria-label="NoArousal home">
-          <span class="brand-mark">N</span>
-          <span>
-            <strong>NoArousal</strong>
-            <small>PMO defense lab</small>
-          </span>
-        </a>
-        <nav class="nav-list">
-          <a href="#dashboard">Dashboard</a>
-          <a href="#urge">Urge Mode</a>
-          <a href="#checkin">Check-In</a>
-          <a href="#triggers">Triggers</a>
-          <a href="#knowledge">Knowledge</a>
-          <a href="#reset">Reset Log</a>
-        </nav>
-        <section class="privacy-note">
-          <strong>Local only</strong>
-          <span>Your data stays in this browser unless you export it.</span>
-        </section>
-      </aside>
+    <header class="site-header">
+      <a class="brand" href="/noarousal/" aria-label="NoArousal home">
+        <span class="brand-mark">N</span>
+        <span>NoArousal</span>
+      </a>
+      <nav class="nav-links" aria-label="Primary navigation">
+        <a href="#sociology">Sociology</a>
+        <a href="#psychology">Psychology</a>
+        <a href="#technology">Brain + Tech</a>
+        <a href="#defense">Defense</a>
+      </nav>
+    </header>
 
-      <section class="workspace">
-        <header class="topbar">
-          <div>
-            <p class="eyebrow">Started June 6, 2026, 12:00 PM</p>
-            <h1>NoArousal</h1>
-          </div>
-          <div class="topbar-actions">
-            <button class="icon-button" id="exportData" type="button" title="Export backup" aria-label="Export backup">⇩</button>
-            <label class="icon-button file-button" title="Import backup" aria-label="Import backup">
-              ⇧
-              <input id="importData" type="file" accept="application/json" />
-            </label>
-          </div>
-        </header>
+    <main>
+      <section class="hero-section">
+        <div class="hero-bg" aria-hidden="true"></div>
+        <div class="hero-inner reveal-on-scroll">
+          <p class="badge">Public accountability streak</p>
+          <h1>NoArousal: building distance from <span class="text-gradient">PMO loops.</span></h1>
+          <p class="hero-copy">
+            This page publishes only the streak. No check-ins, notes, relapse logs, triggers, or private recovery data are collected here.
+          </p>
 
-        <section class="dashboard-grid" id="dashboard">
-          <article class="metric-panel primary-metric">
-            <span class="panel-label">Current streak</span>
-            <strong id="streakDays">0 days</strong>
-            <span id="streakClock">00:00:00</span>
-          </article>
-          <article class="metric-panel">
-            <span class="panel-label">Risk level</span>
-            <strong id="riskLevel">Low</strong>
-            <span id="riskReason">Based on today's check-in.</span>
-          </article>
-          <article class="metric-panel">
-            <span class="panel-label">Check-in</span>
-            <strong id="checkinStatus">Open</strong>
-            <span id="checkinSummary">No check-in yet today.</span>
-          </article>
-          <article class="metric-panel">
-            <span class="panel-label">Resisted urges</span>
-            <strong id="resistedCount">0</strong>
-            <span>Total logged wins.</span>
-          </article>
-        </section>
-
-        <section class="two-column">
-          <article class="tool-panel" id="urge">
-            <div class="section-heading">
-              <span class="eyebrow">Emergency</span>
-              <h2>Urge Mode</h2>
+          <article class="streak-panel" aria-live="polite">
+            <div>
+              <span class="panel-label">Current streak</span>
+              <strong id="streakDays">0 days</strong>
             </div>
-            <div class="timer-display" id="urgeTimer">90</div>
-            <div class="button-row">
-              <button class="command primary" id="startUrgeTimer" type="button">Start 90s</button>
-              <button class="command" id="logResisted" type="button">Log Resisted</button>
+            <div class="clock-grid" aria-label="Detailed streak time">
+              <span><strong id="streakHours">00</strong>hours</span>
+              <span><strong id="streakMinutes">00</strong>minutes</span>
+              <span><strong id="streakSeconds">00</strong>seconds</span>
             </div>
-            <ul class="action-list" id="emergencyActions">
-              <li><label><input type="checkbox" /> Put phone away</label></li>
-              <li><label><input type="checkbox" /> Leave private room</label></li>
-              <li><label><input type="checkbox" /> Drink water</label></li>
-              <li><label><input type="checkbox" /> Walk for 5 minutes</label></li>
+            <p>Started June 6, 2026, 12:00 PM GMT+7.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="intro-section reveal-on-scroll">
+        <div>
+          <p class="eyebrow">Why this matters</p>
+          <h2>PMO is easiest to fight when the system is visible.</h2>
+        </div>
+        <p>
+          Porn, masturbation, and orgasm habits are not dangerous for every person in the same way. The risk rises when the pattern becomes difficult to control, displaces responsibilities, increases distress, or trains attention toward short-term escape. The goal here is education, friction, and clearer decisions.
+        </p>
+      </section>
+
+      <section class="category-grid" aria-label="PMO risk categories">
+        {categories.map((category) => (
+          <article class="info-card reveal-on-scroll" id={category.id}>
+            <span class="eyebrow">{category.eyebrow}</span>
+            <h2>{category.title}</h2>
+            <ul>
+              {category.points.map((point) => <li>{point}</li>)}
             </ul>
           </article>
+        ))}
+      </section>
 
-          <article class="tool-panel">
-            <div class="section-heading">
-              <span class="eyebrow">Reasons</span>
-              <h2>Commitment Stack</h2>
-            </div>
-            <form id="reasonForm" class="inline-form">
-              <input id="reasonInput" type="text" placeholder="Add a reason to stop PMO" maxlength="120" />
-              <button class="command" type="submit">Add</button>
-            </form>
-            <ul class="reason-list" id="reasonList"></ul>
-          </article>
-        </section>
+      <section class="defense-section" id="defense">
+        <div class="defense-copy reveal-on-scroll">
+          <p class="eyebrow">Defense principles</p>
+          <h2>Do not rely on willpower at peak urge.</h2>
+          <p>
+            A practical recovery system changes the environment before the craving arrives. Less cue exposure, more friction, better sleep, and visible accountability usually beat private debate.
+          </p>
+        </div>
+        <div class="defense-list reveal-on-scroll">
+          {defenses.map((defense) => (
+            <article>
+              <span aria-hidden="true">+</span>
+              <p>{defense}</p>
+            </article>
+          ))}
+        </div>
+      </section>
 
-        <section class="tool-panel" id="checkin">
-          <div class="section-heading">
-            <span class="eyebrow">Daily</span>
-            <h2>Check-In</h2>
-          </div>
-          <form class="checkin-form" id="checkinForm">
-            <label>Mood <input name="mood" type="range" min="1" max="10" value="6" /></label>
-            <label>Stress <input name="stress" type="range" min="1" max="10" value="4" /></label>
-            <label>Sleep <input name="sleep" type="range" min="1" max="10" value="7" /></label>
-            <label>Urge <input name="urge" type="range" min="1" max="10" value="3" /></label>
-            <label class="wide-field">Notes <textarea name="notes" rows="4" placeholder="What is the pattern today?"></textarea></label>
-            <button class="command primary" type="submit">Save Check-In</button>
-          </form>
-        </section>
-
-        <section class="two-column">
-          <article class="tool-panel" id="triggers">
-            <div class="section-heading">
-              <span class="eyebrow">Intel</span>
-              <h2>Trigger Log</h2>
-            </div>
-            <form id="triggerForm" class="stack-form">
-              <select name="triggerType">
-                <option>Boredom</option>
-                <option>Stress</option>
-                <option>Loneliness</option>
-                <option>Social media</option>
-                <option>Late night</option>
-                <option>Fatigue</option>
-                <option>Explicit content</option>
-              </select>
-              <input name="context" type="text" placeholder="Context or chain of events" maxlength="160" />
-              <select name="outcome">
-                <option value="resisted">Resisted</option>
-                <option value="slipped">Slipped</option>
-                <option value="relapsed">Relapsed</option>
-              </select>
-              <button class="command" type="submit">Add Trigger</button>
-            </form>
-            <div class="log-list" id="triggerLog"></div>
-          </article>
-
-          <article class="tool-panel analytics-panel">
-            <div class="section-heading">
-              <span class="eyebrow">Patterns</span>
-              <h2>Defense Analytics</h2>
-            </div>
-            <div id="analytics" class="analytics-grid"></div>
-          </article>
-        </section>
-
-        <section class="knowledge-grid" id="knowledge">
+      <section class="source-section reveal-on-scroll">
+        <p class="eyebrow">Evidence notes</p>
+        <h2>Careful claims, not panic claims.</h2>
+        <div class="source-grid">
           <article>
-            <span class="eyebrow">Model</span>
-            <h2>PMO Threat Model</h2>
-            <p>Assets: attention, time, confidence, energy, relationships, and focus.</p>
-            <p>Attack vectors: idle browsing, private phone use, fatigue, social feeds, loneliness, stress, and novelty loops.</p>
-            <p>Defense layers: environment rules, blocker friction, sleep discipline, exercise, accountability, and immediate incident response.</p>
+            <h3>Clinical framing</h3>
+            <p>
+              ICD-11 recognizes compulsive sexual behaviour disorder around persistent loss of control, distress, and impairment. Moral disapproval alone is not enough.
+            </p>
+            <a href="https://icd.who.int/" rel="noreferrer" target="_blank">WHO ICD-11</a>
           </article>
           <article>
-            <span class="eyebrow">Loop</span>
-            <h2>Cue → Craving → Response → Reward</h2>
-            <p>Recovery improves when the cue is detected early and the response is replaced before the reward loop completes.</p>
-            <p>Do not debate an urge at peak intensity. Change location, add friction, and let the nervous system come down first.</p>
+            <h3>Research framing</h3>
+            <p>
+              Reviews describe problematic pornography use through biopsychosocial factors, cognitive bias, reward learning, and context. The evidence is mixed and still developing.
+            </p>
+            <a href="https://pubmed.ncbi.nlm.nih.gov/38026725/" rel="noreferrer" target="_blank">Systematic review</a>
           </article>
           <article>
-            <span class="eyebrow">Rules</span>
-            <h2>Baseline Defenses</h2>
-            <p>No phone in bed. No private browsing when tired. No social feeds after 9 PM. Exercise before long screen sessions.</p>
-            <p>Every slip becomes data: identify the failed defense, then add one concrete rule.</p>
+            <h3>Personal framing</h3>
+            <p>
+              This site is educational and not medical advice. If the pattern causes distress, relationship harm, or loss of control, qualified support is worth using.
+            </p>
+            <a href="https://onlinelibrary.wiley.com/doi/10.1002/wps.20499" rel="noreferrer" target="_blank">CSBD in ICD-11</a>
           </article>
-        </section>
-
-        <section class="tool-panel" id="reset">
-          <div class="section-heading">
-            <span class="eyebrow">Incident Response</span>
-            <h2>Reset Log</h2>
-          </div>
-          <form id="resetForm" class="stack-form">
-            <input name="cause" type="text" placeholder="What happened?" maxlength="160" />
-            <textarea name="chain" rows="3" placeholder="Describe the chain of events"></textarea>
-            <input name="newRule" type="text" placeholder="What rule changes now?" maxlength="160" />
-            <button class="command danger" type="submit">Record Reset</button>
-          </form>
-          <div class="log-list" id="resetLog"></div>
-        </section>
+        </div>
       </section>
     </main>
     <script src="../scripts/app.js"></script>
