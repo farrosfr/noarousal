@@ -1,0 +1,71 @@
+---
+import "@fontsource-variable/inter";
+import "@fontsource-variable/space-grotesk";
+import "../../styles/global.css";
+import { posts } from "../../data/posts";
+
+const sortedPosts = [...posts].sort((a, b) => new Date(b.date).valueOf() - new Date(a.date).valueOf());
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="NoArousal articles about no PMO, flatline, recovery habits, and brain technology loops." />
+    <title>NoArousal Blog</title>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="/noarousal/" aria-label="NoArousal home">
+        <span class="brand-mark">N</span>
+        <span>NoArousal</span>
+      </a>
+      <button class="menu-toggle" type="button" aria-label="Open menu" aria-controls="primaryNav" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <nav class="nav-links" id="primaryNav" aria-label="Primary navigation">
+        <a href="/noarousal/#sociology">Sociology</a>
+        <a href="/noarousal/#psychology">Psychology</a>
+        <a href="/noarousal/#technology">Brain + Tech</a>
+        <a href="/noarousal/blog/">Blog</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="blog-hero reveal-on-scroll">
+        <p class="badge">Knowledge base</p>
+        <h1>NoArousal Blog</h1>
+        <p>
+          Short, practical articles on PMO recovery, flatline, attention, and the discipline that comes from keeping your streak public.
+        </p>
+      </section>
+
+      <section class="blog-grid" aria-label="NoArousal articles">
+        {sortedPosts.map((post) => (
+          <article class="blog-card reveal-on-scroll">
+            <a class="blog-card-image" href={`/noarousal/blog/${post.slug}/`} aria-label={`Read ${post.title}`}>
+              <img src={post.image.url} alt={post.image.alt} loading="lazy" />
+            </a>
+            <div class="post-meta">
+              <span>{post.category}</span>
+              <time datetime={post.date}>
+                {new Date(post.date).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
+              </time>
+            </div>
+            <h2><a href={`/noarousal/blog/${post.slug}/`}>{post.title}</a></h2>
+            <p>{post.description}</p>
+            <div class="tag-row">
+              {post.tags.map((tag) => <span>{tag}</span>)}
+            </div>
+            <a class="image-credit" href={post.image.creditUrl} rel="noreferrer" target="_blank">{post.image.credit}</a>
+            <a class="read-link" href={`/noarousal/blog/${post.slug}/`}>Read article</a>
+          </article>
+        ))}
+      </section>
+    </main>
+    <script src="../../scripts/app.js"></script>
+  </body>
+</html>

@@ -22,6 +22,7 @@ function formatDuration(ms) {
 }
 
 function render() {
+  if (!elements.days || !elements.hours || !elements.minutes || !elements.seconds || Number.isNaN(startDate.getTime())) return;
   const elapsed = formatDuration(Date.now() - startDate.getTime());
   elements.days.textContent = `${elapsed.days} day${elapsed.days === 1 ? "" : "s"}`;
   elements.hours.textContent = String(elapsed.hours).padStart(2, "0");
@@ -55,5 +56,7 @@ window.addEventListener("resize", () => {
   if (window.matchMedia("(min-width: 761px)").matches) setMenuState(false);
 });
 
-setInterval(render, 1000);
-render();
+if (elements.days && elements.hours && elements.minutes && elements.seconds && !Number.isNaN(startDate.getTime())) {
+  setInterval(render, 1000);
+  render();
+}

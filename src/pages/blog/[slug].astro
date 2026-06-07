@@ -1,0 +1,106 @@
+---
+import "@fontsource-variable/inter";
+import "@fontsource-variable/space-grotesk";
+import "../../styles/global.css";
+import { posts } from "../../data/posts";
+
+export function getStaticPaths() {
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post }
+  }));
+}
+
+const { post } = Astro.props;
+const relatedPosts = posts.filter((item) => item.slug !== post.slug).slice(0, 3);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={post.description} />
+    <title>{post.title} | NoArousal</title>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="/noarousal/" aria-label="NoArousal home">
+        <span class="brand-mark">N</span>
+        <span>NoArousal</span>
+      </a>
+      <button class="menu-toggle" type="button" aria-label="Open menu" aria-controls="primaryNav" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <nav class="nav-links" id="primaryNav" aria-label="Primary navigation">
+        <a href="/noarousal/#sociology">Sociology</a>
+        <a href="/noarousal/#psychology">Psychology</a>
+        <a href="/noarousal/#technology">Brain + Tech</a>
+        <a href="/noarousal/blog/">Blog</a>
+      </nav>
+    </header>
+
+    <main>
+      <article class="article-shell reveal-on-scroll">
+        <a class="back-link" href="/noarousal/blog/">Back to blog</a>
+        <div class="post-meta">
+          <span>{post.category}</span>
+          <time datetime={post.date}>
+            {new Date(post.date).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
+          </time>
+          <span>{post.readTime}</span>
+        </div>
+        <h1>{post.title}</h1>
+        <p class="article-description">{post.description}</p>
+        <div class="tag-row article-tags">
+          {post.tags.map((tag) => <span>{tag}</span>)}
+        </div>
+
+        <figure class="article-hero-image">
+          <img src={post.image.url} alt={post.image.alt} />
+          <figcaption>
+            <a href={post.image.creditUrl} rel="noreferrer" target="_blank">{post.image.credit}</a>
+          </figcaption>
+        </figure>
+
+        <div class="article-content">
+          {post.sections.map((section) => (
+            <section>
+              <h2>{section.heading}</h2>
+              {section.body.map((paragraph) => <p>{paragraph}</p>)}
+            </section>
+          ))}
+        </div>
+
+        <section class="article-note">
+          <h2>Evidence note</h2>
+          <p>
+            This article is educational, not medical advice. Research around problematic pornography use, compulsive sexual behaviour, and recovery experiences is still developing. If the pattern causes serious distress, relationship harm, or loss of control, use qualified support.
+          </p>
+          <div>
+            <a href="https://icd.who.int/" rel="noreferrer" target="_blank">WHO ICD-11</a>
+            <a href="https://pubmed.ncbi.nlm.nih.gov/38026725/" rel="noreferrer" target="_blank">Biopsychosocial review</a>
+            <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC8080450/" rel="noreferrer" target="_blank">Cognitive processes review</a>
+          </div>
+        </section>
+      </article>
+
+      <section class="related-section reveal-on-scroll">
+        <p class="eyebrow">Next reading</p>
+        <h2>Related articles</h2>
+        <div class="related-grid">
+          {relatedPosts.map((item) => (
+            <a href={`/noarousal/blog/${item.slug}/`}>
+              <span>{item.category}</span>
+              <strong>{item.title}</strong>
+              <p>{item.description}</p>
+            </a>
+          ))}
+        </div>
+      </section>
+    </main>
+    <script src="../../scripts/app.js"></script>
+  </body>
+</html>
