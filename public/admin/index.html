@@ -6,104 +6,168 @@
     <meta name="robots" content="noindex, nofollow" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <title>NoArousal Data CMS</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+        background: #0b0d10;
+        color: #f7f2ea;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      .cms-fallback {
+        display: grid;
+        min-height: 100vh;
+        place-items: center;
+        padding: 24px;
+      }
+
+      .cms-fallback__inner {
+        width: min(460px, 100%);
+        border: 1px solid rgba(247, 242, 234, 0.16);
+        border-radius: 8px;
+        padding: 24px;
+        background: #11151b;
+      }
+
+      .cms-fallback h1 {
+        margin: 0 0 8px;
+        font-size: 24px;
+      }
+
+      .cms-fallback p {
+        margin: 0;
+        color: #b9b0a3;
+        line-height: 1.55;
+      }
+
+      .cms-fallback p + p {
+        margin-top: 12px;
+      }
+
+      html[data-cms-loaded="true"] .cms-fallback {
+        display: none;
+      }
+    </style>
   </head>
   <body>
+    <div class="cms-fallback" id="cmsFallback">
+      <div class="cms-fallback__inner">
+        <h1>NoArousal CMS</h1>
+        <p id="cmsStatus">Loading the editor...</p>
+        <p>If this stays here, refresh once or disable extensions that block CDN scripts.</p>
+      </div>
+    </div>
     <div id="nc-root"></div>
     <script>
       window.CMS_MANUAL_INIT = true;
+      window.showCmsStatus = function (message) {
+        const status = document.getElementById("cmsStatus");
+        if (status) status.textContent = message;
+      };
     </script>
-    <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js"></script>
+    <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js" onerror="showCmsStatus('Could not load Sveltia CMS from the CDN. Check the connection or browser blocking rules.')"></script>
     <script>
-      window.CMS.init({
-        config: {
-          load_config_file: false,
-          backend: {
-            name: "github",
-            repo: "farrosfr/noarousal",
-            branch: "main",
-            site_domain: "noa.farros.co",
-            auth_methods: ["token"]
-          },
-          media_folder: "public/uploads",
-          public_folder: "/uploads",
-          collections: [
-            {
-              name: "blog",
-              label: "Blog",
-              folder: "src/content/blog",
-              create: true,
-              slug: "{{slug}}",
-              extension: "md",
-              format: "frontmatter",
-              fields: [
-                { name: "title", label: "Title", widget: "string" },
-                { name: "description", label: "Description", widget: "text" },
-                { name: "date", label: "Publish Date", widget: "datetime" },
-                { name: "readTime", label: "Read Time", widget: "string", default: "6 min read" },
-                { name: "category", label: "Category", widget: "string" },
+      (async function initCms() {
+        if (!window.CMS) {
+          showCmsStatus("Sveltia CMS did not finish loading. Try refreshing once.");
+          return;
+        }
+
+        try {
+          await window.CMS.init({
+            config: {
+              load_config_file: false,
+              backend: {
+                name: "github",
+                repo: "farrosfr/noarousal",
+                branch: "main",
+                site_domain: "noa.farros.co",
+                auth_methods: ["token"]
+              },
+              media_folder: "public/uploads",
+              public_folder: "/uploads",
+              collections: [
                 {
-                  name: "tags",
-                  label: "Tags",
-                  widget: "list",
-                  field: { name: "tag", label: "Tag", widget: "string" }
-                },
-                {
-                  name: "image",
-                  label: "Hero Image",
-                  widget: "object",
+                  name: "blog",
+                  label: "Blog",
+                  folder: "src/content/blog",
+                  create: true,
+                  slug: "{{slug}}",
+                  extension: "md",
+                  format: "frontmatter",
                   fields: [
-                    { name: "url", label: "Image URL", widget: "string" },
-                    { name: "alt", label: "Alt Text", widget: "string" },
-                    { name: "credit", label: "Credit", widget: "string" },
-                    { name: "creditUrl", label: "Credit URL", widget: "string" }
+                    { name: "title", label: "Title", widget: "string" },
+                    { name: "description", label: "Description", widget: "text" },
+                    { name: "date", label: "Publish Date", widget: "datetime" },
+                    { name: "readTime", label: "Read Time", widget: "string", default: "6 min read" },
+                    { name: "category", label: "Category", widget: "string" },
+                    {
+                      name: "tags",
+                      label: "Tags",
+                      widget: "list",
+                      field: { name: "tag", label: "Tag", widget: "string" }
+                    },
+                    {
+                      name: "image",
+                      label: "Hero Image",
+                      widget: "object",
+                      fields: [
+                        { name: "url", label: "Image URL", widget: "string" },
+                        { name: "alt", label: "Alt Text", widget: "string" },
+                        { name: "credit", label: "Credit", widget: "string" },
+                        { name: "creditUrl", label: "Credit URL", widget: "string" }
+                      ]
+                    },
+                    { name: "body", label: "Article Body", widget: "markdown" }
                   ]
                 },
-                { name: "body", label: "Article Body", widget: "markdown" }
-              ]
-            },
-            {
-              name: "accountability",
-              label: "Accountability",
-              files: [
                 {
-                  name: "public_log",
-                  label: "Public Accountability Log",
-                  file: "src/data/accountability.json",
-                  format: "json",
-                  fields: [
+                  name: "accountability",
+                  label: "Accountability",
+                  files: [
                     {
-                      name: "journeyStart",
-                      label: "Journey Start",
-                      widget: "datetime",
-                      hint: "Start of the public NoArousal journey."
-                    },
-                    {
-                      name: "timeZone",
-                      label: "Time Zone",
-                      widget: "string",
-                      hint: "Keep this as Asia/Jakarta unless the public streak timezone changes."
-                    },
-                    {
-                      name: "entries",
-                      label: "Public Events",
-                      widget: "list",
-                      summary: "{{fields.timestamp}} - {{fields.type}}",
+                      name: "public_log",
+                      label: "Public Accountability Log",
+                      file: "src/data/accountability.json",
+                      format: "json",
                       fields: [
                         {
-                          name: "type",
-                          label: "Event Type",
-                          widget: "select",
-                          options: [
-                            { label: "Relapse (loss)", value: "relapse" },
-                            { label: "Refuse (win)", value: "refuse" }
-                          ],
-                          hint: "Relapse marks that day as a loss. Refuse records an urge resisted."
+                          name: "journeyStart",
+                          label: "Journey Start",
+                          widget: "datetime",
+                          hint: "Start of the public NoArousal journey."
                         },
                         {
-                          name: "timestamp",
-                          label: "Event Timestamp",
-                          widget: "datetime",
-                          hint: "When the relapse or refusal happened."
+                          name: "timeZone",
+                          label: "Time Zone",
+                          widget: "string",
+                          hint: "Keep this as Asia/Jakarta unless the public streak timezone changes."
+                        },
+                        {
+                          name: "entries",
+                          label: "Public Events",
+                          widget: "list",
+                          summary: "{{fields.timestamp}} - {{fields.type}}",
+                          fields: [
+                            {
+                              name: "type",
+                              label: "Event Type",
+                              widget: "select",
+                              options: [
+                                { label: "Relapse (loss)", value: "relapse" },
+                                { label: "Refuse (win)", value: "refuse" }
+                              ],
+                              hint: "Relapse marks that day as a loss. Refuse records an urge resisted."
+                            },
+                            {
+                              name: "timestamp",
+                              label: "Event Timestamp",
+                              widget: "datetime",
+                              hint: "When the relapse or refusal happened."
+                            }
+                          ]
                         }
                       ]
                     }
@@ -111,9 +175,13 @@
                 }
               ]
             }
-          ]
+          });
+          document.documentElement.dataset.cmsLoaded = "true";
+        } catch (error) {
+          console.error(error);
+          showCmsStatus("Sveltia CMS failed to initialize. Open the browser console for the exact error.");
         }
-      });
+      })();
     </script>
   </body>
 </html>
