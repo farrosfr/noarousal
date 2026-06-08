@@ -56,7 +56,7 @@
       <div class="cms-fallback__inner">
         <h1>NoArousal CMS</h1>
         <p id="cmsStatus">Loading the editor...</p>
-        <p>If this stays here, refresh once or disable extensions that block CDN scripts.</p>
+        <p>If this stays here, refresh once or check the browser console for the exact loading error.</p>
       </div>
     </div>
     <div id="nc-root"></div>
@@ -67,7 +67,7 @@
         if (status) status.textContent = message;
       };
     </script>
-    <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js" onerror="showCmsStatus('Could not load Sveltia CMS from the CDN. Check the connection or browser blocking rules.')"></script>
+    <script src="/admin/sveltia-cms.js" onerror="showCmsStatus('Could not load the local Sveltia CMS script. Refresh once and check the browser console.')"></script>
     <script>
       (async function initCms() {
         if (!window.CMS) {
