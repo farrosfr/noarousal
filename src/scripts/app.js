@@ -42,33 +42,6 @@ function parseAccountabilityData(rawData) {
   }
 }
 
-function getDateParts(date, timeZone) {
-  const parts = new Intl.DateTimeFormat("en-US", {
-    timeZone,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit"
-  }).formatToParts(date);
-
-  return {
-    year: Number(parts.find((part) => part.type === "year")?.value),
-    month: Number(parts.find((part) => part.type === "month")?.value),
-    day: Number(parts.find((part) => part.type === "day")?.value)
-  };
-}
-
-function getDateKey(date, timeZone) {
-  const { year, month, day } = getDateParts(date, timeZone);
-  if (!year || !month || !day) return "";
-  return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-}
-
-function dateKeyToUtcMs(dateKey) {
-  const [year, month, day] = dateKey.split("-").map(Number);
-  if (!year || !month || !day) return Number.NaN;
-  return Date.UTC(year, month - 1, day);
-}
-
 function formatPublicTimestamp(timestamp, timeZone) {
   const date = new Date(timestamp);
   if (Number.isNaN(date.getTime())) return "";
@@ -102,8 +75,18 @@ function isRelapseEntry(entry) {
   return entry?.type === "relapse" || entry?.result === "loss";
 }
 
-function isRefuseEntry(entry) {
-  return entry?.type === "refuse" || (Array.isArray(entry?.refusals) && entry.refusals.length > 0);
+function getCompletedTrackedDays(start, now = Date.now()) {
+  if (Number.isNaN(start.getTime()) || now < start.getTime()) return 0;
+  return Math.floor((now - start.getTime()) / 86400000);
+}
+
+function getCompletedPeriodIndex(timestamp, start, trackedDays) {
+  const entryDate = new Date(timestamp);
+  if (Number.isNaN(entryDate.getTime())) return null;
+
+  const periodIndex = Math.floor((entryDate.getTime() - start.getTime()) / 86400000);
+  if (periodIndex < 0 || periodIndex >= trackedDays) return null;
+  return periodIndex;
 }
 
 function renderAccountability() {
@@ -111,23 +94,17 @@ function renderAccountability() {
 
   const timeZone = accountabilityData.timeZone || "Asia/Jakarta";
   const entries = Array.isArray(accountabilityData.entries) ? accountabilityData.entries : [];
-  const startKey = getDateKey(new Date(accountabilityData.journeyStart), timeZone);
-  const todayKey = getDateKey(new Date(), timeZone);
-  const startUtcMs = dateKeyToUtcMs(startKey);
-  const todayUtcMs = dateKeyToUtcMs(todayKey);
-  if (Number.isNaN(startUtcMs) || Number.isNaN(todayUtcMs) || todayUtcMs < startUtcMs) return;
+  const journeyStart = new Date(accountabilityData.journeyStart);
+  if (Number.isNaN(journeyStart.getTime())) return;
 
-  const trackedDays = Math.floor((todayUtcMs - startUtcMs) / 86400000) + 1;
-  const lossDates = new Set(
+  const trackedDays = getCompletedTrackedDays(journeyStart);
+  const lossPeriods = new Set(
     entries
       .filter((entry) => isRelapseEntry(entry))
-      .map((entry) => getDateKey(new Date(getEntryTimestamp(entry)), timeZone))
-      .filter((entry) => {
-        const entryUtcMs = dateKeyToUtcMs(entry);
-        return !Number.isNaN(entryUtcMs) && entryUtcMs >= startUtcMs && entryUtcMs <= todayUtcMs;
-      })
+      .map((entry) => getCompletedPeriodIndex(getEntryTimestamp(entry), journeyStart, trackedDays))
+      .filter((periodIndex) => periodIndex !== null)
   );
-  const lossDays = lossDates.size;
+  const lossDays = lossPeriods.size;
   const winDays = Math.max(0, trackedDays - lossDays);
   const winRate = trackedDays > 0 ? Math.round((winDays / trackedDays) * 100) : 100;
   const refusalCount = entries.reduce((total, entry) => {

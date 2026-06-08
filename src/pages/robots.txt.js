@@ -4,6 +4,7 @@ export function GET() {
   return new Response(`User-agent: *
 Allow: /
 Disallow: /data/
+Disallow: /admin/
 
 Sitemap: ${site}/sitemap.xml
 `, {

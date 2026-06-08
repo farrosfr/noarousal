@@ -13,13 +13,13 @@ npm run preview
 
 ## Accountability Log
 
-Edit `src/data/accountability.json` when a public accountability event should be recorded. Every Asia/Jakarta calendar day since the journey start counts as a win unless that date is marked as a loss.
+Edit `src/data/accountability.json` when a public accountability event should be recorded. Completed 24-hour streak periods count as wins unless a relapse is logged inside that completed period.
 
-The hidden CMS is available at `/data/`. It is not linked from the public navigation.
+The hidden CMS is available at `/admin/`. It is not linked from the public navigation.
 
 ## Blog Posts
 
-Blog articles live in `src/content/blog` as Markdown files using Astro Content Collections. The `/data/` CMS can create and edit these files.
+Blog articles live in `src/content/blog` as Markdown files using Astro Content Collections. The `/admin/` CMS can create and edit these files.
 
 Example loss entry:
 
