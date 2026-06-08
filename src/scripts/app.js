@@ -86,12 +86,24 @@ function formatPublicTimestamp(timestamp, timeZone) {
 function getCurrentStreakStartDate(data, fallbackDate) {
   const entries = Array.isArray(data?.entries) ? data.entries : [];
   const latestRelapse = entries
-    .filter((entry) => entry?.result === "loss" && entry.relapseTimestamp)
-    .map((entry) => new Date(entry.relapseTimestamp))
+    .filter((entry) => isRelapseEntry(entry))
+    .map((entry) => new Date(getEntryTimestamp(entry)))
     .filter((date) => !Number.isNaN(date.getTime()) && date.getTime() <= Date.now())
     .sort((a, b) => b.getTime() - a.getTime())[0];
 
   return latestRelapse || fallbackDate;
+}
+
+function getEntryTimestamp(entry) {
+  return entry?.timestamp || entry?.relapseTimestamp || entry?.date || "";
+}
+
+function isRelapseEntry(entry) {
+  return entry?.type === "relapse" || entry?.result === "loss";
+}
+
+function isRefuseEntry(entry) {
+  return entry?.type === "refuse" || (Array.isArray(entry?.refusals) && entry.refusals.length > 0);
 }
 
 function renderAccountability() {
@@ -108,27 +120,30 @@ function renderAccountability() {
   const trackedDays = Math.floor((todayUtcMs - startUtcMs) / 86400000) + 1;
   const lossDates = new Set(
     entries
-      .filter((entry) => entry?.result === "loss" && typeof entry.date === "string")
+      .filter((entry) => isRelapseEntry(entry))
+      .map((entry) => getDateKey(new Date(getEntryTimestamp(entry)), timeZone))
       .filter((entry) => {
-        const entryUtcMs = dateKeyToUtcMs(entry.date);
+        const entryUtcMs = dateKeyToUtcMs(entry);
         return !Number.isNaN(entryUtcMs) && entryUtcMs >= startUtcMs && entryUtcMs <= todayUtcMs;
       })
-      .map((entry) => entry.date)
   );
   const lossDays = lossDates.size;
   const winDays = Math.max(0, trackedDays - lossDays);
   const winRate = trackedDays > 0 ? Math.round((winDays / trackedDays) * 100) : 100;
-  const refusalCount = entries.reduce((total, entry) => total + (Array.isArray(entry?.refusals) ? entry.refusals.length : 0), 0);
+  const refusalCount = entries.reduce((total, entry) => {
+    if (entry?.type === "refuse") return total + 1;
+    return total + (Array.isArray(entry?.refusals) ? entry.refusals.length : 0);
+  }, 0);
   const lastRelapseEntry = entries
-    .filter((entry) => entry?.result === "loss" && entry.relapseTimestamp)
-    .sort((a, b) => new Date(b.relapseTimestamp).getTime() - new Date(a.relapseTimestamp).getTime())[0];
+    .filter((entry) => isRelapseEntry(entry))
+    .sort((a, b) => new Date(getEntryTimestamp(b)).getTime() - new Date(getEntryTimestamp(a)).getTime())[0];
 
   elements.winRate.textContent = `${winRate}%`;
   elements.trackedDays.textContent = String(trackedDays);
   elements.winDays.textContent = String(winDays);
   elements.lossDays.textContent = String(lossDays);
   elements.refusalCount.textContent = String(refusalCount);
-  elements.lastRelapse.textContent = lastRelapseEntry ? formatPublicTimestamp(lastRelapseEntry.relapseTimestamp, timeZone) : "none logged";
+  elements.lastRelapse.textContent = lastRelapseEntry ? formatPublicTimestamp(getEntryTimestamp(lastRelapseEntry), timeZone) : "none logged";
 }
 
 function render() {

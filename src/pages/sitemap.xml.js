@@ -1,4 +1,4 @@
-import { posts } from "../data/posts";
+import { getCollection } from "astro:content";
 
 const site = "https://noa.farros.co";
 const siteUpdated = "2026-06-08";
@@ -9,22 +9,23 @@ const staticRoutes = [
   { path: "/quotes/", priority: "0.7" }
 ];
 
-const urls = [
-  ...staticRoutes.map((route) => ({
-    loc: `${site}${route.path}`,
-    lastmod: siteUpdated,
-    changefreq: "weekly",
-    priority: route.priority
-  })),
-  ...posts.map((post) => ({
-    loc: `${site}/blog/${post.slug}/`,
-    lastmod: post.date,
-    changefreq: "monthly",
-    priority: "0.7"
-  }))
-];
+export async function GET() {
+  const posts = await getCollection("blog");
+  const urls = [
+    ...staticRoutes.map((route) => ({
+      loc: `${site}${route.path}`,
+      lastmod: siteUpdated,
+      changefreq: "weekly",
+      priority: route.priority
+    })),
+    ...posts.map((post) => ({
+      loc: `${site}/blog/${post.id}/`,
+      lastmod: post.data.date.toISOString().slice(0, 10),
+      changefreq: "monthly",
+      priority: "0.7"
+    }))
+  ];
 
-export function GET() {
   return new Response(
     `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

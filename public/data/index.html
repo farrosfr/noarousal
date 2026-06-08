@@ -28,6 +28,40 @@
           public_folder: "/uploads",
           collections: [
             {
+              name: "blog",
+              label: "Blog",
+              folder: "src/content/blog",
+              create: true,
+              slug: "{{slug}}",
+              extension: "md",
+              format: "frontmatter",
+              fields: [
+                { name: "title", label: "Title", widget: "string" },
+                { name: "description", label: "Description", widget: "text" },
+                { name: "date", label: "Publish Date", widget: "datetime" },
+                { name: "readTime", label: "Read Time", widget: "string", default: "6 min read" },
+                { name: "category", label: "Category", widget: "string" },
+                {
+                  name: "tags",
+                  label: "Tags",
+                  widget: "list",
+                  field: { name: "tag", label: "Tag", widget: "string" }
+                },
+                {
+                  name: "image",
+                  label: "Hero Image",
+                  widget: "object",
+                  fields: [
+                    { name: "url", label: "Image URL", widget: "string" },
+                    { name: "alt", label: "Alt Text", widget: "string" },
+                    { name: "credit", label: "Credit", widget: "string" },
+                    { name: "creditUrl", label: "Credit URL", widget: "string" }
+                  ]
+                },
+                { name: "body", label: "Article Body", widget: "markdown" }
+              ]
+            },
+            {
               name: "accountability",
               label: "Accountability",
               files: [
@@ -51,40 +85,25 @@
                     },
                     {
                       name: "entries",
-                      label: "Public Log Entries",
+                      label: "Public Events",
                       widget: "list",
-                      summary: "{{fields.date}} - {{fields.result}}",
+                      summary: "{{fields.timestamp}} - {{fields.type}}",
                       fields: [
                         {
-                          name: "date",
-                          label: "Date",
-                          widget: "datetime",
-                          hint: "Calendar date for the accountability entry."
-                        },
-                        {
-                          name: "result",
-                          label: "Result",
+                          name: "type",
+                          label: "Event Type",
                           widget: "select",
-                          options: ["win", "loss"]
+                          options: [
+                            { label: "Relapse (loss)", value: "relapse" },
+                            { label: "Refuse (win)", value: "refuse" }
+                          ],
+                          hint: "Relapse marks that day as a loss. Refuse records an urge resisted."
                         },
                         {
-                          name: "relapseTimestamp",
-                          label: "Relapse Timestamp",
+                          name: "timestamp",
+                          label: "Event Timestamp",
                           widget: "datetime",
-                          required: false,
-                          hint: "Only fill this when result is loss."
-                        },
-                        {
-                          name: "refusals",
-                          label: "Refusals",
-                          widget: "list",
-                          required: false,
-                          hint: "Add a timestamp each time an urge/risk moment was resisted.",
-                          field: {
-                            name: "timestamp",
-                            label: "Refusal Timestamp",
-                            widget: "datetime"
-                          }
+                          hint: "When the relapse or refusal happened."
                         }
                       ]
                     }

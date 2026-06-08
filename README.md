@@ -17,14 +17,16 @@ Edit `src/data/accountability.json` when a public accountability event should be
 
 The hidden CMS is available at `/data/`. It is not linked from the public navigation.
 
+## Blog Posts
+
+Blog articles live in `src/content/blog` as Markdown files using Astro Content Collections. The `/data/` CMS can create and edit these files.
+
 Example loss entry:
 
 ```json
 {
-  "date": "2026-06-08",
-  "result": "loss",
-  "relapseTimestamp": "2026-06-08T21:12:00+07:00",
-  "refusals": []
+  "type": "relapse",
+  "timestamp": "2026-06-08T21:12:00+07:00"
 }
 ```
 
@@ -32,9 +34,7 @@ Example refusal entry:
 
 ```json
 {
-  "date": "2026-06-09",
-  "result": "win",
-  "relapseTimestamp": null,
-  "refusals": ["2026-06-09T20:44:00+07:00"]
+  "type": "refuse",
+  "timestamp": "2026-06-09T20:44:00+07:00"
 }
 ```
