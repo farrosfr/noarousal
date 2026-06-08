@@ -1,5 +1,14 @@
 {
   "journeyStart": "2026-06-06T12:00:00+07:00",
   "timeZone": "Asia/Jakarta",
-  "entries": []
+  "entries": [
+    {
+      "type": "refuse",
+      "timestamp": "2026-06-08T21:30:00"
+    },
+    {
+      "type": "refuse",
+      "timestamp": "2026-06-08T23:00:00"
+    }
+  ]
 }
