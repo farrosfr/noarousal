@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>NoArousal Data CMS</title>
+  </head>
+  <body>
+    <div id="nc-root"></div>
+    <script>
+      window.CMS_MANUAL_INIT = true;
+    </script>
+    <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js"></script>
+    <script>
+      window.CMS.init({
+        config: {
+          load_config_file: false,
+          backend: {
+            name: "github",
+            repo: "farrosfr/noarousal",
+            branch: "main",
+            site_domain: "noa.farros.co",
+            auth_methods: ["token"]
+          },
+          media_folder: "public/uploads",
+          public_folder: "/uploads",
+          collections: [
+            {
+              name: "accountability",
+              label: "Accountability",
+              files: [
+                {
+                  name: "public_log",
+                  label: "Public Accountability Log",
+                  file: "src/data/accountability.json",
+                  format: "json",
+                  fields: [
+                    {
+                      name: "journeyStart",
+                      label: "Journey Start",
+                      widget: "datetime",
+                      hint: "Start of the public NoArousal journey."
+                    },
+                    {
+                      name: "timeZone",
+                      label: "Time Zone",
+                      widget: "string",
+                      hint: "Keep this as Asia/Jakarta unless the public streak timezone changes."
+                    },
+                    {
+                      name: "entries",
+                      label: "Public Log Entries",
+                      widget: "list",
+                      summary: "{{fields.date}} - {{fields.result}}",
+                      fields: [
+                        {
+                          name: "date",
+                          label: "Date",
+                          widget: "datetime",
+                          hint: "Calendar date for the accountability entry."
+                        },
+                        {
+                          name: "result",
+                          label: "Result",
+                          widget: "select",
+                          options: ["win", "loss"]
+                        },
+                        {
+                          name: "relapseTimestamp",
+                          label: "Relapse Timestamp",
+                          widget: "datetime",
+                          required: false,
+                          hint: "Only fill this when result is loss."
+                        },
+                        {
+                          name: "refusals",
+                          label: "Refusals",
+                          widget: "list",
+                          required: false,
+                          hint: "Add a timestamp each time an urge/risk moment was resisted.",
+                          field: {
+                            name: "timestamp",
+                            label: "Refusal Timestamp",
+                            widget: "datetime"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      });
+    </script>
+  </body>
+</html>

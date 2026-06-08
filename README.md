@@ -15,6 +15,8 @@ npm run preview
 
 Edit `src/data/accountability.json` when a public accountability event should be recorded. Every Asia/Jakarta calendar day since the journey start counts as a win unless that date is marked as a loss.
 
+The hidden CMS is available at `/data/`. It is not linked from the public navigation.
+
 Example loss entry:
 
 ```json
