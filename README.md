@@ -1,6 +1,6 @@
 # NoArousal
 
-NoArousal is a public PMO-free streak and education site built with Astro. It publishes only the streak from June 6, 2026 at 12:00 PM Asia/Jakarta and explains PMO risk through sociology, psychology, and brain technology lenses.
+NoArousal is a public PMO-free streak and education site built with Astro. It publishes the journey start from June 6, 2026 at 12:00 PM Asia/Jakarta, the current streak, and a public win rate from the accountability log.
 
 ## Commands
 
@@ -11,6 +11,28 @@ npm run build
 npm run preview
 ```
 
-## Privacy
+## Accountability Log
 
-The site does not collect recovery data. It removes the old private tracker storage key, `noarousal-state-v1`, on page load and keeps only a hardcoded public streak.
+Edit `src/data/accountability.json` when a public accountability event should be recorded. Every Asia/Jakarta calendar day since the journey start counts as a win unless that date is marked as a loss.
+
+Example loss entry:
+
+```json
+{
+  "date": "2026-06-08",
+  "result": "loss",
+  "relapseTimestamp": "2026-06-08T21:12:00+07:00",
+  "refusals": []
+}
+```
+
+Example refusal entry:
+
+```json
+{
+  "date": "2026-06-09",
+  "result": "win",
+  "relapseTimestamp": null,
+  "refusals": ["2026-06-09T20:44:00+07:00"]
+}
+```

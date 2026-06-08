@@ -2,8 +2,9 @@
 import "@fontsource-variable/inter";
 import "@fontsource-variable/space-grotesk";
 import "../styles/global.css";
+import accountabilityData from "../data/accountability.json";
 
-const startDateTime = "2026-06-06T12:00:00+07:00";
+const startDateTime = accountabilityData.journeyStart;
 
 const categories = [
   {
@@ -81,6 +82,7 @@ const defenses = [
       <nav class="nav-links" id="primaryNav" aria-label="Primary navigation">
         <span class="menu-label">Menu</span>
         <a href="/">Home</a>
+        <a href="#accountability">Win Rate</a>
         <a href="/blog/">Blog</a>
         <a href="/quotes/">Quotes</a>
       </nav>
@@ -93,7 +95,7 @@ const defenses = [
           <p class="badge">Public streak. Private discipline.</p>
           <h1>Protect the streak. <span class="text-gradient">Rebuild control.</span></h1>
           <p class="hero-copy">
-            Only the streak is published here. Everything else stays off the record: no logs, no triggers, no notes, no private recovery data.
+            This page publishes the journey start, current streak, and public win rate from a source-controlled accountability log.
           </p>
 
           <article class="streak-panel" aria-live="polite">
@@ -108,9 +110,36 @@ const defenses = [
                 <span><strong id="streakMinutes">00</strong>minutes</span>
                 <span><strong id="streakSeconds">00</strong>seconds</span>
               </div>
-              <p>Streak locked since June 6, 2026 at 12:00 PM GMT+7.</p>
+              <p>Journey started June 6, 2026 at 12:00 PM GMT+7. Current streak resets from the latest public relapse timestamp.</p>
             </div>
           </article>
+
+          <section class="accountability-panel" id="accountability" aria-label="Public accountability statistics">
+            <div class="accountability-heading">
+              <span class="panel-label">Public win rate</span>
+              <strong id="winRate">100%</strong>
+              <p>Every GMT+7 calendar day since the journey start counts as a win unless the public log marks that day as a loss.</p>
+            </div>
+            <div class="accountability-grid">
+              <span>
+                <strong id="trackedDays">0</strong>
+                tracked days
+              </span>
+              <span>
+                <strong id="winDays">0</strong>
+                win days
+              </span>
+              <span>
+                <strong id="lossDays">0</strong>
+                loss days
+              </span>
+              <span>
+                <strong id="refusalCount">0</strong>
+                refusals
+              </span>
+            </div>
+            <p class="accountability-note">Last relapse: <span id="lastRelapse">none logged</span></p>
+          </section>
         </div>
       </section>
 
@@ -199,14 +228,16 @@ const defenses = [
           <span class="brand-mark">N</span>
           <span class="brand-text">NoArousal</span>
         </a>
-        <p>Public streak. Private discipline. No logs, no triggers, no private recovery data.</p>
+        <p>Public streak, public win rate, and source-controlled accountability.</p>
       </div>
       <nav aria-label="Footer navigation">
         <a href="/">Home</a>
+        <a href="#accountability">Win Rate</a>
         <a href="/blog/">Blog</a>
         <a href="/quotes/">Quotes</a>
       </nav>
     </footer>
+    <script id="accountabilityData" type="application/json" set:html={JSON.stringify(accountabilityData)}></script>
     <script>
       import "../scripts/app.js";
     </script>
