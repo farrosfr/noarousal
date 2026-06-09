@@ -9,6 +9,10 @@
     {
       "type": "refuse",
       "timestamp": "2026-06-08T23:00:00"
+    },
+    {
+      "type": "refuse",
+      "timestamp": "2026-06-09T16:26:00"
     }
   ]
 }
