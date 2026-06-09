@@ -135,21 +135,23 @@
                       fields: [
                         {
                           name: "journeyStart",
-                          label: "Journey Start",
-                          widget: "datetime",
-                          hint: "Start of the public NoArousal journey."
+                          widget: "hidden",
+                          default: "2026-06-06T12:00:00+07:00"
                         },
                         {
                           name: "timeZone",
-                          label: "Time Zone",
-                          widget: "string",
-                          hint: "Keep this as Asia/Jakarta unless the public streak timezone changes."
+                          widget: "hidden",
+                          default: "Asia/Jakarta"
                         },
                         {
                           name: "entries",
-                          label: "Public Events",
+                          label: "Events",
                           widget: "list",
                           summary: "{{fields.timestamp}} - {{fields.type}}",
+                          collapsed: true,
+                          minimize_collapsed: true,
+                          add_to_top: true,
+                          hint: "Newest events stay at the top. Add relapse/refusal timestamps here.",
                           fields: [
                             {
                               name: "type",
