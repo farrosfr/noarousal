@@ -4,16 +4,39 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex, nofollow" />
+    <meta name="color-scheme" content="light dark" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <title>NoArousal Data CMS</title>
+    <script>
+      (function setInitialTheme() {
+        try {
+          const savedTheme = localStorage.getItem("noa-cms-theme");
+          document.documentElement.dataset.theme = savedTheme || "light";
+          document.documentElement.style.colorScheme = savedTheme || "light";
+        } catch {
+          document.documentElement.dataset.theme = "light";
+          document.documentElement.style.colorScheme = "light";
+        }
+      })();
+    </script>
     <style>
       html,
       body {
         margin: 0;
         min-height: 100%;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      html[data-theme="light"],
+      html[data-theme="light"] body {
+        background: #f7f4ee;
+        color: #151515;
+      }
+
+      html[data-theme="dark"],
+      html[data-theme="dark"] body {
         background: #0b0d10;
         color: #f7f2ea;
-        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       }
 
       .cms-fallback {
@@ -25,9 +48,14 @@
 
       .cms-fallback__inner {
         width: min(460px, 100%);
-        border: 1px solid rgba(247, 242, 234, 0.16);
+        border: 1px solid rgba(21, 21, 21, 0.14);
         border-radius: 8px;
         padding: 24px;
+        background: #ffffff;
+      }
+
+      html[data-theme="dark"] .cms-fallback__inner {
+        border-color: rgba(247, 242, 234, 0.16);
         background: #11151b;
       }
 
@@ -38,12 +66,36 @@
 
       .cms-fallback p {
         margin: 0;
-        color: #b9b0a3;
+        color: #514b44;
         line-height: 1.55;
+      }
+
+      html[data-theme="dark"] .cms-fallback p {
+        color: #b9b0a3;
       }
 
       .cms-fallback p + p {
         margin-top: 12px;
+      }
+
+      .cms-theme-toggle {
+        position: fixed;
+        z-index: 2147483647;
+        inset: 12px 12px auto auto;
+        border: 1px solid rgba(21, 21, 21, 0.18);
+        border-radius: 999px;
+        padding: 8px 12px;
+        color: #151515;
+        background: rgba(255, 255, 255, 0.92);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+        font: 600 13px/1 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        cursor: pointer;
+      }
+
+      html[data-theme="dark"] .cms-theme-toggle {
+        border-color: rgba(247, 242, 234, 0.18);
+        color: #f7f2ea;
+        background: rgba(17, 21, 27, 0.92);
       }
 
       html[data-cms-loaded="true"] .cms-fallback {
@@ -52,6 +104,7 @@
     </style>
   </head>
   <body>
+    <button class="cms-theme-toggle" id="cmsThemeToggle" type="button">Light</button>
     <div class="cms-fallback" id="cmsFallback">
       <div class="cms-fallback__inner">
         <h1>NoArousal CMS</h1>
@@ -62,12 +115,36 @@
     <div id="nc-root"></div>
     <script>
       window.CMS_MANUAL_INIT = true;
+      window.setCmsLoaded = function () {
+        document.documentElement.dataset.cmsLoaded = "true";
+      };
+      window.setCmsTheme = function (theme) {
+        const nextTheme = theme === "dark" ? "dark" : "light";
+        document.documentElement.dataset.theme = nextTheme;
+        document.documentElement.style.colorScheme = nextTheme;
+        const toggle = document.getElementById("cmsThemeToggle");
+        if (toggle) toggle.textContent = nextTheme === "dark" ? "Dark" : "Light";
+        try {
+          localStorage.setItem("noa-cms-theme", nextTheme);
+        } catch {}
+      };
       window.showCmsStatus = function (message) {
         const status = document.getElementById("cmsStatus");
         if (status) status.textContent = message;
       };
+      document.getElementById("cmsThemeToggle")?.addEventListener("click", function () {
+        setCmsTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark");
+      });
+      setCmsTheme(document.documentElement.dataset.theme);
+
+      const cmsRoot = document.getElementById("nc-root");
+      if (cmsRoot) {
+        new MutationObserver(function () {
+          if (cmsRoot.children.length > 0) setCmsLoaded();
+        }).observe(cmsRoot, { childList: true });
+      }
     </script>
-    <script src="/admin/sveltia-cms.js" onerror="showCmsStatus('Could not load the local Sveltia CMS script. Refresh once and check the browser console.')"></script>
+    <script src="/admin/sveltia-cms.js?v=20260611" onerror="showCmsStatus('Could not load the local Sveltia CMS script. Refresh once and check the browser console.')"></script>
     <script>
       (async function initCms() {
         if (!window.CMS) {
@@ -178,7 +255,7 @@
               ]
             }
           });
-          document.documentElement.dataset.cmsLoaded = "true";
+          setCmsLoaded();
         } catch (error) {
           console.error(error);
           showCmsStatus("Sveltia CMS failed to initialize. Open the browser console for the exact error.");
