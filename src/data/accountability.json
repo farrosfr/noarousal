@@ -4,6 +4,10 @@
   "entries": [
     {
       "type": "refuse",
+      "timestamp": "2026-06-11T03:59:00"
+    },
+    {
+      "type": "refuse",
       "timestamp": "2026-06-11T03:53:00"
     },
     {
