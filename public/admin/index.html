@@ -31,12 +31,53 @@
       html[data-theme="light"] body {
         background: #f7f4ee;
         color: #151515;
+        --sui-foreground-color-1-hsl: 0 0% 5%;
+        --sui-foreground-color-2-hsl: 0 0% 18%;
+        --sui-foreground-color-3-hsl: 0 0% 30%;
+        --sui-background-color-1-hsl: 0 0% 100%;
+        --sui-background-color-2-hsl: 36 24% 97%;
+        --sui-background-color-3-hsl: 36 20% 94%;
+        --sui-background-color-4-hsl: 36 16% 90%;
+        --sui-background-color-5-hsl: 36 12% 82%;
       }
 
       html[data-theme="dark"],
       html[data-theme="dark"] body {
         background: #0b0d10;
         color: #f7f2ea;
+        --sui-foreground-color-1-hsl: 36 28% 96%;
+        --sui-foreground-color-2-hsl: 36 18% 82%;
+        --sui-foreground-color-3-hsl: 36 12% 70%;
+        --sui-background-color-1-hsl: 210 10% 8%;
+        --sui-background-color-2-hsl: 210 10% 10%;
+        --sui-background-color-3-hsl: 210 10% 13%;
+        --sui-background-color-4-hsl: 210 10% 16%;
+        --sui-background-color-5-hsl: 210 10% 26%;
+      }
+
+      #nc-root {
+        position: relative;
+        z-index: 1;
+        min-height: 100vh;
+      }
+
+      #nc-root,
+      #nc-root * {
+        visibility: visible;
+      }
+
+      html[data-theme="light"] #nc-root,
+      html[data-theme="light"] #nc-root .sui.app-shell,
+      html[data-theme="light"] #nc-root .main {
+        color: #151515;
+        background-color: #f7f4ee;
+      }
+
+      html[data-theme="dark"] #nc-root,
+      html[data-theme="dark"] #nc-root .sui.app-shell,
+      html[data-theme="dark"] #nc-root .main {
+        color: #f7f2ea;
+        background-color: #0f1318;
       }
 
       .cms-fallback {
@@ -151,6 +192,28 @@
       html[data-cms-loaded="true"] .cms-fallback p {
         font-size: 13px;
       }
+
+      html[data-cms-blank="true"] .cms-fallback {
+        inset: 0;
+        display: grid;
+        min-height: 100vh;
+        padding: 24px;
+      }
+
+      html[data-cms-blank="true"] .cms-fallback__inner {
+        width: min(560px, 100%);
+        padding: 24px;
+      }
+
+      html[data-cms-blank="true"] .cms-fallback h1,
+      html[data-cms-blank="true"] .cms-fallback p + p,
+      html[data-cms-blank="true"] .cms-actions {
+        display: block;
+      }
+
+      html[data-cms-blank="true"] .cms-actions {
+        display: flex;
+      }
     </style>
   </head>
   <body>
@@ -169,16 +232,31 @@
     <div id="nc-root"></div>
     <script>
       window.CMS_MANUAL_INIT = true;
+      window.cmsPreferredTheme = document.documentElement.dataset.theme || "light";
       window.setCmsLoaded = function () {
-        document.documentElement.dataset.cmsLoaded = "true";
-        showCmsStatus("CMS loaded. If the editor area is still blank, use Reset CMS cache.");
+        window.setTimeout(function () {
+          const rootText = document.getElementById("nc-root")?.innerText?.trim() || "";
+          const hasUsableUi = /sign in|work with local|sveltia cms/i.test(rootText);
+
+          if (!hasUsableUi) {
+            delete document.documentElement.dataset.cmsLoaded;
+            document.documentElement.dataset.cmsBlank = "true";
+            showCmsStatus("Sveltia loaded, but your PC browser rendered the CMS area blank. Use Reset CMS cache, then reload. If it stays blank, disable forced dark mode or extensions for this site.");
+            return;
+          }
+
+          delete document.documentElement.dataset.cmsBlank;
+          document.documentElement.dataset.cmsLoaded = "true";
+          showCmsStatus("CMS loaded. If the editor area is still blank, use Reset CMS cache.");
+        }, 500);
       };
       window.setCmsTheme = function (theme) {
         const nextTheme = theme === "dark" ? "dark" : "light";
+        window.cmsPreferredTheme = nextTheme;
         document.documentElement.dataset.theme = nextTheme;
         document.documentElement.style.colorScheme = nextTheme;
         const toggle = document.getElementById("cmsThemeToggle");
-        if (toggle) toggle.textContent = nextTheme === "dark" ? "Dark" : "Light";
+        if (toggle) toggle.textContent = nextTheme === "dark" ? "Light mode" : "Dark mode";
         try {
           localStorage.setItem("noa-cms-theme", nextTheme);
         } catch {}
@@ -191,6 +269,11 @@
         setCmsTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark");
       });
       setCmsTheme(document.documentElement.dataset.theme);
+      window.setInterval(function () {
+        if (document.documentElement.dataset.theme !== window.cmsPreferredTheme) {
+          setCmsTheme(window.cmsPreferredTheme);
+        }
+      }, 750);
 
       async function clearCmsCache() {
         showCmsStatus("Clearing CMS cache...");
@@ -223,6 +306,15 @@
 
       document.getElementById("cmsResetButton")?.addEventListener("click", clearCmsCache);
       if (new URLSearchParams(window.location.search).get("reset") === "1") clearCmsCache();
+      window.setTimeout(function () {
+        if (!document.documentElement.dataset.cmsLoaded && !document.documentElement.dataset.cmsBlank) {
+          const rootText = document.getElementById("nc-root")?.innerText?.trim() || "";
+          if (!/sign in|work with local|sveltia cms/i.test(rootText)) {
+            document.documentElement.dataset.cmsBlank = "true";
+            showCmsStatus("The CMS did not produce visible UI on this PC browser. Use Reset CMS cache, or try this page with extensions disabled.");
+          }
+        }
+      }, 6000);
     </script>
     <script src="/admin/sveltia-cms.js?v=20260611" onerror="showCmsStatus('Could not load the local Sveltia CMS script. Refresh once and check the browser console.')"></script>
     <script>
