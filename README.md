@@ -11,6 +11,10 @@ npm run build
 npm run preview
 ```
 
+## MCP
+
+This repo includes a project MCP config in `.mcp.json` for Context7. Use it when working on Astro, TypeScript, or package-specific changes so generated code can reference current library documentation.
+
 ## Accountability Log
 
 Edit `src/data/accountability.json` when a public accountability event should be recorded. Completed 24-hour streak periods count as wins unless a relapse is logged inside that completed period.

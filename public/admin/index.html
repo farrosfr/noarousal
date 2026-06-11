@@ -146,25 +146,7 @@
       }
 
       html[data-cms-loaded="true"] .cms-fallback {
-        inset: auto auto 16px 16px;
-        display: block;
-        min-height: 0;
-        padding: 0;
-      }
-
-      html[data-cms-loaded="true"] .cms-fallback__inner {
-        width: min(360px, calc(100vw - 32px));
-        padding: 14px;
-      }
-
-      html[data-cms-loaded="true"] .cms-fallback h1,
-      html[data-cms-loaded="true"] .cms-fallback p + p,
-      html[data-cms-loaded="true"] .cms-actions {
         display: none;
-      }
-
-      html[data-cms-loaded="true"] .cms-fallback p {
-        font-size: 13px;
       }
 
       html[data-cms-blank="true"] .cms-fallback {
@@ -219,7 +201,6 @@
 
           delete document.documentElement.dataset.cmsBlank;
           document.documentElement.dataset.cmsLoaded = "true";
-          showCmsStatus("CMS loaded. If the editor area is still blank, use Reset CMS cache.");
         }, 500);
       };
       window.showCmsStatus = function (message) {
