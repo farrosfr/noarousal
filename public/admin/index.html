@@ -172,6 +172,7 @@
       }
 
       .quick-refuse {
+        display: none !important;
         position: fixed !important;
         z-index: 2147483647 !important;
         bottom: 16px !important;
@@ -184,9 +185,12 @@
         color: #151515 !important;
         box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2) !important;
         visibility: visible !important;
-        display: block !important;
         opacity: 1 !important;
         pointer-events: auto !important;
+      }
+
+      html[data-cms-auth="true"] .quick-refuse {
+        display: block !important;
       }
 
       html[data-theme="dark"] .quick-refuse {
@@ -262,6 +266,17 @@
     <div id="nc-root"></div>
     <script>
       window.CMS_MANUAL_INIT = true;
+      window.checkCmsAuth = function () {
+        const rootText = document.getElementById("nc-root")?.innerText?.trim() || "";
+        const isAuth = rootText && !/sign in|work with local|sveltia cms/i.test(rootText) && /blog|accountability/i.test(rootText);
+        
+        if (isAuth) {
+          document.documentElement.dataset.cmsAuth = "true";
+        } else {
+          delete document.documentElement.dataset.cmsAuth;
+        }
+      };
+
       window.setCmsLoaded = function () {
         window.setTimeout(function () {
           const rootText = document.getElementById("nc-root")?.innerText?.trim() || "";
@@ -276,6 +291,7 @@
 
           delete document.documentElement.dataset.cmsBlank;
           document.documentElement.dataset.cmsLoaded = "true";
+          window.checkCmsAuth();
         }, 500);
       };
       window.showCmsStatus = function (message) {
@@ -287,6 +303,7 @@
           document.documentElement.dataset.theme = "light";
           document.documentElement.style.colorScheme = "light";
         }
+        window.checkCmsAuth();
       }, 750);
 
       async function clearCmsCache() {
@@ -359,6 +376,11 @@
       }
 
       async function getQuickRefuseToken() {
+        try {
+          const sveltiaUser = JSON.parse(localStorage.getItem("sveltia-cms.user") || "{}");
+          if (sveltiaUser.token) return sveltiaUser.token;
+        } catch (e) {}
+
         const savedToken = localStorage.getItem("noa-github-token");
         if (savedToken) return savedToken;
 
