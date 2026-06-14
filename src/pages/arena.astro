@@ -16,6 +16,10 @@ const startDateTime = accountabilityData.journeyStart;
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://noa.farros.co/arena/" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#0f1318" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="NoArousal" />
     <meta property="og:title" content="Battle Arena | NoArousal" />
@@ -142,11 +146,24 @@ const startDateTime = accountabilityData.journeyStart;
 
         <!-- Immersive Fullscreen Simulator Container -->
         <div class="ninja-simulator-fullscreen-container" id="ninjaSimulatorFullscreenContainer" style="display: none;">
-          <!-- Close Button -->
-          <button type="button" class="btn-close-simulator" id="btnCloseSimulator" aria-label="Exit Simulator">
-            <span class="close-icon">&times;</span>
-            <span class="close-label">Exit Arena</span>
-          </button>
+          <!-- Simulator Header / Control Bar -->
+          <div class="simulator-top-bar">
+            <!-- Opponent Select -->
+            <div class="boss-selector-group">
+              <label for="bossSelect">Active Urge Opponent:</label>
+              <select id="bossSelect" class="boss-select-dropdown">
+                <option value="siren">Boredom Siren (Chakra Drain - Lvl 1)</option>
+                <option value="goliath">Stress Goliath (Heavy Hitter - Lvl 5)</option>
+                <option value="leviathan" selected>Shadow Leviathan (Shield Piercer - Lvl 10)</option>
+              </select>
+            </div>
+
+            <!-- Close Button -->
+            <button type="button" class="btn-close-simulator" id="btnCloseSimulator" aria-label="Exit Simulator">
+              <span class="close-icon">&times;</span>
+              <span class="close-label">Exit Arena</span>
+            </button>
+          </div>
 
           <div class="game-board fullscreen-board" id="fullscreenGameBoard">
             <!-- Battle Background Arena -->
@@ -232,6 +249,39 @@ const startDateTime = accountabilityData.journeyStart;
               </button>
             </div>
 
+            <!-- Grounding Tools Inventory -->
+            <div class="combat-items-panel" id="combatItemsPanel">
+              <div class="items-panel-title">🛡️ Grounding Inventory (Single-Use per Match)</div>
+              <div class="items-grid">
+                <button type="button" class="btn-item-use" id="btnUseColdShower" data-item="coldShower">
+                  <span class="item-icon">🧪</span>
+                  <div class="item-details">
+                    <span class="item-name">Cold Shower Elixir</span>
+                    <span class="item-desc">Heals 50% HP (Disrupt cue loop)</span>
+                  </div>
+                  <span class="item-qty-badge" id="qtyColdShower">1</span>
+                </button>
+                
+                <button type="button" class="btn-item-use" id="btnUsePushUp" data-item="pushUp">
+                  <span class="item-icon">📜</span>
+                  <div class="item-details">
+                    <span class="item-name">Push-Up Scroll</span>
+                    <span class="item-desc">+40 Chakra (Divert blood flow)</span>
+                  </div>
+                  <span class="item-qty-badge" id="qtyPushUp">1</span>
+                </button>
+                
+                <button type="button" class="btn-item-use" id="btnUseMeditation" data-item="meditation">
+                  <span class="item-icon">🕯️</span>
+                  <div class="item-details">
+                    <span class="item-name">Meditation Incense</span>
+                    <span class="item-desc">Stuns boss for 1 turn (Mindfulness)</span>
+                  </div>
+                  <span class="item-qty-badge" id="qtyMeditation">1</span>
+                </button>
+              </div>
+            </div>
+
             <!-- Game Over Overlay -->
             <div class="game-overlay" id="gameOverOverlay" style="display: none;">
               <div class="overlay-box">
@@ -310,6 +360,25 @@ const startDateTime = accountabilityData.journeyStart;
                 <div class="attr-value"><span id="attrAccuracy">0</span>%</div>
               </div>
             </article>
+          </div>
+        </section>
+
+        <!-- Willpower Battle Calendar -->
+        <section class="battle-calendar-panel reveal-on-scroll" aria-label="Daily battle calendar">
+          <h2>Willpower Battle Calendar</h2>
+          <p class="panel-desc">Visual history of daily urges resisted. ⚔️ represents a day of victory, while 💥 marks a relapse. Maintain the streak to fortify your character!</p>
+          <div class="calendar-grid-container">
+            <div class="calendar-header-months">
+              <span id="calendarMonthName">June 2026</span>
+            </div>
+            <div class="calendar-days-grid" id="calendarDaysGrid">
+              <!-- Dynamically populated by JS -->
+            </div>
+            <div class="calendar-legend">
+              <span class="legend-item win"><span class="legend-dot win">⚔️</span> Victory Day</span>
+              <span class="legend-item loss"><span class="legend-dot loss">💥</span> Relapse Day</span>
+              <span class="legend-item empty"><span class="legend-dot empty"></span> Unlogged / Future</span>
+            </div>
           </div>
         </section>
 

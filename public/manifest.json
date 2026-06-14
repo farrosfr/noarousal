@@ -1,0 +1,17 @@
+{
+  "name": "NoArousal Willpower Tracker",
+  "short_name": "NoArousal",
+  "description": "Evidence-based willpower training and accountability log.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0b0d10",
+  "theme_color": "#0f1318",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any"
+    }
+  ]
+}

@@ -257,9 +257,301 @@ window.addEventListener("scroll", () => {
 }, { passive: true });
 
 // Initial render
+// Initial render and calendar generation
 if (!Number.isNaN(startDate.getTime())) {
   setInterval(renderArena, 1000);
   renderArena();
+  renderCalendar();
+}
+
+// Web Audio API Sound Synthesizer
+const audioCtxClass = window.AudioContext || window.webkitAudioContext;
+let audioCtx = null;
+
+function playSound(type) {
+  try {
+    if (!audioCtx) {
+      audioCtx = new audioCtxClass();
+    }
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+
+    const now = audioCtx.currentTime;
+
+    if (type === 'strike') {
+      // Noise buffer for slash swipe friction
+      const bufferSize = audioCtx.sampleRate * 0.12;
+      const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = Math.random() * 2 - 1;
+      }
+      
+      const noise = audioCtx.createBufferSource();
+      noise.buffer = buffer;
+
+      const noiseFilter = audioCtx.createBiquadFilter();
+      noiseFilter.type = 'bandpass';
+      noiseFilter.frequency.setValueAtTime(1000, now);
+      noiseFilter.frequency.exponentialRampToValueAtTime(100, now + 0.12);
+
+      const noiseGain = audioCtx.createGain();
+      noiseGain.gain.setValueAtTime(0.2, now);
+      noiseGain.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
+
+      noise.connect(noiseFilter);
+      noiseFilter.connect(noiseGain);
+      noiseGain.connect(audioCtx.destination);
+      noise.start(now);
+
+      // Pitch glide for blade impact
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(600, now);
+      osc.frequency.exponentialRampToValueAtTime(80, now + 0.1);
+      
+      gain.gain.setValueAtTime(0.15, now);
+      gain.gain.linearRampToValueAtTime(0.01, now + 0.1);
+
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + 0.1);
+      
+    } else if (type === 'fire') {
+      // White noise explosion + sawtooth glide
+      const bufferSize = audioCtx.sampleRate * 0.45;
+      const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = Math.random() * 2 - 1;
+      }
+
+      const noise = audioCtx.createBufferSource();
+      noise.buffer = buffer;
+
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(350, now);
+      filter.frequency.exponentialRampToValueAtTime(20, now + 0.4);
+
+      const gain = audioCtx.createGain();
+      gain.gain.setValueAtTime(0.4, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.45);
+
+      noise.connect(filter);
+      filter.connect(gain);
+      gain.connect(audioCtx.destination);
+      noise.start(now);
+
+      const osc = audioCtx.createOscillator();
+      const oscGain = audioCtx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(140, now);
+      osc.frequency.linearRampToValueAtTime(40, now + 0.4);
+
+      oscGain.gain.setValueAtTime(0.2, now);
+      oscGain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+
+      osc.connect(oscGain);
+      oscGain.connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + 0.4);
+
+    } else if (type === 'shield') {
+      // Dual high-pitch crystal sine tones for protective bubble
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(523.25, now);
+      osc.frequency.exponentialRampToValueAtTime(1046.5, now + 0.35);
+
+      gain.gain.setValueAtTime(0.2, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + 0.35);
+
+      const osc2 = audioCtx.createOscillator();
+      const gain2 = audioCtx.createGain();
+      osc2.type = 'sine';
+      osc2.frequency.setValueAtTime(659.25, now);
+      osc2.frequency.exponentialRampToValueAtTime(1318.5, now + 0.35);
+
+      gain2.gain.setValueAtTime(0.1, now);
+      gain2.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+
+      osc2.connect(gain2);
+      gain2.connect(audioCtx.destination);
+      osc2.start(now);
+      osc2.stop(now + 0.35);
+
+    } else if (type === 'charge') {
+      // Swirling sine wave sweeping upward
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(180, now);
+      osc.frequency.linearRampToValueAtTime(800, now + 0.5);
+
+      gain.gain.setValueAtTime(0.01, now);
+      gain.gain.linearRampToValueAtTime(0.15, now + 0.25);
+      gain.gain.linearRampToValueAtTime(0.01, now + 0.5);
+
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + 0.5);
+      
+    } else if (type === 'item') {
+      // Upward arpeggio for powerups
+      const notes = [261.63, 329.63, 392.00, 523.25];
+      notes.forEach((freq, idx) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+        
+        gain.gain.setValueAtTime(0.12, now + idx * 0.08);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + idx * 0.08 + 0.15);
+        
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now + idx * 0.08);
+        osc.stop(now + idx * 0.08 + 0.15);
+      });
+    } else if (type === 'enemy_strike') {
+      // Grungy low sawtooth slash
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(220, now);
+      osc.frequency.exponentialRampToValueAtTime(60, now + 0.2);
+
+      gain.gain.setValueAtTime(0.18, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + 0.2);
+    } else if (type === 'victory') {
+      // Uplifting arpeggio melody
+      const melody = [
+        { note: 261.63, duration: 0.15 },
+        { note: 329.63, duration: 0.15 },
+        { note: 392.00, duration: 0.15 },
+        { note: 523.25, duration: 0.3 }
+      ];
+      let delay = 0;
+      melody.forEach((item) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(item.note, now + delay);
+        
+        gain.gain.setValueAtTime(0.25, now + delay);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + delay + item.duration);
+        
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now + delay);
+        osc.stop(now + delay + item.duration);
+        delay += item.duration;
+      });
+    } else if (type === 'defeat') {
+      // Descending minor theme
+      const melody = [
+        { note: 392.00, duration: 0.2 },
+        { note: 311.13, duration: 0.2 },
+        { note: 261.63, duration: 0.4 }
+      ];
+      let delay = 0;
+      melody.forEach((item) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(item.note, now + delay);
+        
+        gain.gain.setValueAtTime(0.2, now + delay);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + delay + item.duration);
+        
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now + delay);
+        osc.stop(now + delay + item.duration);
+        delay += item.duration;
+      });
+    }
+  } catch (e) {
+    console.error("Audio Synthesis error", e);
+  }
+}
+
+// Calendar rendering logic
+function renderCalendar() {
+  const grid = document.querySelector("#calendarDaysGrid");
+  const monthNameEl = document.querySelector("#calendarMonthName");
+  if (!grid || !accountabilityData) return;
+
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth();
+
+  const monthNames = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+  if (monthNameEl) monthNameEl.textContent = `${monthNames[month]} ${year}`;
+
+  const totalDays = new Date(year, month + 1, 0).getDate();
+  const firstDayIndex = new Date(year, month, 1).getDay();
+
+  let html = "";
+  for (let i = 0; i < firstDayIndex; i++) {
+    html += `<div class="calendar-day padding"></div>`;
+  }
+
+  const entries = Array.isArray(accountabilityData.entries) ? accountabilityData.entries : [];
+  const journeyStart = new Date(accountabilityData.journeyStart);
+
+  for (let day = 1; day <= totalDays; day++) {
+    const checkDate = new Date(year, month, day);
+    
+    let state = "empty";
+    const isFuture = checkDate > now;
+    const isBeforeJourney = checkDate < new Date(journeyStart.getFullYear(), journeyStart.getMonth(), journeyStart.getDate());
+
+    if (!isFuture && !isBeforeJourney) {
+      const dayStart = new Date(year, month, day, 0, 0, 0).getTime();
+      const dayEnd = new Date(year, month, day, 23, 59, 59).getTime();
+
+      const dayEntries = entries.filter(e => {
+        const t = new Date(getEntryTimestamp(e)).getTime();
+        return t >= dayStart && t <= dayEnd;
+      });
+
+      const hasRelapse = dayEntries.some(isRelapseEntry);
+      state = hasRelapse ? "loss" : "win";
+    }
+
+    let dayClass = `calendar-day ${state}`;
+    let dayContent = `<span class="day-number">${day}</span>`;
+    
+    if (state === "win") {
+      dayContent += `<span class="day-status-icon">⚔️</span>`;
+    } else if (state === "loss") {
+      dayContent += `<span class="day-status-icon">💥</span>`;
+    }
+
+    html += `<div class="${dayClass}" title="${state.toUpperCase()}">${dayContent}</div>`;
+  }
+
+  grid.innerHTML = html;
 }
 
 // Willpower Combat Simulator Logic
@@ -272,7 +564,191 @@ const game = {
   enemyMaxHP: 120,
   playerShieldActive: false,
   isBattleOver: false,
-  isEnemyTurn: false
+  isEnemyTurn: false,
+  isBossStunned: false,
+  items: {
+    coldShower: 1,
+    pushUp: 1,
+    meditation: 1
+  }
+};
+
+let currentBossKey = "leviathan";
+
+const BOSSES = {
+  siren: {
+    name: "Boredom Siren",
+    maxHP: 90,
+    filter: "hue-rotate(120deg) saturate(1.5)",
+    description: "An alluring phantom born of inactivity. Drains chakra.",
+    aiAction: function() {
+      const roll = Math.random();
+      let dmg = 0;
+      let attackName = "";
+      let description = "";
+
+      if (roll < 0.6) {
+        attackName = "Chakra Drain";
+        dmg = Math.floor(Math.random() * 5) + 6;
+        const stolenChakra = Math.min(game.playerChakra, 20);
+        game.playerChakra = Math.max(0, game.playerChakra - stolenChakra);
+        description = `deals ${dmg} damage and drains ${stolenChakra} Chakra!`;
+        showFloatingEffect("#ninja-player", `-${stolenChakra} Chakra`, "chakra-float");
+      } else {
+        attackName = "Distraction Song";
+        dmg = Math.floor(Math.random() * 6) + 8;
+        description = `deals ${dmg} damage.`;
+      }
+      
+      playSound('enemy_strike');
+      if (gameElements.ninjaEnemy) {
+        gameElements.ninjaEnemy.classList.add("enemy-attack-dash");
+        setTimeout(() => gameElements.ninjaEnemy.classList.remove("enemy-attack-dash"), 600);
+      }
+
+      setTimeout(() => {
+        if (game.playerShieldActive) {
+          dmg = Math.round(dmg * 0.5);
+          game.playerShieldActive = false;
+          description += ` (50% absorbed by Refusal Shield)`;
+          
+          const shieldOverlay = document.querySelector("#refusalShieldOverlay");
+          if (shieldOverlay) {
+            shieldOverlay.classList.remove("shield-active-state");
+            triggerOverlayAnimation("#refusalShieldOverlay");
+          }
+        } else {
+          triggerOverlayAnimation("#enemyStrikeOverlay");
+        }
+        
+        game.playerHP = Math.max(0, game.playerHP - dmg);
+        shakeElement(gameElements.ninjaPlayer);
+        showFloatingEffect("#ninja-player", `-${dmg}`, "damage");
+        appendLogToTicker(`Boredom Siren casts <strong>${attackName}</strong>! It ${description}`);
+        
+        game.isEnemyTurn = false;
+        updateShieldIndicator();
+        
+        if (!checkBattleEnd()) {
+          updateGameUi();
+        }
+      }, 200);
+    }
+  },
+  goliath: {
+    name: "Stress Goliath",
+    maxHP: 150,
+    filter: "hue-rotate(220deg) brightness(0.9) saturate(1.8)",
+    description: "A colossal titan forged from daily anxiety. Heavy physical hitter.",
+    aiAction: function() {
+      const roll = Math.random();
+      let dmg = 0;
+      let attackName = "";
+      let description = "";
+
+      if (roll < 0.4) {
+        attackName = "Anxiety Slam";
+        dmg = Math.floor(Math.random() * 10) + 22;
+        description = `deals a heavy ${dmg} damage!`;
+      } else {
+        attackName = "Stress Crush";
+        dmg = Math.floor(Math.random() * 7) + 12;
+        description = `deals ${dmg} damage.`;
+      }
+
+      playSound('enemy_strike');
+      if (gameElements.ninjaEnemy) {
+        gameElements.ninjaEnemy.classList.add("enemy-attack-dash");
+        setTimeout(() => gameElements.ninjaEnemy.classList.remove("enemy-attack-dash"), 600);
+      }
+
+      setTimeout(() => {
+        if (game.playerShieldActive) {
+          dmg = Math.round(dmg * 0.5);
+          game.playerShieldActive = false;
+          description += ` (50% absorbed by Refusal Shield)`;
+          
+          const shieldOverlay = document.querySelector("#refusalShieldOverlay");
+          if (shieldOverlay) {
+            shieldOverlay.classList.remove("shield-active-state");
+            triggerOverlayAnimation("#refusalShieldOverlay");
+          }
+        } else {
+          triggerOverlayAnimation("#enemyStrikeOverlay");
+        }
+        
+        game.playerHP = Math.max(0, game.playerHP - dmg);
+        shakeElement(gameElements.ninjaPlayer);
+        showFloatingEffect("#ninja-player", `-${dmg}`, "damage");
+        appendLogToTicker(`Stress Goliath casts <strong>${attackName}</strong>! It ${description}`);
+        
+        game.isEnemyTurn = false;
+        updateShieldIndicator();
+        
+        if (!checkBattleEnd()) {
+          updateGameUi();
+        }
+      }, 200);
+    }
+  },
+  leviathan: {
+    name: "Shadow Leviathan",
+    maxHP: 200,
+    filter: "saturate(2.5) contrast(1.2)",
+    description: "The ultimate representation of chemical compulsion. Ignores shields.",
+    aiAction: function() {
+      const roll = Math.random();
+      let dmg = 0;
+      let attackName = "";
+      let description = "";
+      let bypassShield = false;
+
+      if (roll < 0.5) {
+        attackName = "Compulsion Pierce";
+        dmg = Math.floor(Math.random() * 8) + 16;
+        description = `deals ${dmg} damage, <strong>ignoring Refusal Shield entirely</strong>!`;
+        bypassShield = true;
+      } else {
+        attackName = "Temptation Flood";
+        dmg = Math.floor(Math.random() * 8) + 12;
+        description = `deals ${dmg} damage.`;
+      }
+
+      playSound('enemy_strike');
+      if (gameElements.ninjaEnemy) {
+        gameElements.ninjaEnemy.classList.add("enemy-attack-dash");
+        setTimeout(() => gameElements.ninjaEnemy.classList.remove("enemy-attack-dash"), 600);
+      }
+
+      setTimeout(() => {
+        if (game.playerShieldActive && !bypassShield) {
+          dmg = Math.round(dmg * 0.5);
+          game.playerShieldActive = false;
+          description += ` (50% absorbed by Refusal Shield)`;
+          
+          const shieldOverlay = document.querySelector("#refusalShieldOverlay");
+          if (shieldOverlay) {
+            shieldOverlay.classList.remove("shield-active-state");
+            triggerOverlayAnimation("#refusalShieldOverlay");
+          }
+        } else {
+          triggerOverlayAnimation("#enemyStrikeOverlay");
+        }
+        
+        game.playerHP = Math.max(0, game.playerHP - dmg);
+        shakeElement(gameElements.ninjaPlayer);
+        showFloatingEffect("#ninja-player", `-${dmg}`, "damage");
+        appendLogToTicker(`Shadow Leviathan casts <strong>${attackName}</strong>! It ${description}`);
+        
+        game.isEnemyTurn = false;
+        updateShieldIndicator();
+        
+        if (!checkBattleEnd()) {
+          updateGameUi();
+        }
+      }, 200);
+    }
+  }
 };
 
 const gameElements = {
@@ -297,6 +773,40 @@ const gameElements = {
   btnRestartGame: document.querySelector("#btnRestartGame")
 };
 
+function initDynamicStats() {
+  const willpower = parseInt(document.querySelector("#attrWillpower")?.textContent || "0", 10);
+  const fortitude = parseInt(document.querySelector("#attrFortitude")?.textContent || "0", 10);
+
+  // Stats Bridging
+  game.playerMaxHP = 100 + (fortitude * 5); // +5 HP per clean day
+  game.playerHP = game.playerMaxHP;
+  game.playerMaxChakra = 100;
+  game.playerChakra = 50;
+
+  // Scaling damage
+  game.strikeMinDmg = 10 + Math.floor(willpower * 0.4);
+  game.strikeMaxDmg = 18 + Math.floor(willpower * 0.4);
+  game.fireMinDmg = 24 + Math.floor(willpower * 0.8);
+  game.fireMaxDmg = 36 + Math.floor(willpower * 0.8);
+  game.healAmount = 25 + Math.floor(fortitude * 1.5);
+}
+
+function applySelectedBoss() {
+  const boss = BOSSES[currentBossKey] || BOSSES.leviathan;
+  game.enemyHP = boss.maxHP;
+  game.enemyMaxHP = boss.maxHP;
+  
+  const bossNames = document.querySelectorAll(".boss-name");
+  bossNames.forEach(el => {
+    el.textContent = boss.name;
+  });
+  
+  const enemyAvatar = document.querySelector(".ninja-character.enemy .ninja-avatar-img");
+  if (enemyAvatar) {
+    enemyAvatar.style.filter = boss.filter;
+  }
+}
+
 function updateGameUi() {
   if (gameElements.playerHpText) gameElements.playerHpText.textContent = `${game.playerHP}/${game.playerMaxHP}`;
   if (gameElements.playerHpBar) gameElements.playerHpBar.style.width = `${(game.playerHP / game.playerMaxHP) * 100}%`;
@@ -312,6 +822,27 @@ function updateGameUi() {
   if (gameElements.btnFireJutsu) gameElements.btnFireJutsu.disabled = isDisabled || game.playerChakra < 20;
   if (gameElements.btnHealJutsu) gameElements.btnHealJutsu.disabled = isDisabled || game.playerChakra < 15;
   if (gameElements.btnCharge) gameElements.btnCharge.disabled = isDisabled;
+
+  // Grounding Items States
+  const btnCold = document.querySelector("#btnUseColdShower");
+  const btnPush = document.querySelector("#btnUsePushUp");
+  const btnMed = document.querySelector("#btnUseMeditation");
+  
+  if (btnCold) {
+    btnCold.disabled = isDisabled || game.items.coldShower <= 0;
+    const badge = document.querySelector("#qtyColdShower");
+    if (badge) badge.textContent = game.items.coldShower;
+  }
+  if (btnPush) {
+    btnPush.disabled = isDisabled || game.items.pushUp <= 0;
+    const badge = document.querySelector("#qtyPushUp");
+    if (badge) badge.textContent = game.items.pushUp;
+  }
+  if (btnMed) {
+    btnMed.disabled = isDisabled || game.items.meditation <= 0;
+    const badge = document.querySelector("#qtyMeditation");
+    if (badge) badge.textContent = game.items.meditation;
+  }
 }
 
 function showFloatingEffect(targetId, text, type) {
@@ -356,7 +887,8 @@ function startCinematicVictory() {
   const subtitle = document.querySelector("#cinematicSubtitle");
   if (subtitle) {
     subtitle.textContent = `"At last... the shadow urge dissipates into the light of resolve."`;
-    setTimeout(() => {
+    if (window.victorySubtitleTimeout) clearTimeout(window.victorySubtitleTimeout);
+    window.victorySubtitleTimeout = setTimeout(() => {
       subtitle.textContent = `"My willpower is absolute. The Sovereign Mind remains master of itself."`;
     }, 3500);
   }
@@ -368,7 +900,7 @@ function startCinematicVictory() {
       if (gameElements.gameOverOverlay) {
         gameElements.overlayResultTitle.textContent = "Victory!";
         gameElements.overlayResultTitle.style.color = "var(--accent)";
-        gameElements.overlayResultDesc.textContent = "Shadow urge has been successfully dispelled! Sovereign Mind retains control.";
+        gameElements.overlayResultDesc.textContent = `${BOSSES[currentBossKey].name} has been successfully dispelled! Sovereign Mind retains control.`;
         gameElements.gameOverOverlay.style.display = "flex";
       }
     };
@@ -379,6 +911,7 @@ function checkBattleEnd() {
   if (game.enemyHP <= 0) {
     game.isBattleOver = true;
     updateGameUi();
+    playSound('victory');
     setTimeout(() => {
       startCinematicVictory();
     }, 800);
@@ -388,11 +921,12 @@ function checkBattleEnd() {
   if (game.playerHP <= 0) {
     game.isBattleOver = true;
     updateGameUi();
+    playSound('defeat');
     setTimeout(() => {
       if (gameElements.gameOverOverlay) {
         gameElements.overlayResultTitle.textContent = "Defeated!";
         gameElements.overlayResultTitle.style.color = "#ef4444";
-        gameElements.overlayResultDesc.textContent = "The urge overwhelmed your shield. Clear your mind and try again!";
+        gameElements.overlayResultDesc.textContent = `The urge overwhelmed your shield. Clear your mind and try again!`;
         gameElements.gameOverOverlay.style.display = "flex";
       }
     }, 800);
@@ -445,73 +979,30 @@ function enemyTurn() {
   game.isEnemyTurn = true;
   updateGameUi();
   
-  appendLogToTicker("Shadow Demon is preparing an attack...");
+  appendLogToTicker(`${BOSSES[currentBossKey].name} is preparing an attack...`);
   
   setTimeout(() => {
-    const roll = Math.random();
-    let dmg = 0;
-    let attackName = "";
-    let description = "";
-    
-    if (roll < 0.5) {
-      attackName = "Urge Whisper";
-      dmg = Math.floor(Math.random() * 7) + 8; // 8 - 14 dmg
-      const stolenChakra = Math.min(game.playerChakra, 10);
-      game.playerChakra = Math.max(0, game.playerChakra - stolenChakra);
-      description = `deals ${dmg} damage and drains ${stolenChakra} Chakra!`;
-    } else if (roll < 0.85) {
-      attackName = "Crave Strike";
-      dmg = Math.floor(Math.random() * 8) + 15; // 15 - 22 dmg
-      description = `deals ${dmg} damage!`;
-    } else {
-      attackName = "Sensory Illusion";
-      dmg = Math.floor(Math.random() * 11) + 25; // 25 - 35 dmg
-      description = `deals a massive ${dmg} damage!`;
-    }
-    
-    // Trigger enemy dash forward
-    if (gameElements.ninjaEnemy) {
-      gameElements.ninjaEnemy.classList.add("enemy-attack-dash");
-      setTimeout(() => gameElements.ninjaEnemy.classList.remove("enemy-attack-dash"), 600);
-    }
-    
-    setTimeout(() => {
-      if (game.playerShieldActive) {
-        dmg = Math.round(dmg * 0.5);
-        game.playerShieldActive = false;
-        description = `deals blocked ${dmg} damage (50% absorbed by Refusal Shield)!`;
-        
-        // Flash the shield break/impact
-        const shieldOverlay = document.querySelector("#refusalShieldOverlay");
-        if (shieldOverlay) {
-          shieldOverlay.classList.remove("shield-active-state");
-          triggerOverlayAnimation("#refusalShieldOverlay");
-        }
-      } else {
-        triggerOverlayAnimation("#enemyStrikeOverlay");
-      }
-      
-      game.playerHP = Math.max(0, game.playerHP - dmg);
-      
-      shakeElement(gameElements.ninjaPlayer);
-      showFloatingEffect("#ninja-player", `-${dmg}`, "damage");
-      appendLogToTicker(`Shadow Demon casts <strong>${attackName}</strong>! It ${description}`);
-      
-      game.isEnemyTurn = false;
-      updateShieldIndicator();
-      
-      if (!checkBattleEnd()) {
+    if (game.isBossStunned) {
+      game.isBossStunned = false;
+      appendLogToTicker(`The boss is pacified by the Meditation Incense and skips their turn!`);
+      setTimeout(() => {
+        game.isEnemyTurn = false;
         updateGameUi();
-      }
-    }, 200);
+      }, 1200);
+      return;
+    }
+    
+    // Execute active boss AI Action
+    const boss = BOSSES[currentBossKey] || BOSSES.leviathan;
+    boss.aiAction();
   }, 1200);
 }
 
 function handleStrike() {
-  const dmg = Math.floor(Math.random() * 9) + 10; // 10 - 18 dmg
+  const dmg = Math.floor(Math.random() * (game.strikeMaxDmg - game.strikeMinDmg + 1)) + game.strikeMinDmg;
   game.enemyHP = Math.max(0, game.enemyHP - dmg);
+  playSound('strike');
   
-  // Trigger player dash
   if (gameElements.ninjaPlayer) {
     gameElements.ninjaPlayer.classList.add("player-attack-dash");
     setTimeout(() => gameElements.ninjaPlayer.classList.remove("player-attack-dash"), 600);
@@ -523,7 +1014,7 @@ function handleStrike() {
     triggerOverlayAnimation("#strikeOverlay");
   }, 200);
 
-  appendLogToTicker(`Sovereign Ninja uses <strong>Strike</strong>! Dealt ${dmg} damage to Shadow Demon.`);
+  appendLogToTicker(`Sovereign Ninja uses <strong>Strike</strong>! Dealt ${dmg} damage to ${BOSSES[currentBossKey].name}.`);
   
   if (!checkBattleEnd()) {
     enemyTurn();
@@ -534,10 +1025,10 @@ function handleFireJutsu() {
   if (game.playerChakra < 20) return;
   game.playerChakra -= 20;
   
-  const dmg = Math.floor(Math.random() * 13) + 24; // 24 - 36 dmg
+  const dmg = Math.floor(Math.random() * (game.fireMaxDmg - game.fireMinDmg + 1)) + game.fireMinDmg;
   game.enemyHP = Math.max(0, game.enemyHP - dmg);
+  playSound('fire');
   
-  // Trigger player dash
   if (gameElements.ninjaPlayer) {
     gameElements.ninjaPlayer.classList.add("player-attack-dash");
     setTimeout(() => gameElements.ninjaPlayer.classList.remove("player-attack-dash"), 600);
@@ -549,7 +1040,7 @@ function handleFireJutsu() {
     triggerOverlayAnimation("#willFlameOverlay");
   }, 200);
 
-  appendLogToTicker(`Sovereign Ninja casts <strong>Jutsu: Will Flame</strong>! Dealt ${dmg} fire damage to Shadow Demon.`);
+  appendLogToTicker(`Sovereign Ninja casts <strong>Jutsu: Will Flame</strong>! Dealt ${dmg} fire damage to ${BOSSES[currentBossKey].name}.`);
   
   if (!checkBattleEnd()) {
     enemyTurn();
@@ -560,9 +1051,10 @@ function handleHealJutsu() {
   if (game.playerChakra < 15) return;
   game.playerChakra -= 15;
   
-  const heal = 25;
+  const heal = game.healAmount;
   game.playerHP = Math.min(game.playerMaxHP, game.playerHP + heal);
   game.playerShieldActive = true;
+  playSound('shield');
   
   triggerOverlayAnimation("#refusalShieldOverlay");
   updateShieldIndicator();
@@ -578,6 +1070,7 @@ function handleHealJutsu() {
 function handleCharge() {
   const charge = 40;
   game.playerChakra = Math.min(game.playerMaxChakra, game.playerChakra + charge);
+  playSound('charge');
   
   triggerOverlayAnimation("#chargeChakraOverlay");
   
@@ -590,9 +1083,20 @@ function handleCharge() {
 }
 
 function restartGame() {
-  game.playerHP = 100;
-  game.playerChakra = 50;
-  game.enemyHP = 120;
+  // Initialize Stats
+  initDynamicStats();
+  
+  // Apply Boss HP
+  applySelectedBoss();
+
+  // Reset items
+  game.items = {
+    coldShower: 1,
+    pushUp: 1,
+    meditation: 1
+  };
+  game.isBossStunned = false;
+  
   game.playerShieldActive = false;
   game.isBattleOver = false;
   game.isEnemyTurn = false;
@@ -600,7 +1104,7 @@ function restartGame() {
   updateShieldIndicator();
   
   if (gameElements.gameOverOverlay) gameElements.gameOverOverlay.style.display = "none";
-  appendLogToTicker("Battle reset. Choose your action to begin the strike!");
+  appendLogToTicker(`Battle reset. Choose your action to begin the strike against ${BOSSES[currentBossKey].name}!`);
   updateGameUi();
 }
 
@@ -611,6 +1115,48 @@ function initGameListeners() {
   gameElements.btnCharge?.addEventListener("click", handleCharge);
   gameElements.btnRestartGame?.addEventListener("click", restartGame);
   
+  // Inventory Items Click Listeners
+  document.querySelector("#btnUseColdShower")?.addEventListener("click", () => {
+    if (game.items.coldShower > 0 && !game.isBattleOver && !game.isEnemyTurn) {
+      game.items.coldShower--;
+      const healAmount = Math.round(game.playerMaxHP * 0.5);
+      game.playerHP = Math.min(game.playerMaxHP, game.playerHP + healAmount);
+      playSound('item');
+      showFloatingEffect("#ninja-player", `+${healAmount} HP`, "heal");
+      appendLogToTicker(`Sovereign Ninja uses <strong>Cold Shower Elixir</strong>! Disrupts the urge loop and restores ${healAmount} HP.`);
+      updateGameUi();
+    }
+  });
+
+  document.querySelector("#btnUsePushUp")?.addEventListener("click", () => {
+    if (game.items.pushUp > 0 && !game.isBattleOver && !game.isEnemyTurn) {
+      game.items.pushUp--;
+      const chakraAmount = 40;
+      game.playerChakra = Math.min(game.playerMaxChakra, game.playerChakra + chakraAmount);
+      playSound('item');
+      showFloatingEffect("#ninja-player", `+${chakraAmount} Chakra`, "chakra-float");
+      appendLogToTicker(`Sovereign Ninja uses <strong>Push-Up Scroll</strong>! Diverts blood flow and physical energy, restoring ${chakraAmount} Chakra.`);
+      updateGameUi();
+    }
+  });
+
+  document.querySelector("#btnUseMeditation")?.addEventListener("click", () => {
+    if (game.items.meditation > 0 && !game.isBattleOver && !game.isEnemyTurn) {
+      game.items.meditation--;
+      game.isBossStunned = true;
+      playSound('item');
+      appendLogToTicker(`Sovereign Ninja uses <strong>Meditation Incense</strong>! Mindfulness pacifies the active urge, <strong>stunning the boss for 1 turn!</strong>`);
+      updateGameUi();
+    }
+  });
+
+  // Boss Select Listener
+  const bossSelect = document.querySelector("#bossSelect");
+  bossSelect?.addEventListener("change", (e) => {
+    currentBossKey = e.target.value;
+    restartGame();
+  });
+
   const launchBtn = document.querySelector("#btnLaunchSimulator");
   const closeBtn = document.querySelector("#btnCloseSimulator");
   const fullscreenContainer = document.querySelector("#ninjaSimulatorFullscreenContainer");
@@ -625,6 +1171,7 @@ function initGameListeners() {
       } else if (fullscreenContainer.webkitRequestFullscreen) {
         fullscreenContainer.webkitRequestFullscreen();
       }
+      restartGame(); // initialize stats and boss HP on opening the arena
       setDynamicGameBackground();
       updateShieldIndicator();
     }
@@ -651,8 +1198,20 @@ function initGameListeners() {
 
   setDynamicGameBackground();
   updateShieldIndicator();
+  initDynamicStats();
+  applySelectedBoss();
   updateGameUi();
 }
 
 initGameListeners();
+
+// Register PWA Service Worker for offline capability
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(() => console.log('Service Worker registered successfully'))
+      .catch(err => console.error('Service Worker registration failed:', err));
+  });
+}
+
 

@@ -2574,6 +2574,313 @@ h1 {
   }
 }
 
+/* SIMULATOR TOP CONTROLS BAR */
+.simulator-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 960px;
+  margin-bottom: 16px;
+  z-index: 100000;
+  gap: 16px;
+}
+
+.boss-selector-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--line);
+  padding: 6px 14px;
+  border-radius: 12px;
+  backdrop-filter: blur(8px);
+}
+
+.boss-selector-group label {
+  font-family: "Space Grotesk Variable", sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.boss-select-dropdown {
+  background: #09090b;
+  border: 1px solid var(--line);
+  color: var(--text);
+  font-family: "Space Grotesk Variable", sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.boss-select-dropdown:hover {
+  border-color: var(--accent);
+}
+
+/* adjust btn-close-simulator to not be absolute, so it sits naturally in our top bar */
+.ninja-simulator-fullscreen-container .btn-close-simulator {
+  position: static !important;
+  transform: none !important;
+}
+.ninja-simulator-fullscreen-container .btn-close-simulator:hover {
+  background: #ef4444;
+  border-color: #ef4444;
+  color: #fff;
+  transform: scale(1.03) !important;
+}
+
+/* GROUNDING TOOLS INVENTORY STYLES */
+.combat-items-panel {
+  border-top: 1px solid var(--line);
+  padding: 16px;
+  background: rgba(15, 23, 42, 0.3);
+}
+
+.items-panel-title {
+  font-family: "Space Grotesk Variable", sans-serif;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 12px;
+}
+
+.items-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.btn-item-use {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 10px 14px;
+  color: var(--text);
+  cursor: pointer;
+  position: relative;
+  text-align: left;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-item-use:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.35);
+}
+
+.btn-item-use:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btn-item-use .item-icon {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.btn-item-use .item-details {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.btn-item-use .item-name {
+  font-family: "Space Grotesk Variable", sans-serif;
+  font-weight: 750;
+  font-size: 0.88rem;
+  color: var(--text);
+}
+
+.btn-item-use .item-desc {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.btn-item-use .item-qty-badge {
+  background: var(--accent);
+  color: #000;
+  font-family: "Space Grotesk Variable", sans-serif;
+  font-weight: 900;
+  font-size: 0.75rem;
+  border-radius: 6px;
+  padding: 2px 7px;
+  line-height: 1;
+}
+
+/* WILLPOWER BATTLE CALENDAR STYLES */
+.battle-calendar-panel {
+  background: rgba(15, 23, 42, 0.35);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 32px;
+}
+
+.battle-calendar-panel h2 {
+  margin: 0 0 6px;
+  font-size: 1.5rem;
+}
+
+.battle-calendar-panel .panel-desc {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin: 0 0 20px;
+}
+
+.calendar-grid-container {
+  display: flex;
+  flex-direction: column;
+  background: #09090b;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.calendar-header-months {
+  text-align: center;
+  font-family: "Space Grotesk Variable", sans-serif;
+  font-weight: 850;
+  font-size: 1.15rem;
+  color: var(--accent);
+  margin-bottom: 18px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.calendar-days-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.calendar-day {
+  aspect-ratio: 1;
+  background: rgba(255, 255, 255, 0.015);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.calendar-day.padding {
+  background: transparent;
+  border: 0;
+  pointer-events: none;
+}
+
+.calendar-day .day-number {
+  font-family: "Space Grotesk Variable", sans-serif;
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.calendar-day .day-status-icon {
+  font-size: 1rem;
+  margin-top: 2px;
+}
+
+.calendar-day.win {
+  border-color: rgba(45, 212, 191, 0.35);
+  background: rgba(45, 212, 191, 0.04);
+}
+.calendar-day.win .day-number {
+  color: #2dd4bf;
+}
+
+.calendar-day.loss {
+  border-color: rgba(239, 68, 68, 0.35);
+  background: rgba(239, 68, 68, 0.04);
+}
+.calendar-day.loss .day-number {
+  color: #ef4444;
+}
+
+.calendar-day:hover:not(.padding) {
+  transform: scale(1.08);
+  z-index: 2;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.calendar-legend {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  border-top: 1px solid var(--line);
+  padding-top: 14px;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.legend-dot {
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+.legend-dot.empty {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.015);
+  display: inline-block;
+}
+
+@media (max-width: 768px) {
+  .simulator-top-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .boss-selector-group {
+    justify-content: space-between;
+  }
+  .items-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .btn-item-use {
+    padding: 8px 12px;
+  }
+  .calendar-days-grid {
+    gap: 4px;
+  }
+  .calendar-day {
+    border-radius: 6px;
+  }
+  .calendar-day .day-status-icon {
+    font-size: 0.8rem;
+  }
+}
+
 /* ==========================================================================
    CINEMATIC VICTORY CUTSCENE ANIMATIONS
    ========================================================================== */

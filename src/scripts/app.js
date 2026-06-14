@@ -279,3 +279,13 @@ if (elements.days && elements.hours && elements.minutes && elements.seconds && !
   setInterval(render, 1000);
   render();
 }
+
+// Register PWA Service Worker for offline capability
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(() => console.log('Service Worker registered successfully'))
+      .catch(err => console.error('Service Worker registration failed:', err));
+  });
+}
+
