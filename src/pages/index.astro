@@ -82,6 +82,7 @@ const defenses = [
       <nav class="nav-links" id="primaryNav" aria-label="Primary navigation">
         <span class="menu-label">Menu</span>
         <a href="/">Home</a>
+        <a href="/arena/">Arena</a>
         <a href="/blog/">Blog</a>
         <a href="/quotes/">Quotes</a>
       </nav>
@@ -140,60 +141,49 @@ const defenses = [
             <p class="accountability-note">Last relapse: <span id="lastRelapse">none logged</span></p>
           </section>
 
-          <!-- Gamified Battle Arena -->
-          <section class="battle-arena-panel reveal-on-scroll" id="battle-arena" aria-label="Inner Battle: You vs You">
+          <!-- Gamified Battle Arena Mini-Widget -->
+          <section class="battle-arena-panel reveal-on-scroll" id="battle-arena" aria-label="Inner Battle Status">
             <div class="battle-arena-header">
-              <span class="panel-label">Gamified Arena</span>
-              <h2>You vs You <span class="text-gradient">Battle Log</span></h2>
-              <p class="battle-intro">Gamifying discipline. Turn your resistance into victories.</p>
+              <span class="panel-label">Gamified Arena Status</span>
+              <h2>Sovereign Self <span class="text-gradient">vs The Shadow</span></h2>
+              <p class="battle-intro">Track your level, shield, and active boss fight balance.</p>
             </div>
             
-            <div class="battle-arena-content">
-              <!-- Character Status Card -->
-              <div class="character-card">
-                <div class="character-avatar-wrapper">
-                  <img src="/inner_strength_emblem.jpg" alt="Inner Strength Emblem" class="character-avatar" />
-                  <div class="character-badge-overlay">LVL <span id="charLevel">1</span></div>
-                </div>
-                <div class="character-info">
+            <div class="battle-arena-content mini-widget">
+              <!-- Left side: avatar and basic lvl info -->
+              <div class="character-preview-card">
+                <img src="/inner_strength_emblem.jpg" alt="Inner Strength Emblem" class="preview-avatar" />
+                <div class="preview-info">
                   <h3>Sovereign Self</h3>
-                  <p class="character-class">Sentinel of Will</p>
-                  
-                  <div class="stats-bar-group">
-                    <div class="bar-label">
-                      <span>XP (Experience)</span>
-                      <span id="charXpText">0 / 100 XP</span>
-                    </div>
-                    <div class="bar-outer">
-                      <div class="bar-inner xp-bar" id="charXpBar" style="width: 0%"></div>
-                    </div>
-                  </div>
-
-                  <div class="stats-bar-group">
-                    <div class="bar-label">
-                      <span>Shield Integrity</span>
-                      <span id="charShieldText">0%</span>
-                    </div>
-                    <div class="bar-outer">
-                      <div class="bar-inner shield-bar" id="charShieldBar" style="width: 0%"></div>
-                    </div>
-                  </div>
+                  <div class="preview-level-badge">LVL <span id="charLevel">1</span></div>
                 </div>
               </div>
 
-              <!-- Boss / Shadow Fight Card -->
-              <div class="boss-card">
-                <div class="boss-header">
-                  <div>
-                    <span class="boss-eyebrow">Active Threat</span>
-                    <h3>The Shadow Urge</h3>
-                  </div>
-                  <span class="boss-level">Rank <span id="bossRank">1</span></span>
-                </div>
-                
+              <!-- Right side: compact progress bars and link -->
+              <div class="preview-stats-card">
                 <div class="stats-bar-group">
                   <div class="bar-label">
-                    <span>Shadow HP</span>
+                    <span>XP (Experience)</span>
+                    <span id="charXpText">0 / 100 XP</span>
+                  </div>
+                  <div class="bar-outer">
+                    <div class="bar-inner xp-bar" id="charXpBar" style="width: 0%"></div>
+                  </div>
+                </div>
+
+                <div class="stats-bar-group">
+                  <div class="bar-label">
+                    <span>Shield Integrity</span>
+                    <span id="charShieldText">0%</span>
+                  </div>
+                  <div class="bar-outer">
+                    <div class="bar-inner shield-bar" id="charShieldBar" style="width: 0%"></div>
+                  </div>
+                </div>
+
+                <div class="stats-bar-group">
+                  <div class="bar-label">
+                    <span>Shadow Boss HP (Rank <span id="bossRank">1</span>)</span>
                     <span id="bossHpText">100 / 100 HP</span>
                   </div>
                   <div class="bar-outer">
@@ -201,11 +191,11 @@ const defenses = [
                   </div>
                 </div>
 
-                <div class="battle-logs-wrapper">
-                  <h4>Combat History</h4>
-                  <ul class="battle-logs" id="battleLogs">
-                    <li class="log-item default-log">Initial state loaded. No battles logged yet.</li>
-                  </ul>
+                <!-- Hidden battleLogs container to prevent app.js from breaking -->
+                <ul id="battleLogs" style="display: none;"></ul>
+
+                <div class="widget-cta">
+                  <a href="/arena/" class="read-link">Enter Full Battle Arena &rarr;</a>
                 </div>
               </div>
             </div>
@@ -302,6 +292,7 @@ const defenses = [
       </div>
       <nav aria-label="Footer navigation">
         <a href="/">Home</a>
+        <a href="/arena/">Arena</a>
         <a href="/blog/">Blog</a>
         <a href="/quotes/">Quotes</a>
       </nav>
