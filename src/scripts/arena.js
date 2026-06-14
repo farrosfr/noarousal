@@ -824,7 +824,8 @@ const BOSSES = {
         description = `deals ${dmg} damage.`;
       }
       
-      // Apply Rage & Time boosts
+      // Apply Scaling, Rage & Time boosts
+      if (game.bossScaleFactor) dmg = Math.round(dmg * game.bossScaleFactor);
       if (game.bossRageActive) dmg = Math.round(dmg * 1.25);
       if (game.timeOfDayBoost && game.timeOfDayBoost.bossAtkMultiplier) {
         dmg = Math.round(dmg * game.timeOfDayBoost.bossAtkMultiplier);
@@ -903,7 +904,8 @@ const BOSSES = {
         description = `deals ${dmg} damage.`;
       }
 
-      // Apply Rage & Time boosts
+      // Apply Scaling, Rage & Time boosts
+      if (game.bossScaleFactor) dmg = Math.round(dmg * game.bossScaleFactor);
       if (game.bossRageActive) dmg = Math.round(dmg * 1.25);
       if (game.timeOfDayBoost && game.timeOfDayBoost.bossAtkMultiplier) {
         dmg = Math.round(dmg * game.timeOfDayBoost.bossAtkMultiplier);
@@ -984,7 +986,8 @@ const BOSSES = {
         description = `deals ${dmg} damage.`;
       }
 
-      // Apply Rage & Time boosts
+      // Apply Scaling, Rage & Time boosts
+      if (game.bossScaleFactor) dmg = Math.round(dmg * game.bossScaleFactor);
       if (game.bossRageActive) dmg = Math.round(dmg * 1.25);
       if (game.timeOfDayBoost && game.timeOfDayBoost.bossAtkMultiplier) {
         dmg = Math.round(dmg * game.timeOfDayBoost.bossAtkMultiplier);
@@ -1068,7 +1071,8 @@ const BOSSES = {
         bypassShield = true;
       }
 
-      // Apply Rage & Time boosts
+      // Apply Scaling, Rage & Time boosts
+      if (game.bossScaleFactor) dmg = Math.round(dmg * game.bossScaleFactor);
       if (game.bossRageActive) dmg = Math.round(dmg * 1.25);
       if (game.timeOfDayBoost && game.timeOfDayBoost.bossAtkMultiplier) {
         dmg = Math.round(dmg * game.timeOfDayBoost.bossAtkMultiplier);
@@ -1158,7 +1162,8 @@ const BOSSES = {
         bypassShield = true;
       }
 
-      // Apply Rage & Time boosts
+      // Apply Scaling, Rage & Time boosts
+      if (game.bossScaleFactor) dmg = Math.round(dmg * game.bossScaleFactor);
       if (game.bossRageActive) dmg = Math.round(dmg * 1.25);
       if (game.timeOfDayBoost && game.timeOfDayBoost.bossAtkMultiplier) {
         dmg = Math.round(dmg * game.timeOfDayBoost.bossAtkMultiplier);
@@ -1342,8 +1347,23 @@ function initDynamicStats() {
 
 function applySelectedBoss() {
   const boss = BOSSES[currentBossKey] || BOSSES.leviathan;
-  game.enemyHP = boss.maxHP;
-  game.enemyMaxHP = boss.maxHP;
+  
+  // Dynamic scaling based on player's current attributes
+  const willpower = parseInt(document.querySelector("#attrWillpower")?.textContent || "0", 10);
+  const fortitude = parseInt(document.querySelector("#attrFortitude")?.textContent || "0", 10);
+  
+  let levelWeight = 1.0;
+  if (currentBossKey === "siren") levelWeight = 0.2;
+  else if (currentBossKey === "goliath") levelWeight = 0.5;
+  else if (currentBossKey === "leviathan") levelWeight = 0.8;
+  else if (currentBossKey === "temptress") levelWeight = 1.1;
+  else if (currentBossKey === "archdemon") levelWeight = 1.5;
+
+  const scaleFactor = 1 + (willpower * 0.015 + fortitude * 0.008) * levelWeight;
+  game.bossScaleFactor = scaleFactor;
+
+  game.enemyMaxHP = Math.round(boss.maxHP * scaleFactor);
+  game.enemyHP = game.enemyMaxHP;
   
   const bossNames = document.querySelectorAll(".boss-name");
   bossNames.forEach(el => {
