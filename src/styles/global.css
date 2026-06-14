@@ -1218,3 +1218,263 @@ h1 {
     padding: 62px 0;
   }
 }
+
+/* Gamified Battle Arena */
+.battle-arena-panel {
+  width: min(920px, 100%);
+  margin: 32px auto 0;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  padding: clamp(20px, 4vw, 36px);
+  background: var(--panel-strong);
+  box-shadow: var(--shadow);
+  text-align: left;
+  backdrop-filter: blur(18px);
+}
+
+.battle-arena-header {
+  margin-bottom: 28px;
+}
+
+.battle-arena-header h2 {
+  margin: 6px 0 8px;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  line-height: 1.1;
+}
+
+.battle-intro {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.battle-arena-content {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.character-card,
+.boss-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* Character Card Styles */
+.character-card {
+  align-items: center;
+  text-align: center;
+}
+
+.character-avatar-wrapper {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 2px solid var(--accent);
+  box-shadow: 0 0 20px rgba(45, 212, 191, 0.25);
+  margin-bottom: 16px;
+}
+
+.character-avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.character-badge-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(9, 9, 11, 0.85);
+  color: var(--accent);
+  font-family: "Space Grotesk Variable", sans-serif;
+  font-size: 0.78rem;
+  font-weight: 900;
+  padding: 4px 0;
+  border-top: 1px solid rgba(45, 212, 191, 0.3);
+}
+
+.character-info {
+  width: 100%;
+}
+
+.character-info h3 {
+  margin: 0 0 4px;
+  font-size: 1.4rem;
+}
+
+.character-class {
+  margin: 0 0 20px;
+  color: var(--muted);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+}
+
+/* Stats Progress Bars */
+.stats-bar-group {
+  width: 100%;
+  margin-bottom: 16px;
+  text-align: left;
+}
+
+.bar-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.bar-outer {
+  width: 100%;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.bar-inner {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.xp-bar {
+  background: linear-gradient(90deg, var(--primary), #a855f7);
+  box-shadow: 0 0 10px rgba(129, 140, 248, 0.3);
+}
+
+.shield-bar {
+  background: linear-gradient(90deg, var(--accent), #10b981);
+  box-shadow: 0 0 10px rgba(45, 212, 191, 0.3);
+}
+
+.boss-hp-bar {
+  background: linear-gradient(90deg, #ef4444, #f43f5e);
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
+}
+
+/* Boss Card Styles */
+.boss-card {
+  align-items: stretch;
+}
+
+.boss-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.boss-header h3 {
+  margin: 4px 0 0;
+  font-size: 1.4rem;
+  color: #f43f5e;
+}
+
+.boss-eyebrow {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.boss-level {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #f43f5e;
+  border-radius: 8px;
+  padding: 4px 10px;
+  font-family: "Space Grotesk Variable", sans-serif;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+/* Battle Logs */
+.battle-logs-wrapper {
+  margin-top: 18px;
+  flex-grow: 1;
+}
+
+.battle-logs-wrapper h4 {
+  margin: 0 0 12px;
+  font-size: 0.85rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 6px;
+}
+
+.battle-logs {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.log-item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.02);
+}
+
+.log-icon {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.log-text {
+  color: var(--muted);
+}
+
+.log-text strong {
+  color: var(--text);
+}
+
+.win-log {
+  border-left: 3px solid var(--accent);
+  background: rgba(45, 212, 191, 0.03);
+}
+
+.loss-log {
+  border-left: 3px solid #ef4444;
+  background: rgba(239, 68, 68, 0.03);
+}
+
+.default-log {
+  justify-content: center;
+  color: var(--muted);
+  font-style: italic;
+}
+
+/* Responsive Battle Arena */
+@media (max-width: 768px) {
+  .battle-arena-content {
+    grid-template-columns: 1fr;
+  }
+  
+  .character-card,
+  .boss-card {
+    padding: 20px;
+  }
+}

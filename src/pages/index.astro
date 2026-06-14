@@ -139,6 +139,77 @@ const defenses = [
             </div>
             <p class="accountability-note">Last relapse: <span id="lastRelapse">none logged</span></p>
           </section>
+
+          <!-- Gamified Battle Arena -->
+          <section class="battle-arena-panel reveal-on-scroll" id="battle-arena" aria-label="Inner Battle: You vs You">
+            <div class="battle-arena-header">
+              <span class="panel-label">Gamified Arena</span>
+              <h2>You vs You <span class="text-gradient">Battle Log</span></h2>
+              <p class="battle-intro">Gamifying discipline. Turn your resistance into victories.</p>
+            </div>
+            
+            <div class="battle-arena-content">
+              <!-- Character Status Card -->
+              <div class="character-card">
+                <div class="character-avatar-wrapper">
+                  <img src="/inner_strength_emblem.jpg" alt="Inner Strength Emblem" class="character-avatar" />
+                  <div class="character-badge-overlay">LVL <span id="charLevel">1</span></div>
+                </div>
+                <div class="character-info">
+                  <h3>Sovereign Self</h3>
+                  <p class="character-class">Sentinel of Will</p>
+                  
+                  <div class="stats-bar-group">
+                    <div class="bar-label">
+                      <span>XP (Experience)</span>
+                      <span id="charXpText">0 / 100 XP</span>
+                    </div>
+                    <div class="bar-outer">
+                      <div class="bar-inner xp-bar" id="charXpBar" style="width: 0%"></div>
+                    </div>
+                  </div>
+
+                  <div class="stats-bar-group">
+                    <div class="bar-label">
+                      <span>Shield Integrity</span>
+                      <span id="charShieldText">0%</span>
+                    </div>
+                    <div class="bar-outer">
+                      <div class="bar-inner shield-bar" id="charShieldBar" style="width: 0%"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Boss / Shadow Fight Card -->
+              <div class="boss-card">
+                <div class="boss-header">
+                  <div>
+                    <span class="boss-eyebrow">Active Threat</span>
+                    <h3>The Shadow Urge</h3>
+                  </div>
+                  <span class="boss-level">Rank <span id="bossRank">1</span></span>
+                </div>
+                
+                <div class="stats-bar-group">
+                  <div class="bar-label">
+                    <span>Shadow HP</span>
+                    <span id="bossHpText">100 / 100 HP</span>
+                  </div>
+                  <div class="bar-outer">
+                    <div class="bar-inner boss-hp-bar" id="bossHpBar" style="width: 100%"></div>
+                  </div>
+                </div>
+
+                <div class="battle-logs-wrapper">
+                  <h4>Combat History</h4>
+                  <ul class="battle-logs" id="battleLogs">
+                    <li class="log-item default-log">Initial state loaded. No battles logged yet.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </section>
         </div>
       </section>
 

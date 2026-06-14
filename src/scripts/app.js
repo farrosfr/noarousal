@@ -13,7 +13,16 @@ const elements = {
   winDays: document.querySelector("#winDays"),
   lossDays: document.querySelector("#lossDays"),
   refusalCount: document.querySelector("#refusalCount"),
-  lastRelapse: document.querySelector("#lastRelapse")
+  lastRelapse: document.querySelector("#lastRelapse"),
+  charLevel: document.querySelector("#charLevel"),
+  charXpText: document.querySelector("#charXpText"),
+  charXpBar: document.querySelector("#charXpBar"),
+  charShieldText: document.querySelector("#charShieldText"),
+  charShieldBar: document.querySelector("#charShieldBar"),
+  bossRank: document.querySelector("#bossRank"),
+  bossHpText: document.querySelector("#bossHpText"),
+  bossHpBar: document.querySelector("#bossHpBar"),
+  battleLogs: document.querySelector("#battleLogs")
 };
 const accountabilityDataElement = document.querySelector("#accountabilityData");
 const accountabilityData = parseAccountabilityData(accountabilityDataElement?.textContent);
@@ -123,6 +132,97 @@ function renderAccountability() {
   elements.lastRelapse.textContent = lastRelapseEntry ? formatPublicTimestamp(getEntryTimestamp(lastRelapseEntry), timeZone) : "none logged";
 }
 
+function renderBattleArena() {
+  if (!elements.charLevel || !accountabilityData) return;
+
+  const entries = Array.isArray(accountabilityData.entries) ? accountabilityData.entries : [];
+  const journeyStart = new Date(accountabilityData.journeyStart);
+  const timeZone = accountabilityData.timeZone || "Asia/Jakarta";
+
+  const trackedDays = getCompletedTrackedDays(journeyStart);
+  const lossPeriods = new Set(
+    entries
+      .filter((entry) => isRelapseEntry(entry))
+      .map((entry) => getCompletedPeriodIndex(getEntryTimestamp(entry), journeyStart, trackedDays))
+      .filter((periodIndex) => periodIndex !== null)
+  );
+  const lossDays = lossPeriods.size;
+  const winDays = Math.max(0, trackedDays - lossDays);
+  const refusalCount = entries.reduce((total, entry) => {
+    if (entry?.type === "refuse") return total + 1;
+    return total + (Array.isArray(entry?.refusals) ? entry.refusals.length : 0);
+  }, 0);
+
+  // Level and XP Calculation:
+  // Every win day counts for 10 XP. Every refusal counts for 25 XP.
+  // 100 XP per level.
+  const totalXp = (winDays * 10) + (refusalCount * 25);
+  const level = 1 + Math.floor(totalXp / 100);
+  const xpInCurrentLevel = totalXp % 100;
+
+  elements.charLevel.textContent = String(level);
+  elements.charXpText.textContent = `${xpInCurrentLevel} / 100 XP`;
+  elements.charXpBar.style.width = `${xpInCurrentLevel}%`;
+
+  // Shield Integrity Calculation (current streak progress, reaches 100% at 5 days)
+  const currentStreakMs = Date.now() - streakStartDate.getTime();
+  const currentStreakDays = Math.max(0, Math.floor(currentStreakMs / 86400000));
+  const shieldPercent = Math.min(100, currentStreakDays * 20);
+  elements.charShieldText.textContent = `${shieldPercent}%`;
+  elements.charShieldBar.style.width = `${shieldPercent}%`;
+
+  // Boss Rank and HP
+  // Boss Rank goes up every 5 refusals total
+  // Boss HP is depleted by active refusals in the current streak (20% per refusal)
+  const currentStreakRefusals = entries.filter(
+    (entry) => entry.type === "refuse" && new Date(getEntryTimestamp(entry)).getTime() > streakStartDate.getTime()
+  ).length;
+
+  const bossRank = 1 + Math.floor(refusalCount / 5);
+  const shadowHp = Math.max(0, 100 - (currentStreakRefusals * 20));
+
+  elements.bossRank.textContent = String(bossRank);
+  if (shadowHp === 0) {
+    elements.bossHpText.textContent = "DEFEATED (Awaiting Next Urge)";
+    elements.bossHpBar.style.width = "0%";
+    elements.bossHpBar.style.backgroundColor = "var(--accent)";
+  } else {
+    elements.bossHpText.textContent = `${shadowHp} / 100 HP`;
+    elements.bossHpBar.style.width = `${shadowHp}%`;
+    elements.bossHpBar.style.backgroundColor = "#ef4444";
+  }
+
+  // Populate Battle Logs (most recent 5 entries)
+  if (elements.battleLogs) {
+    const recentEntries = [...entries]
+      .sort((a, b) => new Date(getEntryTimestamp(b)).getTime() - new Date(getEntryTimestamp(a)).getTime())
+      .slice(0, 5);
+
+    if (recentEntries.length === 0) {
+      elements.battleLogs.innerHTML = `<li class="log-item default-log">Initial state loaded. No battles logged yet.</li>`;
+    } else {
+      elements.battleLogs.innerHTML = recentEntries
+        .map((entry) => {
+          const isRelapse = isRelapseEntry(entry);
+          const timestamp = getEntryTimestamp(entry);
+          const formattedDate = formatPublicTimestamp(timestamp, timeZone);
+          if (isRelapse) {
+            return `<li class="log-item loss-log">
+              <span class="log-icon">💥</span>
+              <span class="log-text"><strong>Shield Broken:</strong> Relapsed on ${formattedDate}</span>
+            </li>`;
+          } else {
+            return `<li class="log-item win-log">
+              <span class="log-icon">🛡️</span>
+              <span class="log-text"><strong>Perfect Block:</strong> Refused urge on ${formattedDate}</span>
+            </li>`;
+          }
+        })
+        .join("");
+    }
+  }
+}
+
 function render() {
   if (!elements.days || !elements.hours || !elements.minutes || !elements.seconds || Number.isNaN(streakStartDate.getTime())) return;
   const elapsed = formatDuration(Date.now() - streakStartDate.getTime());
@@ -131,6 +231,7 @@ function render() {
   elements.minutes.textContent = String(elapsed.minutes).padStart(2, "0");
   elements.seconds.textContent = String(elapsed.seconds).padStart(2, "0");
   renderAccountability();
+  renderBattleArena();
 }
 
 const observer = new IntersectionObserver((entries) => {
