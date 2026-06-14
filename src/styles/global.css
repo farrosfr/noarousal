@@ -2581,23 +2581,18 @@ h1 {
 .cinematic-victory-overlay {
   position: fixed;
   inset: 0;
-  background: #000;
+  background: #020203;
   z-index: 100001;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   overflow: hidden;
-  padding: 24px;
   box-sizing: border-box;
 }
 
-/* Cinematic Black Bars */
+/* Cinematic Widescreen Crop Bars */
 .cinematic-bar {
   position: absolute;
   left: 0;
   right: 0;
-  height: 9%;
+  height: 10%;
   background: #000;
   z-index: 100003;
   transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1);
@@ -2617,22 +2612,24 @@ h1 {
   transform: translateY(0);
 }
 
-/* Epic Victory Widescreen Art */
+/* Epic Victory Widescreen Art - Vertically Centered and Scaled */
 .cinematic-art-wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.95);
   width: min(840px, 92%);
   border-radius: 16px;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 30px 80px rgba(0, 0, 0, 0.95);
-  margin-bottom: 28px;
   opacity: 0;
-  transform: scale(0.95);
   transition: all 1.2s cubic-bezier(0.25, 1, 0.5, 1) 0.3s;
   z-index: 100002;
 }
 .play-animation .cinematic-art-wrapper {
   opacity: 1;
-  transform: scale(1);
+  transform: translate(-50%, -50%) scale(1);
 }
 
 .cinematic-art-img {
@@ -2646,112 +2643,126 @@ h1 {
   transform: scale(1);
 }
 
-/* Dynamic movie style subtitles */
+/* Dynamic movie style subtitles - Positioned just above the bottom black bar */
 .cinematic-subtitle {
+  position: absolute;
+  bottom: 14%;
+  left: 50%;
+  transform: translate(-50%, 0) translateY(10px);
+  opacity: 0;
   color: #e5e7eb;
   font-family: "Georgia", "Times New Roman", serif;
   font-style: italic;
-  font-size: clamp(1rem, 2.5vw, 1.2rem);
+  font-size: clamp(0.95rem, 2.2vw, 1.15rem);
   text-align: center;
-  max-width: min(720px, 85%);
-  min-height: 54px;
-  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.95), 0 0 10px rgba(0, 0, 0, 0.7);
+  width: min(720px, 88%);
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.95), 0 0 10px rgba(0, 0, 0, 0.8);
   z-index: 100004;
-  opacity: 0;
-  transform: translateY(10px);
   transition: all 0.8s ease 1s;
 }
 .play-animation .cinematic-subtitle {
   opacity: 1;
-  transform: translateY(0);
+  transform: translate(-50%, 0);
 }
 
-/* Levelup/Victory epic slash overlay */
+/* Levelup/Victory epic slash overlay - Positioned at the top covering the top bar */
 .cinematic-victory-banner {
   position: absolute;
-  top: 40%;
+  top: 15%;
   left: 50%;
-  transform: translate(-50%, -50%) scale(0.5) rotate(-5deg);
+  transform: translate(-50%, -50%) scale(0.9);
   opacity: 0;
-  pointer-events: none;
   z-index: 100005;
-  transition: all 1s cubic-bezier(0.34, 1.6, 0.64, 1) 1.5s;
+  text-align: center;
+  transition: all 1s cubic-bezier(0.25, 1, 0.5, 1) 1.5s;
 }
 .play-animation .cinematic-victory-banner {
-  transform: translate(-50%, -50%) scale(1) rotate(0deg);
+  transform: translate(-50%, -50%) scale(1);
   opacity: 1;
-  animation: bannerGlow 2.5s infinite alternate ease-in-out 2.5s;
+}
+
+.banner-tagline {
+  font-family: "Space Grotesk Variable", sans-serif;
+  font-size: 0.72rem;
+  font-weight: 900;
+  color: #2dd4bf;
+  letter-spacing: 0.45em;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  opacity: 0.85;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));
 }
 
 .victory-title-epic {
   font-family: "Space Grotesk Variable", sans-serif;
-  font-size: clamp(3.2rem, 11vw, 6.5rem);
+  font-size: clamp(2.4rem, 8vw, 4.8rem);
   font-weight: 950;
   color: transparent;
   background: linear-gradient(135deg, #2dd4bf 0%, #3b82f6 50%, #2dd4bf 100%);
   background-size: 200% auto;
   -webkit-background-clip: text;
   background-clip: text;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.25em;
   margin: 0;
   text-transform: uppercase;
   animation: shimmerGradient 4s linear infinite;
-  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.8));
+  filter: drop-shadow(0 4px 15px rgba(0,0,0,0.85));
 }
 
 @keyframes shimmerGradient {
   to { background-position: 200% center; }
 }
 
-@keyframes bannerGlow {
-  0% { filter: drop-shadow(0 0 20px rgba(45, 212, 191, 0.4)) drop-shadow(0 0 40px rgba(59, 130, 246, 0.2)); }
-  100% { filter: drop-shadow(0 0 40px rgba(45, 212, 191, 0.8)) drop-shadow(0 0 60px rgba(59, 130, 246, 0.5)); }
-}
-
-/* Widescreen continue button */
+/* Widescreen continue button - Positioned perfectly inside the bottom black bar */
 .btn-cinematic-continue {
   position: absolute;
-  bottom: 15%;
+  bottom: 4%;
+  left: 50%;
+  transform: translate(-50%, 0) translateY(15px);
+  opacity: 0;
   background: linear-gradient(135deg, #2dd4bf 0%, #3b82f6 100%);
   color: #000 !important;
   border: 0;
   font-family: "Space Grotesk Variable", sans-serif;
-  font-weight: 850;
-  font-size: 0.95rem;
+  font-weight: 900;
+  font-size: 0.85rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  border-radius: 12px;
-  padding: 14px 32px;
+  letter-spacing: 0.1em;
+  border-radius: 99px;
+  padding: 11px 32px;
   cursor: pointer;
-  opacity: 0;
-  transform: translateY(20px);
   z-index: 100006;
-  box-shadow: 0 0 20px rgba(45, 212, 191, 0.3);
+  box-shadow: 0 0 20px rgba(45, 212, 191, 0.4);
   transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1) 4.2s;
 }
 .play-animation .btn-cinematic-continue {
   opacity: 1;
-  transform: translateY(0);
+  transform: translate(-50%, 0);
 }
 .btn-cinematic-continue:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 35px rgba(45, 212, 191, 0.6);
+  transform: translate(-50%, -3px) scale(1.04);
+  box-shadow: 0 0 35px rgba(45, 212, 191, 0.75);
 }
 .btn-cinematic-continue:active {
-  transform: scale(0.98);
+  transform: translate(-50%, 1px) scale(0.98);
 }
 
 @media (max-width: 768px) {
   .cinematic-bar {
-    height: 12%;
-  }
-  .btn-cinematic-continue {
-    bottom: 16%;
-    padding: 10px 24px;
-    font-size: 0.85rem;
+    height: 13%;
   }
   .cinematic-victory-banner {
-    top: 42%;
+    top: 14%;
+  }
+  .cinematic-subtitle {
+    bottom: 17%;
+    font-size: 0.9rem;
+    width: 90%;
+  }
+  .btn-cinematic-continue {
+    bottom: 4%;
+    padding: 8px 24px;
+    font-size: 0.78rem;
   }
 }
 
