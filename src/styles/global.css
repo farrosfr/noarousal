@@ -2197,3 +2197,88 @@ h1 {
   }
 }
 
+/* Achievements Page Layout */
+.achievements-hero {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 72px clamp(18px, 5vw, 72px) 36px;
+  text-align: center;
+}
+
+.achievements-intro-sub {
+  color: var(--muted);
+  font-size: 1.15rem;
+  line-height: 1.65;
+  margin-top: 16px;
+}
+
+.achievements-back-btn {
+  margin-top: 24px;
+}
+
+.achievements-page-layout {
+  width: min(1180px, calc(100% - 36px));
+  margin: 0 auto 94px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 36px;
+}
+
+.achievements-section {
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  padding: clamp(22px, 4vw, 36px);
+  background: var(--panel);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(18px);
+}
+
+.achievements-section h2 {
+  margin: 0 0 24px;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+}
+
+.badges-large-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.badge-req {
+  margin-top: 12px;
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--line);
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.badge-card.unlocked .badge-req {
+  background: rgba(45, 212, 191, 0.1);
+  border-color: rgba(45, 212, 191, 0.3);
+  color: var(--accent);
+}
+
+@media (max-width: 1024px) {
+  .badges-large-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .badges-large-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .badges-large-grid {
+    grid-template-columns: 1fr;
+  }
+}
+

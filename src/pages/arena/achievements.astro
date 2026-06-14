@@ -1,0 +1,276 @@
+---
+import "@fontsource-variable/inter";
+import "@fontsource-variable/space-grotesk";
+import "../../styles/global.css";
+import accountabilityData from "../../data/accountability.json";
+
+const startDateTime = accountabilityData.journeyStart;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="NoArousal Hall of Achievements: Complete list of locked and unlocked RPG self-discipline badges ranging from Day 1 to Day 180." />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://noa.farros.co/arena/achievements/" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="NoArousal" />
+    <meta property="og:title" content="Achievements | NoArousal" />
+    <meta property="og:description" content="View your complete set of unlocked and locked self-discipline achievements up to 180 days." />
+    <meta property="og:url" content="https://noa.farros.co/arena/achievements/" />
+    <meta name="twitter:card" content="summary" />
+    <title>All Achievements | NoArousal</title>
+  </head>
+  <body data-start={startDateTime}>
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="NoArousal home">
+        <span class="brand-mark">N</span>
+        <span class="brand-text">NoArousal</span>
+      </a>
+      <button class="menu-toggle" type="button" aria-label="Open menu" aria-controls="primaryNav" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <nav class="nav-links" id="primaryNav" aria-label="Primary navigation">
+        <span class="menu-label">Menu</span>
+        <a href="/">Home</a>
+        <a href="/arena/">Arena</a>
+        <a href="/blog/">Blog</a>
+        <a href="/quotes/">Quotes</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="achievements-hero reveal-on-scroll">
+        <p class="badge">Discipline Milestones</p>
+        <h1>Hall of <span class="text-gradient">Achievements</span></h1>
+        <p class="achievements-intro-sub">
+          A comprehensive record of your battles and discipline milestones. Unlocked dynamically as you progress from Day 1 to Day 180.
+        </p>
+        <div class="achievements-back-btn">
+          <a href="/arena/" class="read-link">&larr; Back to Arena</a>
+        </div>
+      </section>
+
+      <div class="achievements-page-layout">
+        <!-- Streak Milestone Section -->
+        <section class="achievements-section reveal-on-scroll" aria-label="Streak achievements">
+          <h2>Streak Milestones (Days Clean)</h2>
+          <div class="badges-large-grid">
+            <article class="badge-card locked" id="badge-first-step">
+              <div class="badge-icon">👣</div>
+              <h4>First Step</h4>
+              <p>Start your journey start timestamp</p>
+              <span class="badge-req">0 Days Clean</span>
+            </article>
+
+            <article class="badge-card locked" id="badge-consistent-shield">
+              <div class="badge-icon">💎</div>
+              <h4>Consistent Shield</h4>
+              <p>Maintain your resolve</p>
+              <span class="badge-req">3 Days Clean</span>
+            </article>
+
+            <article class="badge-card locked" id="badge-week-of-will">
+              <div class="badge-icon">🔥</div>
+              <h4>Week of Will</h4>
+              <p>One full week of strength</p>
+              <span class="badge-req">7 Days Clean</span>
+            </article>
+
+            <article class="badge-card locked" id="badge-double-digits">
+              <div class="badge-icon">🎯</div>
+              <h4>Double Digits</h4>
+              <p>Break into double digit days</p>
+              <span class="badge-req">10 Days Clean</span>
+            </article>
+
+            <article class="badge-card locked" id="badge-fortress-habit">
+              <div class="badge-icon">🏰</div>
+              <h4>Fortress of Will</h4>
+              <p>Discipline becomes a habit</p>
+              <span class="badge-req">14 Days Clean</span>
+            </article>
+
+            <article class="badge-card locked" id="badge-three-weeks">
+              <div class="badge-icon">🌀</div>
+              <h4>Three Weeks</h4>
+              <p>Mind fog starts to clear</p>
+              <span class="badge-req">21 Days Clean</span>
+            </article>
+
+            <article class="badge-card locked" id="badge-monthly-sovereign">
+              <div class="badge-icon">🌙</div>
+              <h4>Monthly Sovereign</h4>
+              <p>One entire month of control</p>
+              <span class="badge-req">30 Days Clean</span>
+            </article>
+
+            <article class="badge-card locked" id="badge-vanguard-focus">
+              <div class="badge-icon">⚡</div>
+              <h4>Vanguard of Focus</h4>
+              <p>Halfway to the 90 day mark</p>
+              <span class="badge-req">45 Days Clean</span>
+            </article>
+
+            <article class="badge-card locked" id="badge-habit-breaker">
+              <div class="badge-icon">🌋</div>
+              <h4>Habit Breaker</h4>
+              <p>Brain loops heavily weakened</p>
+              <span class="badge-req">60 Days Clean</span>
+            </article>
+
+            <article class="badge-card locked" id="badge-quarterly-sovereign">
+              <div class="badge-icon">👑</div>
+              <h4>Quarterly Sovereign</h4>
+              <p>The standard baseline reset</p>
+              <span class="badge-req">90 Days Clean</span>
+            </article>
+
+            <article class="badge-card locked" id="badge-golden-shield">
+              <div class="badge-icon">🛡️</div>
+              <h4>The Golden Shield</h4>
+              <p>Sovereignty is firmly established</p>
+              <span class="badge-req">120 Days Clean</span>
+            </article>
+
+            <article class="badge-card locked" id="badge-unshakable-mind">
+              <div class="badge-icon">👁️</div>
+              <h4>Unshakable Mind</h4>
+              <p>Almost half a year of discipline</p>
+              <span class="badge-req">150 Days Clean</span>
+            </article>
+
+            <article class="badge-card locked" id="badge-half-year">
+              <div class="badge-icon">☀️</div>
+              <h4>Half Year Zenith</h4>
+              <p>Complete transformation</p>
+              <span class="badge-req">180 Days Clean</span>
+            </article>
+          </div>
+        </section>
+
+        <!-- Refusal Milestone Section -->
+        <section class="achievements-section reveal-on-scroll" aria-label="Refusal achievements">
+          <h2>Refusal Milestones (Urges Resisted)</h2>
+          <div class="badges-large-grid">
+            <article class="badge-card locked" id="badge-first-refusal">
+              <div class="badge-icon">🛡️</div>
+              <h4>Shield Activated</h4>
+              <p>Resist your first urge</p>
+              <span class="badge-req">1 Refusal</span>
+            </article>
+
+            <article class="badge-card locked" id="badge-temptation-blocker">
+              <div class="badge-icon">🧱</div>
+              <h4>Temptation Blocker</h4>
+              <p>Block temptation 5 times</p>
+              <span class="badge-req">5 Refusals</span>
+            </article>
+
+            <article class="badge-card locked" id="badge-shadow-slayer">
+              <div class="badge-icon">⚔️</div>
+              <h4>Shadow Slayer</h4>
+              <p>Defeat the shadow 10 times</p>
+              <span class="badge-req">10 Refusals</span>
+            </article>
+
+            <article class="badge-card locked" id="badge-urge-master">
+              <div class="badge-icon">🧿</div>
+              <h4>Urge Master</h4>
+              <p>Defeat the shadow 20 times</p>
+              <span class="badge-req">20 Refusals</span>
+            </article>
+
+            <article class="badge-card locked" id="badge-perfect-defender">
+              <div class="badge-icon">🛡️</div>
+              <h4>Perfect Defender</h4>
+              <p>Defeat the shadow 30 times</p>
+              <span class="badge-req">30 Refusals</span>
+            </article>
+
+            <article class="badge-card locked" id="badge-indomitable">
+              <div class="badge-icon">👑</div>
+              <h4>Indomitable Will</h4>
+              <p>Defeat the shadow 50 times</p>
+              <span class="badge-req">50 Refusals</span>
+            </article>
+
+            <article class="badge-card locked" id="badge-shield-eternity">
+              <div class="badge-icon">🌌</div>
+              <h4>Shield of Eternity</h4>
+              <p>Defeat the shadow 100 times</p>
+              <span class="badge-req">100 Refusals</span>
+            </article>
+          </div>
+        </section>
+
+        <!-- Combat Performance Section -->
+        <section class="achievements-section reveal-on-scroll" aria-label="Performance achievements">
+          <h2>Combat Performance & Level Milestones</h2>
+          <div class="badges-large-grid">
+            <article class="badge-card locked" id="badge-flawless">
+              <div class="badge-icon">🏆</div>
+              <h4>Flawless Victory</h4>
+              <p>Maintain 95%+ win rate with 5+ win days</p>
+              <span class="badge-req">95% WR & 5 W-Days</span>
+            </article>
+
+            <article class="badge-card locked" id="badge-absolute-control">
+              <div class="badge-icon">⚜️</div>
+              <h4>Absolute Control</h4>
+              <p>Maintain 100% win rate with 14+ win days</p>
+              <span class="badge-req">100% WR & 14 W-Days</span>
+            </article>
+
+            <article class="badge-card locked" id="badge-sovereign-master">
+              <div class="badge-icon">⚡</div>
+              <h4>Sovereign Master</h4>
+              <p>Reach character level 5</p>
+              <span class="badge-req">Level 5</span>
+            </article>
+
+            <article class="badge-card locked" id="badge-grand-champion">
+              <div class="badge-icon">⭐</div>
+              <h4>Grand Champion</h4>
+              <p>Reach character level 10</p>
+              <span class="badge-req">Level 10</span>
+            </article>
+
+            <article class="badge-card locked" id="badge-ascendant-sentinel">
+              <div class="badge-icon">🌠</div>
+              <h4>Ascendant Sentinel</h4>
+              <p>Reach character level 15</p>
+              <span class="badge-req">Level 15</span>
+            </article>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div>
+        <a class="brand" href="/" aria-label="NoArousal home">
+          <span class="brand-mark">N</span>
+          <span class="brand-text">NoArousal</span>
+        </a>
+        <p>Public streak, win rate, and accountability log.</p>
+      </div>
+      <nav aria-label="Footer navigation">
+        <a href="/">Home</a>
+        <a href="/arena/">Arena</a>
+        <a href="/blog/">Blog</a>
+        <a href="/quotes/">Quotes</a>
+      </nav>
+    </footer>
+
+    <script id="accountabilityData" type="application/json" set:html={JSON.stringify(accountabilityData)}></script>
+    <script>
+      import "../../scripts/achievements.js";
+    </script>
+  </body>
+</html>
