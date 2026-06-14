@@ -124,15 +124,31 @@ const startDateTime = accountabilityData.journeyStart;
           </div>
         </section>
 
-        <!-- Ninja Saga Simulator -->
-        <section class="ninja-simulator reveal-on-scroll" id="ninja-simulator" aria-label="Ninja Saga Battle Simulator">
+        <!-- Ninja Saga Simulator Launcher -->
+        <section class="ninja-simulator-launcher reveal-on-scroll" id="ninja-simulator-launcher" aria-label="Willpower Combat Simulator Launcher">
           <div class="simulator-header">
             <span class="panel-label">Interactive Minigame</span>
             <h2>Willpower Combat <span class="text-gradient">Simulator</span></h2>
-            <p class="simulator-intro">A turn-based mini-game simulating the mental fight against urges. Win or lose here will not affect your actual streak.</p>
+            <p class="simulator-intro">A turn-based mini-game simulating the mental fight against urges. Challenge your willpower in an immersive, full-screen combat arena.</p>
           </div>
+          <div class="launcher-action-container" style="text-align: center; margin-top: 18px;">
+            <button type="button" class="btn-launch-simulator" id="btnLaunchSimulator">
+              <span class="launch-icon">🥷</span>
+              <span class="launch-text">Enter Willpower Battle Arena</span>
+              <span class="launch-badge">Go Full Screen</span>
+            </button>
+          </div>
+        </section>
 
-          <div class="game-board">
+        <!-- Immersive Fullscreen Simulator Container -->
+        <div class="ninja-simulator-fullscreen-container" id="ninjaSimulatorFullscreenContainer" style="display: none;">
+          <!-- Close Button -->
+          <button type="button" class="btn-close-simulator" id="btnCloseSimulator" aria-label="Exit Simulator">
+            <span class="close-icon">&times;</span>
+            <span class="close-label">Exit Arena</span>
+          </button>
+
+          <div class="game-board fullscreen-board" id="fullscreenGameBoard">
             <!-- Battle Background Arena -->
             <div class="battle-bg-arena">
               <!-- Player Character (Left) -->
@@ -225,7 +241,7 @@ const startDateTime = accountabilityData.journeyStart;
               </div>
             </div>
           </div>
-        </section>
+        </div>
 
         <!-- RPG Attributes Grid -->
         <section class="attributes-panel reveal-on-scroll" aria-label="Character attributes">

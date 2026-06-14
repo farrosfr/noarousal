@@ -583,6 +583,44 @@ function initGameListeners() {
   gameElements.btnCharge?.addEventListener("click", handleCharge);
   gameElements.btnRestartGame?.addEventListener("click", restartGame);
   
+  const launchBtn = document.querySelector("#btnLaunchSimulator");
+  const closeBtn = document.querySelector("#btnCloseSimulator");
+  const fullscreenContainer = document.querySelector("#ninjaSimulatorFullscreenContainer");
+
+  launchBtn?.addEventListener("click", () => {
+    if (fullscreenContainer) {
+      fullscreenContainer.style.display = "flex";
+      if (fullscreenContainer.requestFullscreen) {
+        fullscreenContainer.requestFullscreen().catch((err) => {
+          console.warn("Fullscreen request rejected:", err);
+        });
+      } else if (fullscreenContainer.webkitRequestFullscreen) {
+        fullscreenContainer.webkitRequestFullscreen();
+      }
+      setDynamicGameBackground();
+      updateShieldIndicator();
+    }
+  });
+
+  const closeFullscreenSimulator = () => {
+    if (fullscreenContainer) {
+      fullscreenContainer.style.display = "none";
+      if (document.fullscreenElement) {
+        document.exitFullscreen().catch((err) => {
+          console.warn("Error exiting fullscreen:", err);
+        });
+      }
+    }
+  };
+
+  closeBtn?.addEventListener("click", closeFullscreenSimulator);
+
+  document.addEventListener("fullscreenchange", () => {
+    if (!document.fullscreenElement && fullscreenContainer && fullscreenContainer.style.display === "flex") {
+      closeFullscreenSimulator();
+    }
+  });
+
   setDynamicGameBackground();
   updateShieldIndicator();
   updateGameUi();
