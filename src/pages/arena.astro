@@ -240,6 +240,33 @@ const startDateTime = accountabilityData.journeyStart;
                 <button type="button" class="read-link" id="btnRestartGame">Battle Again</button>
               </div>
             </div>
+
+            <!-- Cinematic Victory Cutscene Overlay -->
+            <div class="cinematic-victory-overlay" id="cinematicVictoryOverlay" style="display: none;">
+              <!-- Cinematic Widescreen Crop Bars -->
+              <div class="cinematic-bar top"></div>
+              <div class="cinematic-bar bottom"></div>
+
+              <!-- Epic Cinematic Victory Image -->
+              <div class="cinematic-art-wrapper">
+                <img src="/ninja_victory.jpg" alt="Victory Cutscene Art" class="cinematic-art-img" />
+              </div>
+
+              <!-- Movie Subtitles -->
+              <div class="cinematic-subtitle" id="cinematicSubtitle">
+                "At last... the shadow urge dissipates into the light of resolve."
+              </div>
+
+              <!-- Big Victory Banner -->
+              <div class="cinematic-victory-banner" id="cinematicVictoryBanner">
+                <h1 class="victory-title-epic">VICTORY</h1>
+              </div>
+
+              <!-- Continue Button -->
+              <button type="button" class="btn-cinematic-continue" id="btnCinematicContinue">
+                Continue to Rewards &rarr;
+              </button>
+            </div>
           </div>
         </div>
 

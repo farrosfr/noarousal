@@ -342,17 +342,45 @@ function appendLogToTicker(message) {
   }
 }
 
-function checkBattleEnd() {
-  if (game.enemyHP <= 0) {
-    game.isBattleOver = true;
-    updateGameUi();
+function startCinematicVictory() {
+  const cinematicOverlay = document.querySelector("#cinematicVictoryOverlay");
+  if (!cinematicOverlay) return;
+  
+  if (gameElements.gameOverOverlay) gameElements.gameOverOverlay.style.display = "none";
+  
+  cinematicOverlay.style.display = "flex";
+  cinematicOverlay.classList.remove("play-animation");
+  cinematicOverlay.offsetHeight; // trigger reflow
+  cinematicOverlay.classList.add("play-animation");
+
+  const subtitle = document.querySelector("#cinematicSubtitle");
+  if (subtitle) {
+    subtitle.textContent = `"At last... the shadow urge dissipates into the light of resolve."`;
     setTimeout(() => {
+      subtitle.textContent = `"My willpower is absolute. The Sovereign Mind remains master of itself."`;
+    }, 3500);
+  }
+
+  const continueBtn = document.querySelector("#btnCinematicContinue");
+  if (continueBtn) {
+    continueBtn.onclick = () => {
+      cinematicOverlay.style.display = "none";
       if (gameElements.gameOverOverlay) {
         gameElements.overlayResultTitle.textContent = "Victory!";
         gameElements.overlayResultTitle.style.color = "var(--accent)";
         gameElements.overlayResultDesc.textContent = "Shadow urge has been successfully dispelled! Sovereign Mind retains control.";
         gameElements.gameOverOverlay.style.display = "flex";
       }
+    };
+  }
+}
+
+function checkBattleEnd() {
+  if (game.enemyHP <= 0) {
+    game.isBattleOver = true;
+    updateGameUi();
+    setTimeout(() => {
+      startCinematicVictory();
     }, 800);
     return true;
   }
