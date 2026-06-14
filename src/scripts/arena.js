@@ -776,6 +776,7 @@ const game = {
   isBattleOver: false,
   isEnemyTurn: false,
   isBossStunned: false,
+  companion: "none",
   playerDebuffs: {
     fog: false,
     weight: false,
@@ -840,7 +841,8 @@ const BOSSES = {
       setTimeout(() => {
         if (game.playerShieldActive) {
           let absorbRate = game.fortressAmuletActive ? 0.4 : 0.5;
-          let shieldDesc = `${(1 - absorbRate)*100}% absorbed by Refusal Shield`;
+          if (game.companion === "turtle") absorbRate -= 0.1;
+          let shieldDesc = `${Math.round((1 - absorbRate)*100)}% absorbed by Refusal Shield`;
           if (game.perfectShieldActive) {
             absorbRate = 0;
             shieldDesc = "100% absorbed by PERFECT Refusal Shield";
@@ -920,7 +922,8 @@ const BOSSES = {
       setTimeout(() => {
         if (game.playerShieldActive) {
           let absorbRate = game.fortressAmuletActive ? 0.4 : 0.5;
-          let shieldDesc = `${(1 - absorbRate)*100}% absorbed by Refusal Shield`;
+          if (game.companion === "turtle") absorbRate -= 0.1;
+          let shieldDesc = `${Math.round((1 - absorbRate)*100)}% absorbed by Refusal Shield`;
           if (game.perfectShieldActive) {
             absorbRate = 0;
             shieldDesc = "100% absorbed by PERFECT Refusal Shield";
@@ -1002,7 +1005,8 @@ const BOSSES = {
       setTimeout(() => {
         if (game.playerShieldActive && !bypassShield) {
           let absorbRate = game.fortressAmuletActive ? 0.4 : 0.5;
-          let shieldDesc = `${(1 - absorbRate)*100}% absorbed by Refusal Shield`;
+          if (game.companion === "turtle") absorbRate -= 0.1;
+          let shieldDesc = `${Math.round((1 - absorbRate)*100)}% absorbed by Refusal Shield`;
           if (game.perfectShieldActive) {
             absorbRate = 0;
             shieldDesc = "100% absorbed by PERFECT Refusal Shield";
@@ -1087,7 +1091,8 @@ const BOSSES = {
       setTimeout(() => {
         if (game.playerShieldActive && !bypassShield) {
           let absorbRate = game.fortressAmuletActive ? 0.4 : 0.5;
-          let shieldDesc = `${(1 - absorbRate)*100}% absorbed by Refusal Shield`;
+          if (game.companion === "turtle") absorbRate -= 0.1;
+          let shieldDesc = `${Math.round((1 - absorbRate)*100)}% absorbed by Refusal Shield`;
           if (game.perfectShieldActive) {
             absorbRate = 0;
             shieldDesc = "100% absorbed by PERFECT Refusal Shield";
@@ -1178,7 +1183,8 @@ const BOSSES = {
       setTimeout(() => {
         if (game.playerShieldActive && !bypassShield) {
           let absorbRate = game.fortressAmuletActive ? 0.4 : 0.5;
-          let shieldDesc = `${(1 - absorbRate)*100}% absorbed by Refusal Shield`;
+          if (game.companion === "turtle") absorbRate -= 0.1;
+          let shieldDesc = `${Math.round((1 - absorbRate)*100)}% absorbed by Refusal Shield`;
           if (game.perfectShieldActive) {
             absorbRate = 0;
             shieldDesc = "100% absorbed by PERFECT Refusal Shield";
@@ -1272,17 +1278,76 @@ function renderDebuffs() {
 
 function startPlayerTurn() {
   game.isEnemyTurn = false;
+  let turnLogs = [];
   
+  // 1. Process bleeding/debuff damage first
   if (game.playerHP > 0 && game.playerDebuffs.bleedTurns > 0) {
     const bleedDmg = 5;
     game.playerHP = Math.max(0, game.playerHP - bleedDmg);
     playSound('enemy_strike');
     shakeElement(gameElements.ninjaPlayer);
     showFloatingEffect("#ninja-player", `-${bleedDmg} (Bleed)`, "damage");
-    appendLogToTicker(`Lingering Urge drains ${bleedDmg} HP from Sovereign Ninja!`);
+    turnLogs.push(`Lingering Urge drains ${bleedDmg} HP from Sovereign Ninja!`);
     game.playerDebuffs.bleedTurns--;
     
     if (checkBattleEnd()) return;
+  }
+
+  // 2. Companion turn start effects
+  if (game.playerHP > 0) {
+    if (game.companion === "fox") {
+      if (Math.random() < 0.25) {
+        const gain = 10;
+        game.playerChakra = Math.min(game.playerMaxChakra, game.playerChakra + gain);
+        playSound('charge');
+        showFloatingEffect("#ninja-player", `+${gain} Chakra`, "chakra-float");
+        turnLogs.push(`🦊 <strong>Zen Fox</strong> channels inner peace! Restored ${gain} Chakra.`);
+      }
+    } else if (game.companion === "crane") {
+      if (Math.random() < 0.20) {
+        const activeDebuffs = [];
+        if (game.playerDebuffs.fog) activeDebuffs.push("fog");
+        if (game.playerDebuffs.weight) activeDebuffs.push("weight");
+        if (game.playerDebuffs.bleedTurns > 0) activeDebuffs.push("bleed");
+
+        if (activeDebuffs.length > 0) {
+          const toCleanse = activeDebuffs[Math.floor(Math.random() * activeDebuffs.length)];
+          let cleanedName = "";
+          if (toCleanse === "fog") {
+            game.playerDebuffs.fog = false;
+            cleanedName = "Brain Fog";
+          } else if (toCleanse === "weight") {
+            game.playerDebuffs.weight = false;
+            cleanedName = "Anxiety Weight";
+          } else if (toCleanse === "bleed") {
+            game.playerDebuffs.bleedTurns = 0;
+            cleanedName = "Lingering Urge";
+          }
+          playSound('item');
+          showFloatingEffect("#ninja-player", "CLEANSED!", "heal");
+          turnLogs.push(`🦅 <strong>Discipline Crane</strong> cleanses your mind! <strong>${cleanedName}</strong> debuff has been removed.`);
+        }
+      }
+    } else if (game.companion === "wolf") {
+      const dmg = 10;
+      game.enemyHP = Math.max(0, game.enemyHP - dmg);
+      playSound('strike');
+      checkBossRageTransition();
+      
+      shakeElement(gameElements.ninjaEnemy);
+      showFloatingEffect("#ninja-enemy", `-${dmg}`, "damage");
+      triggerOverlayAnimation("#strikeOverlay");
+      
+      turnLogs.push(`🐺 <strong>Resolve Wolf</strong> strikes! Dealt ${dmg} bonus damage to ${BOSSES[currentBossKey].name}.`);
+      
+      if (checkBattleEnd()) return;
+    }
+  }
+
+  if (turnLogs.length > 0) {
+    appendLogToTicker(turnLogs.join("<br/>"));
+  } else {
+    appendLogToTicker(`Your turn! Choose an action.`);
   }
   
   updateGameUi();
@@ -1291,6 +1356,10 @@ function startPlayerTurn() {
 function initDynamicStats() {
   const willpower = parseInt(document.querySelector("#attrWillpower")?.textContent || "0", 10);
   const fortitude = parseInt(document.querySelector("#attrFortitude")?.textContent || "0", 10);
+
+  // Sync companion from UI selection dropdown
+  const companionSelect = document.querySelector("#companionSelect");
+  game.companion = companionSelect ? companionSelect.value : "none";
 
   // Stats Bridging
   game.playerMaxHP = 100 + (fortitude * 5); // +5 HP per clean day
@@ -1779,6 +1848,29 @@ function handleCharge() {
   }
 }
 
+function updateCompanionUi() {
+  const container = document.querySelector("#equippedCompanion");
+  const iconEl = document.querySelector("#companionIcon");
+  const nameEl = document.querySelector("#companionName");
+  if (!container) return;
+
+  const comps = {
+    fox: { icon: "🦊", name: "Zen Fox" },
+    crane: { icon: "🦅", name: "Discipline Crane" },
+    wolf: { icon: "🐺", name: "Resolve Wolf" },
+    turtle: { icon: "🐢", name: "Patience Turtle" }
+  };
+
+  const active = comps[game.companion];
+  if (active) {
+    if (iconEl) iconEl.textContent = active.icon;
+    if (nameEl) nameEl.textContent = active.name;
+    container.style.display = "flex";
+  } else {
+    container.style.display = "none";
+  }
+}
+
 function restartGame() {
   // Initialize Stats
   initDynamicStats();
@@ -1790,6 +1882,7 @@ function restartGame() {
   game.perfectShieldActive = false;
   game.perfectFocusActive = false;
   updateShieldIndicator();
+  updateCompanionUi();
   
   const vignette = document.querySelector("#rageVignette");
   if (vignette) vignette.classList.remove("rage-active");
@@ -1798,6 +1891,15 @@ function restartGame() {
   
   let startLog = `Battle reset. Choose your action to begin the strike against ${BOSSES[currentBossKey].name}!`;
   const activeBuffs = [];
+  if (game.companion && game.companion !== "none") {
+    const comps = {
+      fox: "🦊 Zen Fox (Chakra Restorer)",
+      crane: "🦅 Discipline Crane (Debuff Cleanser)",
+      wolf: "🐺 Resolve Wolf (Extra Striker)",
+      turtle: "🐢 Patience Turtle (Shield Absorber)"
+    };
+    if (comps[game.companion]) activeBuffs.push(comps[game.companion]);
+  }
   if (game.phoenixResolveActive) activeBuffs.push("🔥 Phoenix Resolve (+30% ATK, starting shield)");
   if (game.fortressAmuletActive) activeBuffs.push("🛡️ Fortress Amulet (+10% shield absorption)");
   if (game.lotusIncenseActive) activeBuffs.push("🕯️ Lotus Incense (2x Meditation Incense)");
@@ -1865,6 +1967,13 @@ function initGameListeners() {
   const bossSelect = document.querySelector("#bossSelect");
   bossSelect?.addEventListener("change", (e) => {
     currentBossKey = e.target.value;
+    restartGame();
+  });
+
+  // Companion Select Listener
+  const companionSelect = document.querySelector("#companionSelect");
+  companionSelect?.addEventListener("change", (e) => {
+    game.companion = e.target.value;
     restartGame();
   });
 

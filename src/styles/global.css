@@ -2590,7 +2590,8 @@ h1 {
   gap: 16px;
 }
 
-.boss-selector-group {
+.boss-selector-group,
+.companion-selector-group {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -2601,14 +2602,16 @@ h1 {
   backdrop-filter: blur(8px);
 }
 
-.boss-selector-group label {
+.boss-selector-group label,
+.companion-selector-group label {
   font-family: "Space Grotesk Variable", sans-serif;
   font-weight: 700;
   font-size: 0.85rem;
   color: var(--text-muted);
 }
 
-.boss-select-dropdown {
+.boss-select-dropdown,
+.companion-select-dropdown {
   background: #09090b;
   border: 1px solid var(--line);
   color: var(--text);
@@ -2622,7 +2625,8 @@ h1 {
   transition: border-color 0.2s ease;
 }
 
-.boss-select-dropdown:hover {
+.boss-select-dropdown:hover,
+.companion-select-dropdown:hover {
   border-color: var(--accent);
 }
 
@@ -2864,7 +2868,8 @@ h1 {
     align-items: stretch;
     gap: 8px;
   }
-  .boss-selector-group {
+  .boss-selector-group,
+  .companion-selector-group {
     justify-content: space-between;
   }
   .items-grid {
@@ -3100,6 +3105,32 @@ h1 {
   background: rgba(9, 9, 11, 0.4);
   border-radius: 12px;
   width: fit-content;
+}
+
+.equipped-companion {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin: 8px auto;
+  padding: 6px 12px;
+  background: rgba(99, 102, 241, 0.1);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  border-radius: 12px;
+  width: fit-content;
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.05);
+}
+
+.companion-icon {
+  font-size: 1.25rem;
+}
+
+.companion-name {
+  font-family: "Space Grotesk Variable", sans-serif;
+  font-weight: 700;
+  font-size: 0.82rem;
+  color: #a5b4fc;
+  letter-spacing: 0.02em;
 }
 
 .talisman-slot {

@@ -161,6 +161,18 @@ const startDateTime = accountabilityData.journeyStart;
               </select>
             </div>
 
+            <!-- Companion Select -->
+            <div class="companion-selector-group">
+              <label for="companionSelect">Spirit Companion:</label>
+              <select id="companionSelect" class="companion-select-dropdown">
+                <option value="none" selected>No Companion</option>
+                <option value="fox">🦊 Zen Fox (Chakra Restorer)</option>
+                <option value="crane">🦅 Discipline Crane (Debuff Cleanser)</option>
+                <option value="wolf">🐺 Resolve Wolf (Extra Striker)</option>
+                <option value="turtle">🐢 Patience Turtle (Shield Absorber)</option>
+              </select>
+            </div>
+
             <!-- Close Button -->
             <button type="button" class="btn-close-simulator" id="btnCloseSimulator" aria-label="Exit Simulator">
               <span class="close-icon">&times;</span>
@@ -198,6 +210,11 @@ const startDateTime = accountabilityData.journeyStart;
                   <span class="talisman-slot locked" id="talismanFortress" title="Fortress Amulet (Locked: Requires 3-day streak) - Adds +10% shield absorption">🛡️</span>
                   <span class="talisman-slot locked" id="talismanLotus" title="Lotus Incense (Locked: Requires 7-day streak) - Adds a 2nd Meditation Incense">🕯️</span>
                   <span class="talisman-slot locked" id="talismanWillfire" title="Willfire Blade (Locked: Requires 10 Refusals) - Adds +15% Jutsu Critical hit chance">⚔️</span>
+                </div>
+                <!-- Spirit Companion Display -->
+                <div class="equipped-companion" id="equippedCompanion" style="display: none;" title="Active Spirit Companion">
+                  <span id="companionIcon" class="companion-icon"></span>
+                  <span id="companionName" class="companion-name"></span>
                 </div>
                 <div class="phoenix-buff-badge" id="phoenixBuffBadge" style="display: none;" title="Phoenix Resolve Active: +30% ATK & Starting Shield (Activated within 24h of a relapse)">
                   🔥 Phoenix Resolve
