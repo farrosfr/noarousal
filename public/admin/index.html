@@ -7,6 +7,9 @@
     <meta name="color-scheme" content="light dark" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <title>NoArousal Data CMS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Space+Grotesk:wght@500;700;900&display=swap" rel="stylesheet" />
     <script>
       (function setInitialTheme() {
         document.documentElement.dataset.theme = "dark";
@@ -243,6 +246,208 @@
         color: inherit !important;
         opacity: 0.8;
       }
+
+      /* CINEMATIC VICTORY CUTSCENE ANIMATIONS */
+      .cinematic-victory-overlay {
+        position: fixed;
+        inset: 0;
+        background: #020203;
+        z-index: 100001;
+        overflow: hidden;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* Cinematic Widescreen Crop Bars */
+      .cinematic-bar {
+        position: absolute;
+        left: 0;
+        right: 0;
+        height: 10%;
+        background: #000;
+        z-index: 100003;
+        transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+      }
+      .cinematic-bar.top {
+        top: 0;
+        transform: translateY(-100%);
+      }
+      .cinematic-bar.bottom {
+        bottom: 0;
+        transform: translateY(100%);
+      }
+      .play-animation .cinematic-bar.top {
+        transform: translateY(0);
+      }
+      .play-animation .cinematic-bar.bottom {
+        transform: translateY(0);
+      }
+
+      /* Epic Victory Widescreen Art - Vertically Centered and Scaled */
+      .cinematic-art-wrapper {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.95);
+        width: min(840px, 92%);
+        max-height: 56vh; /* Keeps artwork strictly bounded from overlapping top/bottom titles */
+        border-radius: 16px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.95);
+        opacity: 0;
+        transition: all 1.2s cubic-bezier(0.25, 1, 0.5, 1) 0.3s;
+        z-index: 100002;
+      }
+      .play-animation .cinematic-art-wrapper {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+      }
+
+      .cinematic-art-img {
+        width: 100%;
+        max-height: 56vh;
+        object-fit: cover;
+        display: block;
+        transform: scale(1.1);
+        transition: transform 7s cubic-bezier(0.1, 0.8, 0.3, 1) 0.5s;
+      }
+      .play-animation .cinematic-art-img {
+        transform: scale(1);
+      }
+
+      /* Dynamic movie style subtitles - Positioned just above the bottom black bar */
+      .cinematic-subtitle {
+        position: absolute;
+        bottom: 14%;
+        left: 50%;
+        transform: translate(-50%, 0) translateY(10px);
+        opacity: 0;
+        color: #fef08a; /* Soft warning yellow, highly readable */
+        font-family: "Space Grotesk", "Inter", system-ui, sans-serif;
+        font-style: normal;
+        font-weight: 600;
+        font-size: clamp(1rem, 2.4vw, 1.2rem);
+        text-align: center;
+        width: max-content;
+        max-width: min(680px, 85%);
+        background: rgba(0, 0, 0, 0.75); /* Dark background box for subtitles */
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 10px 24px;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+        backdrop-filter: blur(8px);
+        z-index: 100004;
+        transition: all 0.8s ease 1s;
+      }
+      .play-animation .cinematic-subtitle {
+        opacity: 1;
+        transform: translate(-50%, 0);
+      }
+
+      /* Levelup/Victory epic slash overlay - Positioned at the top covering the top bar */
+      .cinematic-victory-banner {
+        position: absolute;
+        top: 15%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.9);
+        opacity: 0;
+        z-index: 100005;
+        text-align: center;
+        transition: all 1s cubic-bezier(0.25, 1, 0.5, 1) 1.5s;
+      }
+      .play-animation .cinematic-victory-banner {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+      }
+
+      .banner-tagline {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 0.8rem;
+        font-weight: 900;
+        color: #2dd4bf;
+        letter-spacing: 0.5em;
+        margin-bottom: 6px;
+        text-transform: uppercase;
+        opacity: 0.95;
+        text-shadow: 0 0 10px rgba(45, 212, 191, 0.4);
+      }
+
+      .victory-title-epic {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: clamp(2.4rem, 8vw, 4.8rem);
+        font-weight: 950;
+        color: transparent;
+        background: linear-gradient(135deg, #2dd4bf 0%, #3b82f6 50%, #2dd4bf 100%);
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        background-clip: text;
+        letter-spacing: 0.25em;
+        margin: 0;
+        text-transform: uppercase;
+        animation: shimmerGradient 4s linear infinite;
+        filter: drop-shadow(0 4px 15px rgba(0,0,0,0.85));
+      }
+
+      @keyframes shimmerGradient {
+        to { background-position: 200% center; }
+      }
+
+      /* Widescreen continue button - Positioned perfectly inside the bottom black bar */
+      .btn-cinematic-continue {
+        position: absolute;
+        bottom: 4%;
+        left: 50%;
+        transform: translate(-50%, 0) translateY(15px);
+        opacity: 0;
+        background: linear-gradient(135deg, #2dd4bf 0%, #3b82f6 100%);
+        color: #000 !important;
+        border: 0;
+        font-family: "Space Grotesk", sans-serif;
+        font-weight: 900;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        border-radius: 99px;
+        padding: 11px 32px;
+        cursor: pointer;
+        z-index: 100006;
+        box-shadow: 0 0 20px rgba(45, 212, 191, 0.4);
+        transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1) 4.2s;
+      }
+      .play-animation .btn-cinematic-continue {
+        opacity: 1;
+        transform: translate(-50%, 0);
+      }
+      .btn-cinematic-continue:hover {
+        transform: translate(-50%, -3px) scale(1.04);
+        box-shadow: 0 0 35px rgba(45, 212, 191, 0.75);
+      }
+      .btn-cinematic-continue:active {
+        transform: translate(-50%, 1px) scale(0.98);
+      }
+
+      @media (max-width: 768px) {
+        .cinematic-bar {
+          height: 13%;
+        }
+        .cinematic-victory-banner {
+          top: 14%;
+        }
+        .cinematic-subtitle {
+          bottom: 17%;
+          font-size: 0.9rem;
+          width: 90%;
+        }
+        .btn-cinematic-continue {
+          bottom: 4%;
+          padding: 8px 24px;
+          font-size: 0.78rem;
+        }
+      }
     </style>
   </head>
   <body>
@@ -264,7 +469,195 @@
       </div>
     </div>
     <div id="nc-root"></div>
+
+    <!-- Cinematic Victory Cutscene Overlay -->
+    <div class="cinematic-victory-overlay" id="cinematicVictoryOverlay" style="display: none;">
+      <!-- Cinematic Widescreen Crop Bars -->
+      <div class="cinematic-bar top"></div>
+      <div class="cinematic-bar bottom"></div>
+
+      <!-- Epic Cinematic Victory Image -->
+      <div class="cinematic-art-wrapper">
+        <img src="/ninja_victory.jpg" alt="Victory Cutscene Art" class="cinematic-art-img" />
+      </div>
+
+      <!-- Movie Subtitles -->
+      <div class="cinematic-subtitle" id="cinematicSubtitle">
+        "At last... the shadow urge dissipates into the light of resolve."
+      </div>
+
+      <!-- Big Victory Banner -->
+      <div class="cinematic-victory-banner" id="cinematicVictoryBanner">
+        <div class="banner-tagline">SOVEREIGN RESISTANCE</div>
+        <h1 class="victory-title-epic">VICTORY</h1>
+      </div>
+
+      <!-- Continue Button -->
+      <button type="button" class="btn-cinematic-continue" id="btnCinematicContinue">
+        Continue &rarr;
+      </button>
+    </div>
+
     <script>
+      let currentRefuseCount = 0;
+      let isRefuseCountInitialized = false;
+
+      async function getSavedTokenSilently() {
+        try {
+          const sveltiaUser = JSON.parse(localStorage.getItem("sveltia-cms.user") || "{}");
+          if (sveltiaUser.token) return sveltiaUser.token;
+        } catch (e) {}
+        return localStorage.getItem("noa-github-token") || "";
+      }
+
+      async function updateInitialRefuseCount() {
+        try {
+          const token = await getSavedTokenSilently();
+          const headers = {};
+          if (token) {
+            headers["Authorization"] = `Bearer ${token}`;
+          }
+          const apiUrl = "https://api.github.com/repos/farrosfr/noarousal/contents/src/data/accountability.json?ref=main";
+          const res = await fetch(apiUrl, { headers });
+          if (res.ok) {
+            const currentFile = await res.json();
+            const data = JSON.parse(decodeBase64Utf8(currentFile.content));
+            if (data && Array.isArray(data.entries)) {
+              currentRefuseCount = data.entries.filter(e => e.type === "refuse").length;
+              isRefuseCountInitialized = true;
+              console.log("Initial refuse count initialized:", currentRefuseCount);
+            }
+          } else {
+            // Fallback to raw github content
+            const rawRes = await fetch("https://raw.githubusercontent.com/farrosfr/noarousal/main/src/data/accountability.json?t=" + Date.now());
+            if (rawRes.ok) {
+              const data = await rawRes.json();
+              if (data && Array.isArray(data.entries)) {
+                currentRefuseCount = data.entries.filter(e => e.type === "refuse").length;
+                isRefuseCountInitialized = true;
+                console.log("Initial refuse count (fallback raw):", currentRefuseCount);
+              }
+            }
+          }
+        } catch (e) {
+          console.error("Failed to fetch initial refuse count:", e);
+        }
+      }
+
+      // Initialize on load
+      updateInitialRefuseCount();
+
+      // Periodically check if still 0
+      window.setInterval(async () => {
+        if (!isRefuseCountInitialized) {
+          await updateInitialRefuseCount();
+        }
+      }, 5000);
+
+      function startCinematicVictory() {
+        const cinematicOverlay = document.querySelector("#cinematicVictoryOverlay");
+        if (!cinematicOverlay) return;
+        
+        cinematicOverlay.style.display = "flex";
+        cinematicOverlay.classList.remove("play-animation");
+        cinematicOverlay.offsetHeight; // trigger reflow
+        cinematicOverlay.classList.add("play-animation");
+
+        const subtitle = document.querySelector("#cinematicSubtitle");
+        if (subtitle) {
+          subtitle.textContent = `"At last... the shadow urge dissipates into the light of resolve."`;
+          if (window.victorySubtitleTimeout) clearTimeout(window.victorySubtitleTimeout);
+          window.victorySubtitleTimeout = setTimeout(() => {
+            subtitle.textContent = `"My willpower is absolute. The Sovereign Mind remains master of itself."`;
+          }, 3500);
+        }
+
+        const continueBtn = document.querySelector("#btnCinematicContinue");
+        if (continueBtn) {
+          continueBtn.onclick = () => {
+            cinematicOverlay.style.display = "none";
+            cinematicOverlay.classList.remove("play-animation");
+          };
+        }
+      }
+
+      // Intercept window.fetch to catch PUT updates to accountability
+      const originalFetch = window.fetch;
+      window.fetch = async function(resource, options) {
+        const url = typeof resource === 'string' ? resource : (resource instanceof Request ? resource.url : '');
+        const method = options && options.method ? options.method.toUpperCase() : 'GET';
+        
+        if (url.includes('contents/src/data/accountability.json') && method === 'PUT') {
+          // Attempt to fetch current count if not initialized yet
+          if (!isRefuseCountInitialized) {
+            let authHeader = '';
+            if (options.headers) {
+              if (typeof options.headers.get === 'function') {
+                authHeader = options.headers.get('Authorization') || options.headers.get('authorization');
+              } else {
+                authHeader = options.headers.Authorization || options.headers.authorization;
+              }
+            }
+            try {
+              const headers = {};
+              if (authHeader) headers["Authorization"] = authHeader;
+              const apiUrl = "https://api.github.com/repos/farrosfr/noarousal/contents/src/data/accountability.json?ref=main";
+              const res = await originalFetch(apiUrl, { headers });
+              if (res.ok) {
+                const currentFile = await res.json();
+                const currentData = JSON.parse(decodeBase64Utf8(currentFile.content));
+                if (currentData && Array.isArray(currentData.entries)) {
+                  currentRefuseCount = currentData.entries.filter(e => e.type === "refuse").length;
+                  isRefuseCountInitialized = true;
+                }
+              }
+            } catch (e) {
+              console.error("Failed to fetch count before save", e);
+            }
+          }
+
+          let bodyData = null;
+          try {
+            if (options.body) {
+              if (typeof options.body === 'string') {
+                bodyData = JSON.parse(options.body);
+              } else if (options.body instanceof Blob) {
+                const text = await options.body.text();
+                bodyData = JSON.parse(text);
+              }
+            }
+          } catch(e) {
+            console.error("Failed to parse request body", e);
+          }
+          
+          const response = await originalFetch.apply(this, arguments);
+          
+          if (response.ok && bodyData && bodyData.content) {
+            try {
+              const decoded = decodeBase64Utf8(bodyData.content);
+              const data = JSON.parse(decoded);
+              if (data && Array.isArray(data.entries)) {
+                const newRefuseCount = data.entries.filter(e => e.type === "refuse").length;
+                console.log("Intercepted PUT. Old count:", currentRefuseCount, "New count:", newRefuseCount);
+                if (newRefuseCount > currentRefuseCount) {
+                  currentRefuseCount = newRefuseCount;
+                  setTimeout(() => {
+                    startCinematicVictory();
+                  }, 800);
+                } else {
+                  currentRefuseCount = newRefuseCount;
+                }
+              }
+            } catch (e) {
+              console.error("Error parsing intercepted PUT content", e);
+            }
+          }
+          return response;
+        }
+        
+        return originalFetch.apply(this, arguments);
+      };
+
       window.CMS_MANUAL_INIT = true;
       window.checkCmsAuth = function () {
         const rootText = document.getElementById("nc-root")?.innerText?.trim() || "";
