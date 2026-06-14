@@ -2619,6 +2619,7 @@ h1 {
   left: 50%;
   transform: translate(-50%, -50%) scale(0.95);
   width: min(840px, 92%);
+  max-height: 56vh; /* Keeps artwork strictly bounded from overlapping top/bottom titles */
   border-radius: 16px;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -2634,7 +2635,8 @@ h1 {
 
 .cinematic-art-img {
   width: 100%;
-  height: auto;
+  max-height: 56vh;
+  object-fit: cover;
   display: block;
   transform: scale(1.1);
   transition: transform 7s cubic-bezier(0.1, 0.8, 0.3, 1) 0.5s;
@@ -2650,13 +2652,20 @@ h1 {
   left: 50%;
   transform: translate(-50%, 0) translateY(10px);
   opacity: 0;
-  color: #e5e7eb;
-  font-family: "Georgia", "Times New Roman", serif;
-  font-style: italic;
-  font-size: clamp(0.95rem, 2.2vw, 1.15rem);
+  color: #fef08a; /* Soft warning yellow, highly readable */
+  font-family: "Space Grotesk Variable", "Inter Variable", system-ui, sans-serif;
+  font-style: normal;
+  font-weight: 600;
+  font-size: clamp(1rem, 2.4vw, 1.2rem);
   text-align: center;
-  width: min(720px, 88%);
-  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.95), 0 0 10px rgba(0, 0, 0, 0.8);
+  width: max-content;
+  max-width: min(680px, 85%);
+  background: rgba(0, 0, 0, 0.75); /* Dark background box for subtitles */
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 10px 24px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+  backdrop-filter: blur(8px);
   z-index: 100004;
   transition: all 0.8s ease 1s;
 }
@@ -2683,14 +2692,14 @@ h1 {
 
 .banner-tagline {
   font-family: "Space Grotesk Variable", sans-serif;
-  font-size: 0.72rem;
+  font-size: 0.8rem;
   font-weight: 900;
   color: #2dd4bf;
-  letter-spacing: 0.45em;
-  margin-bottom: 4px;
+  letter-spacing: 0.5em;
+  margin-bottom: 6px;
   text-transform: uppercase;
-  opacity: 0.85;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));
+  opacity: 0.95;
+  text-shadow: 0 0 10px rgba(45, 212, 191, 0.4);
 }
 
 .victory-title-epic {
