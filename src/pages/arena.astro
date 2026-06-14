@@ -3,6 +3,7 @@ import "@fontsource-variable/inter";
 import "@fontsource-variable/space-grotesk";
 import "../styles/global.css";
 import accountabilityData from "../data/accountability.json";
+import fitnessSummaryData from "../../public/data/fitness-summary.json";
 
 const startDateTime = accountabilityData.journeyStart;
 ---
@@ -386,6 +387,54 @@ const startDateTime = accountabilityData.journeyStart;
           </div>
         </section>
 
+        <!-- Physical Resolve & Fitness Panel -->
+        <section class="fitness-panel reveal-on-scroll" aria-label="Physical resolve and fitness tracking">
+          <h2>Physical Resolve & Fitness</h2>
+          <p class="panel-desc">Real-world physical discipline fuels your mental fortitude. Syncing with Strava activities and push-up logs since June 6, 2026.</p>
+          
+          <div class="fitness-grid">
+            <article class="attr-card fitness-card">
+              <div class="attr-icon">🏃‍♂️</div>
+              <div class="attr-details">
+                <h4>Total Run / Walk</h4>
+                <p>Builds cardio stamina and endurance. Adds directly to your Fortitude (DEF).</p>
+                <div class="attr-value"><span id="fitRunWalkDistance">0.00</span> Km</div>
+              </div>
+            </article>
+
+            <article class="attr-card fitness-card">
+              <div class="attr-icon">💪</div>
+              <div class="attr-details">
+                <h4>Total Push-ups</h4>
+                <p>Builds raw physical power. Adds +1 Willpower (ATK) per 50 push-ups.</p>
+                <div class="attr-value"><span id="fitPushUpsCount">0</span> Reps</div>
+              </div>
+            </article>
+          </div>
+          
+          <div class="fitness-progress-container">
+            <div class="fitness-progress-bar-group">
+              <div class="bar-label">
+                <span>Weekly Cardio Goal Progress</span>
+                <span id="fitWeeklyCardioGoalText">0 / 10 Km</span>
+              </div>
+              <div class="bar-outer">
+                <div class="bar-inner fitness-cardio-bar" id="fitWeeklyCardioBar" style="width: 0%"></div>
+              </div>
+            </div>
+            
+            <div class="fitness-progress-bar-group">
+              <div class="bar-label">
+                <span>Weekly Push-ups Goal Progress</span>
+                <span id="fitWeeklyPushGoalText">0 / 250 Reps</span>
+              </div>
+              <div class="bar-outer">
+                <div class="bar-inner fitness-push-bar" id="fitWeeklyPushBar" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <!-- Willpower Battle Calendar -->
         <section class="battle-calendar-panel reveal-on-scroll" aria-label="Daily battle calendar">
           <h2>Willpower Battle Calendar</h2>
@@ -498,6 +547,7 @@ const startDateTime = accountabilityData.journeyStart;
     </footer>
 
     <script id="accountabilityData" type="application/json" set:html={JSON.stringify(accountabilityData)}></script>
+    <script id="fitnessSummaryData" type="application/json" set:html={JSON.stringify(fitnessSummaryData)}></script>
     <script>
       import "../scripts/arena.js";
     </script>

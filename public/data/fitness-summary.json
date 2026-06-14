@@ -1,0 +1,63 @@
+{
+  "updatedAt": "2026-06-14T12:47:32.730Z",
+  "timezone": "Asia/Jakarta",
+  "startDate": "2026-06-06",
+  "summary": {
+    "todayRunWalkKm": 0,
+    "totalRunWalkKm": 8.77,
+    "todayPushUps": 0,
+    "totalPushUps": 0
+  },
+  "daily": [
+    {
+      "date": "2026-06-13",
+      "runWalkKm": 2.76,
+      "pushUps": 0
+    },
+    {
+      "date": "2026-06-08",
+      "runWalkKm": 0.86,
+      "pushUps": 0
+    },
+    {
+      "date": "2026-06-07",
+      "runWalkKm": 2.3,
+      "pushUps": 0
+    },
+    {
+      "date": "2026-06-06",
+      "runWalkKm": 2.85,
+      "pushUps": 0
+    }
+  ],
+  "activities": [
+    {
+      "id": 18809347565,
+      "name": "Afternoon Run",
+      "type": "Run",
+      "date": "2026-06-06",
+      "distanceKm": 2.85
+    },
+    {
+      "id": 18822322580,
+      "name": "Afternoon Run",
+      "type": "Run",
+      "date": "2026-06-07",
+      "distanceKm": 2.3
+    },
+    {
+      "id": 18832817480,
+      "name": "Lunch Run",
+      "type": "Run",
+      "date": "2026-06-08",
+      "distanceKm": 0.86
+    },
+    {
+      "id": 18901938134,
+      "name": "Afternoon Run",
+      "type": "Run",
+      "date": "2026-06-13",
+      "distanceKm": 2.76
+    }
+  ]
+}

@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev --host 0.0.0.0",
-    "build": "astro build",
+    "sync-fitness": "node scripts/update-fitness-summary.mjs",
+    "build": "npm run sync-fitness && astro build",
     "preview": "astro preview --host 0.0.0.0"
   },
   "dependencies": {

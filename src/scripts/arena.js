@@ -21,6 +21,8 @@ const elements = {
 
 const accountabilityDataElement = document.querySelector("#accountabilityData");
 const accountabilityData = parseAccountabilityData(accountabilityDataElement?.textContent);
+const fitnessSummaryDataElement = document.querySelector("#fitnessSummaryData");
+const fitnessData = parseAccountabilityData(fitnessSummaryDataElement?.textContent);
 const streakStartDate = getCurrentStreakStartDate(accountabilityData, startDate);
 
 const menuToggle = document.querySelector(".menu-toggle");
@@ -233,11 +235,22 @@ function renderArena() {
     }
   }
 
-  // RPG Attributes
-  if (elements.attrWillpower) elements.attrWillpower.textContent = String(refusalCount);
-  if (elements.attrFortitude) elements.attrFortitude.textContent = String(currentStreakDays);
+  // RPG Attributes & Fitness Bridging
+  const fitnessPushUps = fitnessData?.summary?.totalPushUps || 0;
+  const willpowerBonus = Math.floor(fitnessPushUps / 50);
+  const totalWillpower = refusalCount + willpowerBonus;
+  
+  const fitnessRuns = fitnessData?.summary?.totalRunWalkKm || 0;
+  const fortitudeBonus = Math.floor(fitnessRuns);
+  const totalFortitude = currentStreakDays + fortitudeBonus;
+
+  if (elements.attrWillpower) elements.attrWillpower.textContent = String(totalWillpower);
+  if (elements.attrFortitude) elements.attrFortitude.textContent = String(totalFortitude);
   if (elements.attrConsistency) elements.attrConsistency.textContent = String(winDays);
   if (elements.attrAccuracy) elements.attrAccuracy.textContent = String(winRate);
+
+  // Render Fitness dashboard UI
+  renderFitnessSummary();
 
   // Unlock Badges dynamically
   unlockBadge("badge-first-step"); // Started journey
@@ -703,6 +716,52 @@ function renderCalendar() {
   }
 
   grid.innerHTML = html;
+}
+
+function renderFitnessSummary() {
+  if (!fitnessData) return;
+  const summary = fitnessData.summary || { totalRunWalkKm: 0, totalPushUps: 0 };
+  
+  const runDistanceEl = document.querySelector("#fitRunWalkDistance");
+  const pushUpsEl = document.querySelector("#fitPushUpsCount");
+  
+  if (runDistanceEl) runDistanceEl.textContent = summary.totalRunWalkKm.toFixed(2);
+  if (pushUpsEl) pushUpsEl.textContent = String(summary.totalPushUps);
+  
+  const daily = Array.isArray(fitnessData.daily) ? fitnessData.daily : [];
+  const oneWeekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+  
+  let weeklyRuns = 0;
+  let weeklyPushUps = 0;
+  daily.forEach((day) => {
+    if (new Date(day.date).getTime() >= oneWeekAgo) {
+      weeklyRuns += Number(day.runWalkKm || 0);
+      weeklyPushUps += Number(day.pushUps || 0);
+    }
+  });
+
+  const cardioGoal = 10; // 10 Km weekly
+  const pushGoal = 250; // 250 Reps weekly
+  
+  const cardioBar = document.querySelector("#fitWeeklyCardioBar");
+  const cardioText = document.querySelector("#fitWeeklyCardioGoalText");
+  if (cardioText) {
+    cardioText.textContent = `${weeklyRuns.toFixed(2)} / ${cardioGoal} Km`;
+  }
+  if (cardioBar) {
+    const pct = Math.min(100, (weeklyRuns / cardioGoal) * 100);
+    cardioBar.style.width = `${pct}%`;
+  }
+  
+  const pushBar = document.querySelector("#fitWeeklyPushBar");
+  const pushText = document.querySelector("#fitWeeklyPushGoalText");
+  if (pushText) {
+    pushText.textContent = `${weeklyPushUps} / ${pushGoal} Reps`;
+  }
+  if (pushBar) {
+    const pct = Math.min(100, (weeklyPushUps / pushGoal) * 100);
+    pushBar.style.width = `${pct}%`;
+  }
 }
 
 // Willpower Combat Simulator Logic
