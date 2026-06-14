@@ -172,7 +172,7 @@ function renderArena() {
   if (currentStreakDays >= 3) unlockBadge("badge-consistent-shield");
   if (currentStreakDays >= 7) unlockBadge("badge-week-of-will");
   if (refusalCount >= 10) unlockBadge("badge-shadow-slayer");
-  if (currentStreakDays >= 14) unlockBadge("badge-indomitable");
+  if (currentStreakDays >= 14) unlockBadge("badge-fortress-habit");
   if (winRate >= 95 && winDays >= 5) unlockBadge("badge-flawless");
   if (level >= 5) unlockBadge("badge-sovereign-master");
 
