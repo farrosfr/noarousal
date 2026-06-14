@@ -9,8 +9,8 @@
     <title>NoArousal Data CMS</title>
     <script>
       (function setInitialTheme() {
-        document.documentElement.dataset.theme = "light";
-        document.documentElement.style.colorScheme = "light";
+        document.documentElement.dataset.theme = "dark";
+        document.documentElement.style.colorScheme = "dark";
       })();
     </script>
     <style>
@@ -299,9 +299,9 @@
         if (status) status.textContent = message;
       };
       window.setInterval(function () {
-        if (document.documentElement.dataset.theme !== "light") {
-          document.documentElement.dataset.theme = "light";
-          document.documentElement.style.colorScheme = "light";
+        if (document.documentElement.dataset.theme !== "dark") {
+          document.documentElement.dataset.theme = "dark";
+          document.documentElement.style.colorScheme = "dark";
         }
         window.checkCmsAuth();
       }, 750);
