@@ -93,6 +93,79 @@ function unlockBadge(id) {
   }
 }
 
+function checkPhoenixResolveActive() {
+  const entries = Array.isArray(accountabilityData?.entries) ? accountabilityData.entries : [];
+  const latestRelapseEntry = entries
+    .filter((entry) => isRelapseEntry(entry))
+    .sort((a, b) => new Date(getEntryTimestamp(b)).getTime() - new Date(getEntryTimestamp(a)).getTime())[0];
+
+  if (latestRelapseEntry) {
+    const relapseTime = new Date(getEntryTimestamp(latestRelapseEntry)).getTime();
+    const oneDayMs = 24 * 60 * 60 * 1000;
+    return (Date.now() - relapseTime) <= oneDayMs;
+  }
+  return false;
+}
+
+function updatePhoenixBuffUi() {
+  const isActive = checkPhoenixResolveActive();
+  const badge = document.querySelector("#phoenixBuffBadge");
+  if (badge) {
+    badge.style.display = isActive ? "inline-block" : "none";
+  }
+}
+
+function updateEquippedTalismansUi() {
+  const entries = Array.isArray(accountabilityData?.entries) ? accountabilityData.entries : [];
+  const currentStreakMs = Date.now() - streakStartDate.getTime();
+  const currentStreakDays = Math.max(0, Math.floor(currentStreakMs / 86400000));
+  const refusalCount = entries.reduce((total, entry) => {
+    if (entry?.type === "refuse") return total + 1;
+    return total + (Array.isArray(entry?.refusals) ? entry.refusals.length : 0);
+  }, 0);
+
+  const isFortressUnlocked = currentStreakDays >= 3;
+  const isLotusUnlocked = currentStreakDays >= 7;
+  const isWillfireUnlocked = refusalCount >= 10;
+
+  const fortressEl = document.querySelector("#talismanFortress");
+  const lotusEl = document.querySelector("#talismanLotus");
+  const willfireEl = document.querySelector("#talismanWillfire");
+
+  if (fortressEl) {
+    if (isFortressUnlocked) {
+      fortressEl.classList.remove("locked");
+      fortressEl.classList.add("unlocked");
+      fortressEl.title = "Fortress Amulet (Equipped) - Adds +10% shield absorption (Shield blocks 60% damage)";
+    } else {
+      fortressEl.classList.add("locked");
+      fortressEl.classList.remove("unlocked");
+    }
+  }
+
+  if (lotusEl) {
+    if (isLotusUnlocked) {
+      lotusEl.classList.remove("locked");
+      lotusEl.classList.add("unlocked");
+      lotusEl.title = "Lotus Incense (Equipped) - Adds a 2nd Meditation Incense to inventory";
+    } else {
+      lotusEl.classList.add("locked");
+      lotusEl.classList.remove("unlocked");
+    }
+  }
+
+  if (willfireEl) {
+    if (isWillfireUnlocked) {
+      willfireEl.classList.remove("locked");
+      willfireEl.classList.add("unlocked");
+      willfireEl.title = "Willfire Blade (Equipped) - Adds +15% Critical hit chance to Jutsus (Will Flame)";
+    } else {
+      willfireEl.classList.add("locked");
+      willfireEl.classList.remove("unlocked");
+    }
+  }
+}
+
 function renderArena() {
   if (!accountabilityData) return;
 
@@ -175,6 +248,10 @@ function renderArena() {
   if (currentStreakDays >= 14) unlockBadge("badge-fortress-habit");
   if (winRate >= 95 && winDays >= 5) unlockBadge("badge-flawless");
   if (level >= 5) unlockBadge("badge-sovereign-master");
+
+  // Update Talismans & Phoenix buff UI
+  updateEquippedTalismansUi();
+  updatePhoenixBuffUi();
 
   // Combat Log Stats
   const relapseCount = entries.filter((e) => isRelapseEntry(e)).length;
@@ -279,6 +356,17 @@ function playSound(type) {
 
     const now = audioCtx.currentTime;
 
+    // Helper to auto-disconnect audio nodes on completion to prevent memory leaks
+    const safeDisconnect = (sourceNode, gainNode, filterNode) => {
+      sourceNode.onended = () => {
+        try {
+          sourceNode.disconnect();
+          if (gainNode) gainNode.disconnect();
+          if (filterNode) filterNode.disconnect();
+        } catch (e) {}
+      };
+    };
+
     if (type === 'strike') {
       // Noise buffer for slash swipe friction
       const bufferSize = audioCtx.sampleRate * 0.12;
@@ -304,6 +392,7 @@ function playSound(type) {
       noiseFilter.connect(noiseGain);
       noiseGain.connect(audioCtx.destination);
       noise.start(now);
+      safeDisconnect(noise, noiseGain, noiseFilter);
 
       // Pitch glide for blade impact
       const osc = audioCtx.createOscillator();
@@ -319,6 +408,7 @@ function playSound(type) {
       gain.connect(audioCtx.destination);
       osc.start(now);
       osc.stop(now + 0.1);
+      safeDisconnect(osc, gain);
       
     } else if (type === 'fire') {
       // White noise explosion + sawtooth glide
@@ -345,6 +435,7 @@ function playSound(type) {
       filter.connect(gain);
       gain.connect(audioCtx.destination);
       noise.start(now);
+      safeDisconnect(noise, gain, filter);
 
       const osc = audioCtx.createOscillator();
       const oscGain = audioCtx.createGain();
@@ -359,6 +450,7 @@ function playSound(type) {
       oscGain.connect(audioCtx.destination);
       osc.start(now);
       osc.stop(now + 0.4);
+      safeDisconnect(osc, oscGain);
 
     } else if (type === 'shield') {
       // Dual high-pitch crystal sine tones for protective bubble
@@ -375,6 +467,7 @@ function playSound(type) {
       gain.connect(audioCtx.destination);
       osc.start(now);
       osc.stop(now + 0.35);
+      safeDisconnect(osc, gain);
 
       const osc2 = audioCtx.createOscillator();
       const gain2 = audioCtx.createGain();
@@ -389,6 +482,7 @@ function playSound(type) {
       gain2.connect(audioCtx.destination);
       osc2.start(now);
       osc2.stop(now + 0.35);
+      safeDisconnect(osc2, gain2);
 
     } else if (type === 'charge') {
       // Swirling sine wave sweeping upward
@@ -406,6 +500,7 @@ function playSound(type) {
       gain.connect(audioCtx.destination);
       osc.start(now);
       osc.stop(now + 0.5);
+      safeDisconnect(osc, gain);
       
     } else if (type === 'item') {
       // Upward arpeggio for powerups
@@ -423,6 +518,7 @@ function playSound(type) {
         gain.connect(audioCtx.destination);
         osc.start(now + idx * 0.08);
         osc.stop(now + idx * 0.08 + 0.15);
+        safeDisconnect(osc, gain);
       });
     } else if (type === 'enemy_strike') {
       // Grungy low sawtooth slash
@@ -439,6 +535,7 @@ function playSound(type) {
       gain.connect(audioCtx.destination);
       osc.start(now);
       osc.stop(now + 0.2);
+      safeDisconnect(osc, gain);
     } else if (type === 'victory') {
       // Uplifting arpeggio melody
       const melody = [
@@ -461,6 +558,7 @@ function playSound(type) {
         gain.connect(audioCtx.destination);
         osc.start(now + delay);
         osc.stop(now + delay + item.duration);
+        safeDisconnect(osc, gain);
         delay += item.duration;
       });
     } else if (type === 'defeat') {
@@ -484,8 +582,61 @@ function playSound(type) {
         gain.connect(audioCtx.destination);
         osc.start(now + delay);
         osc.stop(now + delay + item.duration);
+        safeDisconnect(osc, gain);
         delay += item.duration;
       });
+    } else if (type === 'focus_success') {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(880, now);
+      osc.frequency.exponentialRampToValueAtTime(1760, now + 0.15);
+      gain.gain.setValueAtTime(0.18, now);
+      gain.gain.linearRampToValueAtTime(0.01, now + 0.15);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + 0.15);
+      safeDisconnect(osc, gain);
+    } else if (type === 'focus_fail') {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(130, now);
+      osc.frequency.linearRampToValueAtTime(80, now + 0.2);
+      gain.gain.setValueAtTime(0.2, now);
+      gain.gain.linearRampToValueAtTime(0.01, now + 0.2);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + 0.2);
+      safeDisconnect(osc, gain);
+    } else if (type === 'debuff') {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(300, now);
+      osc.frequency.exponentialRampToValueAtTime(60, now + 0.35);
+      gain.gain.setValueAtTime(0.15, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + 0.35);
+      safeDisconnect(osc, gain);
+    } else if (type === 'rage') {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(90, now);
+      osc.frequency.linearRampToValueAtTime(60, now + 0.7);
+      gain.gain.setValueAtTime(0.3, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.75);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + 0.75);
+      safeDisconnect(osc, gain);
     }
   } catch (e) {
     console.error("Audio Synthesis error", e);
@@ -566,6 +717,19 @@ const game = {
   isBattleOver: false,
   isEnemyTurn: false,
   isBossStunned: false,
+  playerDebuffs: {
+    fog: false,
+    weight: false,
+    bleedTurns: 0
+  },
+  bossRageActive: false,
+  perfectFocusActive: false,
+  perfectShieldActive: false,
+  timeOfDayBoost: {
+    heal: 1.0,
+    bossAtkMultiplier: 1.0,
+    playerFlameCrit: 1.5
+  },
   items: {
     coldShower: 1,
     pushUp: 1,
@@ -600,6 +764,12 @@ const BOSSES = {
         description = `deals ${dmg} damage.`;
       }
       
+      // Apply Rage & Time boosts
+      if (game.bossRageActive) dmg = Math.round(dmg * 1.25);
+      if (game.timeOfDayBoost && game.timeOfDayBoost.bossAtkMultiplier) {
+        dmg = Math.round(dmg * game.timeOfDayBoost.bossAtkMultiplier);
+      }
+
       playSound('enemy_strike');
       if (gameElements.ninjaEnemy) {
         gameElements.ninjaEnemy.classList.add("enemy-attack-dash");
@@ -608,9 +778,16 @@ const BOSSES = {
 
       setTimeout(() => {
         if (game.playerShieldActive) {
-          dmg = Math.round(dmg * 0.5);
+          let absorbRate = game.fortressAmuletActive ? 0.4 : 0.5;
+          let shieldDesc = `${(1 - absorbRate)*100}% absorbed by Refusal Shield`;
+          if (game.perfectShieldActive) {
+            absorbRate = 0;
+            shieldDesc = "100% absorbed by PERFECT Refusal Shield";
+          }
+          dmg = Math.round(dmg * absorbRate);
           game.playerShieldActive = false;
-          description += ` (50% absorbed by Refusal Shield)`;
+          game.perfectShieldActive = false;
+          description += ` (${shieldDesc})`;
           
           const shieldOverlay = document.querySelector("#refusalShieldOverlay");
           if (shieldOverlay) {
@@ -624,9 +801,18 @@ const BOSSES = {
         game.playerHP = Math.max(0, game.playerHP - dmg);
         shakeElement(gameElements.ninjaPlayer);
         showFloatingEffect("#ninja-player", `-${dmg}`, "damage");
+
+        // Siren applies Brain Fog debuff (40% chance)
+        if (Math.random() < 0.4 && !game.playerDebuffs.fog) {
+          game.playerDebuffs.fog = true;
+          playSound('debuff');
+          showFloatingEffect("#ninja-player", "Brain Fog!", "debuff-float");
+          description += ` and inflicts <strong>Brain Fog</strong>!`;
+        }
+
         appendLogToTicker(`Boredom Siren casts <strong>${attackName}</strong>! It ${description}`);
         
-        game.isEnemyTurn = false;
+        startPlayerTurn();
         updateShieldIndicator();
         
         if (!checkBattleEnd()) {
@@ -656,6 +842,12 @@ const BOSSES = {
         description = `deals ${dmg} damage.`;
       }
 
+      // Apply Rage & Time boosts
+      if (game.bossRageActive) dmg = Math.round(dmg * 1.25);
+      if (game.timeOfDayBoost && game.timeOfDayBoost.bossAtkMultiplier) {
+        dmg = Math.round(dmg * game.timeOfDayBoost.bossAtkMultiplier);
+      }
+
       playSound('enemy_strike');
       if (gameElements.ninjaEnemy) {
         gameElements.ninjaEnemy.classList.add("enemy-attack-dash");
@@ -664,9 +856,16 @@ const BOSSES = {
 
       setTimeout(() => {
         if (game.playerShieldActive) {
-          dmg = Math.round(dmg * 0.5);
+          let absorbRate = game.fortressAmuletActive ? 0.4 : 0.5;
+          let shieldDesc = `${(1 - absorbRate)*100}% absorbed by Refusal Shield`;
+          if (game.perfectShieldActive) {
+            absorbRate = 0;
+            shieldDesc = "100% absorbed by PERFECT Refusal Shield";
+          }
+          dmg = Math.round(dmg * absorbRate);
           game.playerShieldActive = false;
-          description += ` (50% absorbed by Refusal Shield)`;
+          game.perfectShieldActive = false;
+          description += ` (${shieldDesc})`;
           
           const shieldOverlay = document.querySelector("#refusalShieldOverlay");
           if (shieldOverlay) {
@@ -680,9 +879,18 @@ const BOSSES = {
         game.playerHP = Math.max(0, game.playerHP - dmg);
         shakeElement(gameElements.ninjaPlayer);
         showFloatingEffect("#ninja-player", `-${dmg}`, "damage");
+
+        // Goliath applies Anxiety Weight debuff (40% chance)
+        if (Math.random() < 0.4 && !game.playerDebuffs.weight) {
+          game.playerDebuffs.weight = true;
+          playSound('debuff');
+          showFloatingEffect("#ninja-player", "Anxiety Weight!", "debuff-float");
+          description += ` and inflicts <strong>Anxiety Weight</strong>!`;
+        }
+
         appendLogToTicker(`Stress Goliath casts <strong>${attackName}</strong>! It ${description}`);
         
-        game.isEnemyTurn = false;
+        startPlayerTurn();
         updateShieldIndicator();
         
         if (!checkBattleEnd()) {
@@ -714,6 +922,12 @@ const BOSSES = {
         description = `deals ${dmg} damage.`;
       }
 
+      // Apply Rage & Time boosts
+      if (game.bossRageActive) dmg = Math.round(dmg * 1.25);
+      if (game.timeOfDayBoost && game.timeOfDayBoost.bossAtkMultiplier) {
+        dmg = Math.round(dmg * game.timeOfDayBoost.bossAtkMultiplier);
+      }
+
       playSound('enemy_strike');
       if (gameElements.ninjaEnemy) {
         gameElements.ninjaEnemy.classList.add("enemy-attack-dash");
@@ -722,9 +936,16 @@ const BOSSES = {
 
       setTimeout(() => {
         if (game.playerShieldActive && !bypassShield) {
-          dmg = Math.round(dmg * 0.5);
+          let absorbRate = game.fortressAmuletActive ? 0.4 : 0.5;
+          let shieldDesc = `${(1 - absorbRate)*100}% absorbed by Refusal Shield`;
+          if (game.perfectShieldActive) {
+            absorbRate = 0;
+            shieldDesc = "100% absorbed by PERFECT Refusal Shield";
+          }
+          dmg = Math.round(dmg * absorbRate);
           game.playerShieldActive = false;
-          description += ` (50% absorbed by Refusal Shield)`;
+          game.perfectShieldActive = false;
+          description += ` (${shieldDesc})`;
           
           const shieldOverlay = document.querySelector("#refusalShieldOverlay");
           if (shieldOverlay) {
@@ -738,9 +959,18 @@ const BOSSES = {
         game.playerHP = Math.max(0, game.playerHP - dmg);
         shakeElement(gameElements.ninjaPlayer);
         showFloatingEffect("#ninja-player", `-${dmg}`, "damage");
+
+        // Leviathan applies Lingering Urge (bleed) debuff (50% chance)
+        if (Math.random() < 0.5 && game.playerDebuffs.bleedTurns === 0) {
+          game.playerDebuffs.bleedTurns = 3;
+          playSound('debuff');
+          showFloatingEffect("#ninja-player", "Lingering Urge!", "debuff-float");
+          description += ` and inflicts <strong>Lingering Urge</strong> (bleed)!`;
+        }
+
         appendLogToTicker(`Shadow Leviathan casts <strong>${attackName}</strong>! It ${description}`);
         
-        game.isEnemyTurn = false;
+        startPlayerTurn();
         updateShieldIndicator();
         
         if (!checkBattleEnd()) {
@@ -773,6 +1003,50 @@ const gameElements = {
   btnRestartGame: document.querySelector("#btnRestartGame")
 };
 
+function checkBossRageTransition() {
+  if (game.enemyHP > 0 && game.enemyHP <= game.enemyMaxHP * 0.4 && !game.bossRageActive) {
+    game.bossRageActive = true;
+    playSound('rage');
+    appendLogToTicker(`<span style="color: #ef4444; font-weight: bold;">⚠️ Boss Rage:</span> ${BOSSES[currentBossKey].name} enters a RAGE STATE! Damage increased by 25%!`);
+    const vignette = document.querySelector("#rageVignette");
+    if (vignette) vignette.classList.add("rage-active");
+  }
+}
+
+function renderDebuffs() {
+  const container = document.querySelector("#playerDebuffs");
+  if (!container) return;
+  let html = "";
+  if (game.playerDebuffs.fog) {
+    html += `<span class="debuff-badge" title="Brain Fog: 25% chance to miss basic attacks">🌫️ Brain Fog</span>`;
+  }
+  if (game.playerDebuffs.weight) {
+    html += `<span class="debuff-badge" title="Anxiety Weight: +5 Chakra cost on all Jutsus">⚖️ Anxiety Weight</span>`;
+  }
+  if (game.playerDebuffs.bleedTurns > 0) {
+    html += `<span class="debuff-badge" title="Lingering Urge: Bleeding 5 HP per turn (${game.playerDebuffs.bleedTurns} turns remaining)">🩸 Lingering Urge (${game.playerDebuffs.bleedTurns}t)</span>`;
+  }
+  container.innerHTML = html;
+}
+
+function startPlayerTurn() {
+  game.isEnemyTurn = false;
+  
+  if (game.playerHP > 0 && game.playerDebuffs.bleedTurns > 0) {
+    const bleedDmg = 5;
+    game.playerHP = Math.max(0, game.playerHP - bleedDmg);
+    playSound('enemy_strike');
+    shakeElement(gameElements.ninjaPlayer);
+    showFloatingEffect("#ninja-player", `-${bleedDmg} (Bleed)`, "damage");
+    appendLogToTicker(`Lingering Urge drains ${bleedDmg} HP from Sovereign Ninja!`);
+    game.playerDebuffs.bleedTurns--;
+    
+    if (checkBattleEnd()) return;
+  }
+  
+  updateGameUi();
+}
+
 function initDynamicStats() {
   const willpower = parseInt(document.querySelector("#attrWillpower")?.textContent || "0", 10);
   const fortitude = parseInt(document.querySelector("#attrFortitude")?.textContent || "0", 10);
@@ -789,6 +1063,45 @@ function initDynamicStats() {
   game.fireMinDmg = 24 + Math.floor(willpower * 0.8);
   game.fireMaxDmg = 36 + Math.floor(willpower * 0.8);
   game.healAmount = 25 + Math.floor(fortitude * 1.5);
+
+  // Unlocked Equipment/Buffs checks
+  game.phoenixResolveActive = checkPhoenixResolveActive();
+  game.fortressAmuletActive = fortitude >= 3;
+  game.lotusIncenseActive = fortitude >= 7;
+  game.willfireBladeActive = willpower >= 10;
+
+  // Reset Debuffs & Buffs
+  game.playerDebuffs = { fog: false, weight: false, bleedTurns: 0 };
+  game.bossRageActive = false;
+  game.perfectFocusActive = false;
+  game.perfectShieldActive = false;
+
+  // Time of Day Affinities
+  const hour = new Date().getHours();
+  if (hour >= 6 && hour < 17) {
+    game.timeOfDayBoost = { heal: 1.15, bossAtkMultiplier: 1.0, playerFlameCrit: 1.5 };
+  } else if (hour >= 17 && hour < 19) {
+    game.timeOfDayBoost = { heal: 1.0, bossAtkMultiplier: 1.0, playerFlameCrit: 1.5 };
+  } else {
+    game.timeOfDayBoost = { heal: 1.0, bossAtkMultiplier: 1.10, playerFlameCrit: 1.8 };
+  }
+
+  // Apply Lotus Incense item capacity
+  game.items = {
+    coldShower: 1,
+    pushUp: 1,
+    meditation: game.lotusIncenseActive ? 2 : 1
+  };
+  game.isBossStunned = false;
+
+  // Apply Phoenix starting shield & ATK multipliers
+  if (game.phoenixResolveActive) {
+    game.playerShieldActive = true;
+    game.atkMultiplier = 1.3;
+  } else {
+    game.playerShieldActive = false;
+    game.atkMultiplier = 1.0;
+  }
 }
 
 function applySelectedBoss() {
@@ -818,9 +1131,12 @@ function updateGameUi() {
   if (gameElements.enemyHpBar) gameElements.enemyHpBar.style.width = `${(game.enemyHP / game.enemyMaxHP) * 100}%`;
   
   const isDisabled = game.isBattleOver || game.isEnemyTurn;
+  const fireCost = 20 + (game.playerDebuffs.weight ? 5 : 0);
+  const healCost = 15 + (game.playerDebuffs.weight ? 5 : 0);
+
   if (gameElements.btnStrike) gameElements.btnStrike.disabled = isDisabled;
-  if (gameElements.btnFireJutsu) gameElements.btnFireJutsu.disabled = isDisabled || game.playerChakra < 20;
-  if (gameElements.btnHealJutsu) gameElements.btnHealJutsu.disabled = isDisabled || game.playerChakra < 15;
+  if (gameElements.btnFireJutsu) gameElements.btnFireJutsu.disabled = isDisabled || game.playerChakra < fireCost;
+  if (gameElements.btnHealJutsu) gameElements.btnHealJutsu.disabled = isDisabled || game.playerChakra < healCost;
   if (gameElements.btnCharge) gameElements.btnCharge.disabled = isDisabled;
 
   // Grounding Items States
@@ -843,6 +1159,8 @@ function updateGameUi() {
     const badge = document.querySelector("#qtyMeditation");
     if (badge) badge.textContent = game.items.meditation;
   }
+
+  renderDebuffs();
 }
 
 function showFloatingEffect(targetId, text, type) {
@@ -998,10 +1316,84 @@ function enemyTurn() {
   }, 1200);
 }
 
+let activeFocusTimeout = null;
+
+function triggerFocusEvent(onComplete) {
+  const overlay = document.querySelector("#focusRingOverlay");
+  const btnFocus = document.querySelector("#btnFocus");
+  if (!overlay || !btnFocus) {
+    onComplete();
+    return;
+  }
+
+  game.perfectFocusActive = false;
+  overlay.style.display = "flex";
+  overlay.classList.remove("animating");
+  overlay.offsetHeight; // trigger reflow
+  overlay.classList.add("animating");
+
+  const startTime = Date.now();
+  let clicked = false;
+
+  const handleFocusClick = () => {
+    if (clicked) return;
+    clicked = true;
+    
+    const elapsed = Date.now() - startTime;
+    // Perfect alignment window is 80% to 95% of the 1-second animation (800ms to 950ms)
+    if (elapsed >= 800 && elapsed <= 950) {
+      game.perfectFocusActive = true;
+      playSound('focus_success');
+      showFloatingEffect("#ninja-player", "PERFECT FOCUS!", "heal");
+    } else {
+      game.perfectFocusActive = false;
+      playSound('focus_fail');
+      showFloatingEffect("#ninja-player", "MISSED FOCUS", "damage");
+    }
+
+    cleanup();
+  };
+
+  const cleanup = () => {
+    if (activeFocusTimeout) clearTimeout(activeFocusTimeout);
+    btnFocus.removeEventListener("click", handleFocusClick);
+    overlay.style.display = "none";
+    overlay.classList.remove("animating");
+    onComplete();
+  };
+
+  btnFocus.addEventListener("click", handleFocusClick);
+
+  activeFocusTimeout = setTimeout(() => {
+    if (!clicked) {
+      clicked = true;
+      game.perfectFocusActive = false;
+      playSound('focus_fail');
+      showFloatingEffect("#ninja-player", "MISSED FOCUS", "damage");
+      cleanup();
+    }
+  }, 1100);
+}
+
 function handleStrike() {
-  const dmg = Math.floor(Math.random() * (game.strikeMaxDmg - game.strikeMinDmg + 1)) + game.strikeMinDmg;
+  if (game.playerDebuffs.fog && Math.random() < 0.25) {
+    playSound('focus_fail');
+    showFloatingEffect("#ninja-enemy", "MISS!", "damage-miss");
+    appendLogToTicker(`Sovereign Ninja uses <strong>Strike</strong>... but <strong>MISSES</strong> due to Brain Fog!`);
+    if (!checkBattleEnd()) {
+      enemyTurn();
+    }
+    return;
+  }
+
+  let dmg = Math.floor(Math.random() * (game.strikeMaxDmg - game.strikeMinDmg + 1)) + game.strikeMinDmg;
+  if (game.atkMultiplier) {
+    dmg = Math.round(dmg * game.atkMultiplier);
+  }
+
   game.enemyHP = Math.max(0, game.enemyHP - dmg);
   playSound('strike');
+  checkBossRageTransition();
   
   if (gameElements.ninjaPlayer) {
     gameElements.ninjaPlayer.classList.add("player-attack-dash");
@@ -1022,49 +1414,92 @@ function handleStrike() {
 }
 
 function handleFireJutsu() {
-  if (game.playerChakra < 20) return;
-  game.playerChakra -= 20;
+  const cost = 20 + (game.playerDebuffs.weight ? 5 : 0);
+  if (game.playerChakra < cost) return;
   
-  const dmg = Math.floor(Math.random() * (game.fireMaxDmg - game.fireMinDmg + 1)) + game.fireMinDmg;
-  game.enemyHP = Math.max(0, game.enemyHP - dmg);
-  playSound('fire');
-  
-  if (gameElements.ninjaPlayer) {
-    gameElements.ninjaPlayer.classList.add("player-attack-dash");
-    setTimeout(() => gameElements.ninjaPlayer.classList.remove("player-attack-dash"), 600);
-  }
-  
-  setTimeout(() => {
-    shakeElement(gameElements.ninjaEnemy);
-    showFloatingEffect("#ninja-enemy", `-${dmg}`, "damage");
-    triggerOverlayAnimation("#willFlameOverlay");
-  }, 200);
+  triggerFocusEvent(() => {
+    game.playerChakra -= cost;
+    
+    let dmg = Math.floor(Math.random() * (game.fireMaxDmg - game.fireMinDmg + 1)) + game.fireMinDmg;
+    if (game.atkMultiplier) {
+      dmg = Math.round(dmg * game.atkMultiplier);
+    }
 
-  appendLogToTicker(`Sovereign Ninja casts <strong>Jutsu: Will Flame</strong>! Dealt ${dmg} fire damage to ${BOSSES[currentBossKey].name}.`);
-  
-  if (!checkBattleEnd()) {
-    enemyTurn();
-  }
+    let isCrit = false;
+    if (game.perfectFocusActive) {
+      isCrit = true;
+      const critMul = game.timeOfDayBoost.playerFlameCrit || 1.5;
+      dmg = Math.round(dmg * critMul);
+    } else if (game.willfireBladeActive && Math.random() < 0.15) {
+      isCrit = true;
+      const critMul = game.timeOfDayBoost.playerFlameCrit || 1.5;
+      dmg = Math.round(dmg * critMul);
+    }
+
+    game.enemyHP = Math.max(0, game.enemyHP - dmg);
+    playSound('fire');
+    checkBossRageTransition();
+    
+    if (gameElements.ninjaPlayer) {
+      gameElements.ninjaPlayer.classList.add("player-attack-dash");
+      setTimeout(() => gameElements.ninjaPlayer.classList.remove("player-attack-dash"), 600);
+    }
+    
+    setTimeout(() => {
+      shakeElement(gameElements.ninjaEnemy);
+      const floatText = isCrit 
+        ? (game.perfectFocusActive ? `PERFECT CRIT! -${dmg}` : `CRITICAL! -${dmg}`) 
+        : `-${dmg}`;
+      const floatType = isCrit ? "damage-crit" : "damage";
+      showFloatingEffect("#ninja-enemy", floatText, floatType);
+      triggerOverlayAnimation("#willFlameOverlay");
+    }, 200);
+
+    const jutsuMsg = isCrit 
+      ? `Sovereign Ninja casts <strong>Jutsu: Will Flame</strong>! 💥<strong>CRITICAL HIT!</strong> Dealt ${dmg} fire damage to ${BOSSES[currentBossKey].name}.`
+      : `Sovereign Ninja casts <strong>Jutsu: Will Flame</strong>! Dealt ${dmg} fire damage to ${BOSSES[currentBossKey].name}.`;
+
+    appendLogToTicker(jutsuMsg);
+    
+    if (!checkBattleEnd()) {
+      enemyTurn();
+    }
+  });
 }
 
 function handleHealJutsu() {
-  if (game.playerChakra < 15) return;
-  game.playerChakra -= 15;
+  const cost = 15 + (game.playerDebuffs.weight ? 5 : 0);
+  if (game.playerChakra < cost) return;
   
-  const heal = game.healAmount;
-  game.playerHP = Math.min(game.playerMaxHP, game.playerHP + heal);
-  game.playerShieldActive = true;
-  playSound('shield');
-  
-  triggerOverlayAnimation("#refusalShieldOverlay");
-  updateShieldIndicator();
-  
-  showFloatingEffect("#ninja-player", `+${heal}`, "heal");
-  appendLogToTicker(`Sovereign Ninja casts <strong>Jutsu: Refusal Shield</strong>! Restored ${heal} HP and raised a defensive barrier.`);
-  
-  if (!checkBattleEnd()) {
-    enemyTurn();
-  }
+  triggerFocusEvent(() => {
+    game.playerChakra -= cost;
+    
+    let heal = game.healAmount;
+    if (game.timeOfDayBoost.heal) {
+      heal = Math.round(heal * game.timeOfDayBoost.heal);
+    }
+    
+    game.playerHP = Math.min(game.playerMaxHP, game.playerHP + heal);
+    game.playerShieldActive = true;
+    playSound('shield');
+    
+    triggerOverlayAnimation("#refusalShieldOverlay");
+    updateShieldIndicator();
+    
+    if (game.perfectFocusActive) {
+      game.perfectShieldActive = true;
+      showFloatingEffect("#ninja-player", `+${heal} (Perfect Shield!)`, "heal");
+      appendLogToTicker(`Sovereign Ninja casts <strong>Jutsu: Refusal Shield</strong>! Restored ${heal} HP and raised a <strong>PERFECT SHIELD</strong> (blocks 100% damage next turn!).`);
+    } else {
+      game.perfectShieldActive = false;
+      showFloatingEffect("#ninja-player", `+${heal}`, "heal");
+      appendLogToTicker(`Sovereign Ninja casts <strong>Jutsu: Refusal Shield</strong>! Restored ${heal} HP and raised a defensive barrier.`);
+    }
+    
+    if (!checkBattleEnd()) {
+      enemyTurn();
+    }
+  });
 }
 
 function handleCharge() {
@@ -1088,23 +1523,33 @@ function restartGame() {
   
   // Apply Boss HP
   applySelectedBoss();
-
-  // Reset items
-  game.items = {
-    coldShower: 1,
-    pushUp: 1,
-    meditation: 1
-  };
-  game.isBossStunned = false;
   
-  game.playerShieldActive = false;
-  game.isBattleOver = false;
-  game.isEnemyTurn = false;
-  
+  game.playerShieldActive = game.phoenixResolveActive;
+  game.perfectShieldActive = false;
+  game.perfectFocusActive = false;
   updateShieldIndicator();
   
+  const vignette = document.querySelector("#rageVignette");
+  if (vignette) vignette.classList.remove("rage-active");
+  
   if (gameElements.gameOverOverlay) gameElements.gameOverOverlay.style.display = "none";
-  appendLogToTicker(`Battle reset. Choose your action to begin the strike against ${BOSSES[currentBossKey].name}!`);
+  
+  let startLog = `Battle reset. Choose your action to begin the strike against ${BOSSES[currentBossKey].name}!`;
+  const activeBuffs = [];
+  if (game.phoenixResolveActive) activeBuffs.push("🔥 Phoenix Resolve (+30% ATK, starting shield)");
+  if (game.fortressAmuletActive) activeBuffs.push("🛡️ Fortress Amulet (+10% shield absorption)");
+  if (game.lotusIncenseActive) activeBuffs.push("🕯️ Lotus Incense (2x Meditation Incense)");
+  if (game.willfireBladeActive) activeBuffs.push("⚔️ Willfire Blade (+15% crit chance on Jutsus)");
+  
+  const hour = new Date().getHours();
+  if (hour >= 6 && hour < 17) activeBuffs.push("☀️ Daytime Boost (+15% heals)");
+  if (hour >= 19 || hour < 6) activeBuffs.push("🌙 Nighttime Aura (+10% Boss ATK, +30% Jutsu Crit damage)");
+
+  if (activeBuffs.length > 0) {
+    startLog += `<br/><span style="color: var(--accent); font-weight: bold;">Active Talismans/Buffs:</span> ${activeBuffs.join(", ")}`;
+  }
+  
+  appendLogToTicker(startLog);
   updateGameUi();
 }
 
@@ -1121,9 +1566,13 @@ function initGameListeners() {
       game.items.coldShower--;
       const healAmount = Math.round(game.playerMaxHP * 0.5);
       game.playerHP = Math.min(game.playerMaxHP, game.playerHP + healAmount);
+      
+      // Cleanse all debuffs
+      game.playerDebuffs = { fog: false, weight: false, bleedTurns: 0 };
+      
       playSound('item');
-      showFloatingEffect("#ninja-player", `+${healAmount} HP`, "heal");
-      appendLogToTicker(`Sovereign Ninja uses <strong>Cold Shower Elixir</strong>! Disrupts the urge loop and restores ${healAmount} HP.`);
+      showFloatingEffect("#ninja-player", `+${healAmount} HP (Cleansed!)`, "heal");
+      appendLogToTicker(`Sovereign Ninja uses <strong>Cold Shower Elixir</strong>! Disrupts the urge loop, restores ${healAmount} HP, and <strong>cleanses all debuffs</strong>.`);
       updateGameUi();
     }
   });

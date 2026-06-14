@@ -168,6 +168,19 @@ const startDateTime = accountabilityData.journeyStart;
           <div class="game-board fullscreen-board" id="fullscreenGameBoard">
             <!-- Battle Background Arena -->
             <div class="battle-bg-arena">
+              <!-- Rage Vignette Overlay -->
+              <div class="rage-vignette" id="rageVignette"></div>
+
+              <!-- Mindfulness Focus Ring Overlay -->
+              <div class="focus-ring-overlay" id="focusRingOverlay" style="display: none;">
+                <div class="focus-circle-target"></div>
+                <div class="focus-circle-outer" id="focusCircleOuter"></div>
+                <div class="focus-content">
+                  <div class="focus-label">FOCUS BREATH</div>
+                  <button type="button" class="btn-focus-action" id="btnFocus">TAP FOCUS!</button>
+                </div>
+              </div>
+
               <!-- Player Character (Left) -->
               <div class="ninja-character player" id="ninja-player">
                 <div class="character-avatar-frame">
@@ -178,6 +191,16 @@ const startDateTime = accountabilityData.journeyStart;
                   <div class="enemy-strike-overlay" id="enemyStrikeOverlay"></div>
                 </div>
                 <div class="character-name">Sovereign Ninja</div>
+                <div class="equipped-talismans" id="equippedTalismans">
+                  <span class="talisman-slot locked" id="talismanFortress" title="Fortress Amulet (Locked: Requires 3-day streak) - Adds +10% shield absorption">🛡️</span>
+                  <span class="talisman-slot locked" id="talismanLotus" title="Lotus Incense (Locked: Requires 7-day streak) - Adds a 2nd Meditation Incense">🕯️</span>
+                  <span class="talisman-slot locked" id="talismanWillfire" title="Willfire Blade (Locked: Requires 10 Refusals) - Adds +15% Jutsu Critical hit chance">⚔️</span>
+                </div>
+                <div class="phoenix-buff-badge" id="phoenixBuffBadge" style="display: none;" title="Phoenix Resolve Active: +30% ATK & Starting Shield (Activated within 24h of a relapse)">
+                  🔥 Phoenix Resolve
+                </div>
+                <!-- Active Debuffs -->
+                <div class="debuffs-container" id="playerDebuffs"></div>
                 <!-- Status Bars -->
                 <div class="combat-status-bars">
                   <div class="bar-container">
