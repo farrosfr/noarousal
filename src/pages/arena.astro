@@ -138,7 +138,11 @@ const startDateTime = accountabilityData.journeyStart;
               <!-- Player Character (Left) -->
               <div class="ninja-character player" id="ninja-player">
                 <div class="character-avatar-frame">
-                  <div class="character-sprite">🥷</div>
+                  <img src="/ninja_avatar.jpg" alt="Sovereign Ninja" class="ninja-avatar-img" />
+                  <!-- Visual Effects Overlays -->
+                  <div class="refusal-shield-overlay" id="refusalShieldOverlay"></div>
+                  <div class="charge-chakra-overlay" id="chargeChakraOverlay"></div>
+                  <div class="enemy-strike-overlay" id="enemyStrikeOverlay"></div>
                 </div>
                 <div class="character-name">Sovereign Ninja</div>
                 <!-- Status Bars -->
@@ -162,7 +166,10 @@ const startDateTime = accountabilityData.journeyStart;
               <!-- Enemy Character (Right) -->
               <div class="ninja-character enemy" id="ninja-enemy">
                 <div class="character-avatar-frame shadow-avatar-border">
-                  <div class="character-sprite shadow-sprite">😈</div>
+                  <img src="/shadow_avatar.jpg" alt="Shadow Demon" class="ninja-avatar-img shadow-avatar-img" />
+                  <!-- Visual Effects Overlays -->
+                  <div class="strike-overlay" id="strikeOverlay"></div>
+                  <div class="will-flame-overlay" id="willFlameOverlay"></div>
                 </div>
                 <div class="character-name boss-name">Shadow Demon</div>
                 <!-- Status Bars -->
@@ -321,9 +328,9 @@ const startDateTime = accountabilityData.journeyStart;
           </div>
         </section>
 
-        <!-- Full Combat History Log -->
-        <section class="combat-history reveal-on-scroll" aria-label="Full combat log">
-          <h2>Full Combat Log</h2>
+        <!-- Recent Combat History Log -->
+        <section class="combat-history reveal-on-scroll" aria-label="Recent combat log">
+          <h2>Recent Combat Log (Latest 10)</h2>
           <div class="logs-header-stats">
             <span>Total Battles: <strong id="logTotalBattles">0</strong></span>
             <span>Urges Blocked: <strong id="logUrgesBlocked">0</strong></span>

@@ -182,9 +182,11 @@ function renderArena() {
   if (elements.logUrgesBlocked) elements.logUrgesBlocked.textContent = String(refusalCount);
   if (elements.logRelapses) elements.logRelapses.textContent = String(relapseCount);
 
-  // Full Combat History Logs
+  // Full Combat History Logs (Latest 10)
   if (elements.fullBattleLogs) {
-    const sortedEntries = [...entries].sort((a, b) => new Date(getEntryTimestamp(b)).getTime() - new Date(getEntryTimestamp(a)).getTime());
+    const sortedEntries = [...entries]
+      .sort((a, b) => new Date(getEntryTimestamp(b)).getTime() - new Date(getEntryTimestamp(a)).getTime())
+      .slice(0, 10);
 
     if (sortedEntries.length === 0) {
       elements.fullBattleLogs.innerHTML = `<li class="log-item default-log">No battles logged. Clean slate.</li>`;
@@ -371,6 +373,45 @@ function checkBattleEnd() {
   return false;
 }
 
+function triggerOverlayAnimation(selector, activeClass = "active") {
+  const el = document.querySelector(selector);
+  if (!el) return;
+  el.classList.remove(activeClass);
+  el.offsetHeight; // trigger reflow
+  el.classList.add(activeClass);
+  if (activeClass === "active") {
+    setTimeout(() => {
+      el.classList.remove(activeClass);
+    }, 800);
+  }
+}
+
+function updateShieldIndicator() {
+  const shieldOverlay = document.querySelector("#refusalShieldOverlay");
+  if (shieldOverlay) {
+    if (game.playerShieldActive) {
+      shieldOverlay.classList.add("shield-active-state");
+    } else {
+      shieldOverlay.classList.remove("shield-active-state");
+    }
+  }
+}
+
+function setDynamicGameBackground() {
+  const hour = new Date().getHours();
+  const arena = document.querySelector(".battle-bg-arena");
+  if (!arena) return;
+  let bg = "/arena_bg_day.jpg";
+  if (hour >= 17 && hour < 19) {
+    bg = "/arena_bg_sunset.jpg";
+  } else if (hour >= 19 || hour < 6) {
+    bg = "/arena_bg_night.jpg";
+  }
+  arena.style.backgroundImage = `linear-gradient(180deg, rgba(15, 23, 42, 0.2) 0%, rgba(9, 9, 11, 0.85) 100%), url(${bg})`;
+  arena.style.backgroundSize = "cover";
+  arena.style.backgroundPosition = "center";
+}
+
 function enemyTurn() {
   if (game.isBattleOver) return;
   game.isEnemyTurn = true;
@@ -400,23 +441,41 @@ function enemyTurn() {
       description = `deals a massive ${dmg} damage!`;
     }
     
-    if (game.playerShieldActive) {
-      dmg = Math.round(dmg * 0.5);
-      game.playerShieldActive = false;
-      description = `deals blocked ${dmg} damage (50% absorbed by Refusal Shield)!`;
+    // Trigger enemy dash forward
+    if (gameElements.ninjaEnemy) {
+      gameElements.ninjaEnemy.classList.add("enemy-attack-dash");
+      setTimeout(() => gameElements.ninjaEnemy.classList.remove("enemy-attack-dash"), 600);
     }
     
-    game.playerHP = Math.max(0, game.playerHP - dmg);
-    
-    shakeElement(gameElements.ninjaPlayer);
-    showFloatingEffect("#ninja-player", `-${dmg}`, "damage");
-    appendLogToTicker(`Shadow Demon casts <strong>${attackName}</strong>! It ${description}`);
-    
-    game.isEnemyTurn = false;
-    
-    if (!checkBattleEnd()) {
-      updateGameUi();
-    }
+    setTimeout(() => {
+      if (game.playerShieldActive) {
+        dmg = Math.round(dmg * 0.5);
+        game.playerShieldActive = false;
+        description = `deals blocked ${dmg} damage (50% absorbed by Refusal Shield)!`;
+        
+        // Flash the shield break/impact
+        const shieldOverlay = document.querySelector("#refusalShieldOverlay");
+        if (shieldOverlay) {
+          shieldOverlay.classList.remove("shield-active-state");
+          triggerOverlayAnimation("#refusalShieldOverlay");
+        }
+      } else {
+        triggerOverlayAnimation("#enemyStrikeOverlay");
+      }
+      
+      game.playerHP = Math.max(0, game.playerHP - dmg);
+      
+      shakeElement(gameElements.ninjaPlayer);
+      showFloatingEffect("#ninja-player", `-${dmg}`, "damage");
+      appendLogToTicker(`Shadow Demon casts <strong>${attackName}</strong>! It ${description}`);
+      
+      game.isEnemyTurn = false;
+      updateShieldIndicator();
+      
+      if (!checkBattleEnd()) {
+        updateGameUi();
+      }
+    }, 200);
   }, 1200);
 }
 
@@ -424,8 +483,18 @@ function handleStrike() {
   const dmg = Math.floor(Math.random() * 9) + 10; // 10 - 18 dmg
   game.enemyHP = Math.max(0, game.enemyHP - dmg);
   
-  shakeElement(gameElements.ninjaEnemy);
-  showFloatingEffect("#ninja-enemy", `-${dmg}`, "damage");
+  // Trigger player dash
+  if (gameElements.ninjaPlayer) {
+    gameElements.ninjaPlayer.classList.add("player-attack-dash");
+    setTimeout(() => gameElements.ninjaPlayer.classList.remove("player-attack-dash"), 600);
+  }
+  
+  setTimeout(() => {
+    shakeElement(gameElements.ninjaEnemy);
+    showFloatingEffect("#ninja-enemy", `-${dmg}`, "damage");
+    triggerOverlayAnimation("#strikeOverlay");
+  }, 200);
+
   appendLogToTicker(`Sovereign Ninja uses <strong>Strike</strong>! Dealt ${dmg} damage to Shadow Demon.`);
   
   if (!checkBattleEnd()) {
@@ -440,8 +509,18 @@ function handleFireJutsu() {
   const dmg = Math.floor(Math.random() * 13) + 24; // 24 - 36 dmg
   game.enemyHP = Math.max(0, game.enemyHP - dmg);
   
-  shakeElement(gameElements.ninjaEnemy);
-  showFloatingEffect("#ninja-enemy", `-${dmg}`, "damage");
+  // Trigger player dash
+  if (gameElements.ninjaPlayer) {
+    gameElements.ninjaPlayer.classList.add("player-attack-dash");
+    setTimeout(() => gameElements.ninjaPlayer.classList.remove("player-attack-dash"), 600);
+  }
+  
+  setTimeout(() => {
+    shakeElement(gameElements.ninjaEnemy);
+    showFloatingEffect("#ninja-enemy", `-${dmg}`, "damage");
+    triggerOverlayAnimation("#willFlameOverlay");
+  }, 200);
+
   appendLogToTicker(`Sovereign Ninja casts <strong>Jutsu: Will Flame</strong>! Dealt ${dmg} fire damage to Shadow Demon.`);
   
   if (!checkBattleEnd()) {
@@ -457,6 +536,9 @@ function handleHealJutsu() {
   game.playerHP = Math.min(game.playerMaxHP, game.playerHP + heal);
   game.playerShieldActive = true;
   
+  triggerOverlayAnimation("#refusalShieldOverlay");
+  updateShieldIndicator();
+  
   showFloatingEffect("#ninja-player", `+${heal}`, "heal");
   appendLogToTicker(`Sovereign Ninja casts <strong>Jutsu: Refusal Shield</strong>! Restored ${heal} HP and raised a defensive barrier.`);
   
@@ -468,6 +550,8 @@ function handleHealJutsu() {
 function handleCharge() {
   const charge = 40;
   game.playerChakra = Math.min(game.playerMaxChakra, game.playerChakra + charge);
+  
+  triggerOverlayAnimation("#chargeChakraOverlay");
   
   showFloatingEffect("#ninja-player", `+${charge} Chakra`, "chakra-float");
   appendLogToTicker(`Sovereign Ninja charges Chakra! Restored ${charge} energy.`);
@@ -485,6 +569,8 @@ function restartGame() {
   game.isBattleOver = false;
   game.isEnemyTurn = false;
   
+  updateShieldIndicator();
+  
   if (gameElements.gameOverOverlay) gameElements.gameOverOverlay.style.display = "none";
   appendLogToTicker("Battle reset. Choose your action to begin the strike!");
   updateGameUi();
@@ -497,6 +583,8 @@ function initGameListeners() {
   gameElements.btnCharge?.addEventListener("click", handleCharge);
   gameElements.btnRestartGame?.addEventListener("click", restartGame);
   
+  setDynamicGameBackground();
+  updateShieldIndicator();
   updateGameUi();
 }
 
