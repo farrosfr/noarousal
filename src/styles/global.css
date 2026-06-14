@@ -2513,9 +2513,11 @@ h1 {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   padding: clamp(12px, 3vw, 40px);
   box-sizing: border-box;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .btn-close-simulator {
@@ -2555,6 +2557,8 @@ h1 {
   border: 1px solid var(--line);
   box-shadow: 0 25px 70px rgba(0,0,0,0.85);
   background: #09090b;
+  margin-bottom: auto;
+  flex-shrink: 0;
 }
 
 .ninja-simulator-fullscreen-container .battle-bg-arena {
@@ -2588,6 +2592,8 @@ h1 {
   margin-bottom: 16px;
   z-index: 100000;
   gap: 16px;
+  margin-top: auto;
+  flex-shrink: 0;
 }
 
 .boss-selector-group,
@@ -2864,20 +2870,88 @@ h1 {
 
 @media (max-width: 768px) {
   .simulator-top-bar {
-    flex-direction: column;
-    align-items: stretch;
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    align-items: center;
     gap: 8px;
+    width: 100%;
+    margin-bottom: 8px;
   }
   .boss-selector-group,
   .companion-selector-group {
-    justify-content: space-between;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 2px;
+    padding: 4px 8px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.02);
+  }
+  .boss-selector-group label,
+  .companion-selector-group label {
+    font-size: 0.65rem;
+    font-weight: 700;
+  }
+  .boss-select-dropdown,
+  .companion-select-dropdown {
+    font-size: 0.72rem;
+    padding: 3px 6px;
+    width: 100%;
+  }
+  .ninja-simulator-fullscreen-container .btn-close-simulator {
+    padding: 6px;
+    border-radius: 8px;
+    height: 34px;
+    width: 34px;
+    justify-content: center;
+  }
+  .btn-close-simulator .close-label {
+    display: none;
   }
   .items-grid {
-    grid-template-columns: 1fr;
-    gap: 8px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
   }
   .btn-item-use {
-    padding: 8px 12px;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 6px 4px;
+    gap: 4px;
+    border-radius: 8px;
+  }
+  .btn-item-use .item-icon {
+    font-size: 1.1rem;
+  }
+  .btn-item-use .item-name {
+    font-size: 0.68rem;
+    font-weight: 700;
+    line-height: 1.15;
+  }
+  .btn-item-use .item-desc {
+    display: none;
+  }
+  .btn-item-use .item-qty-badge {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    font-size: 0.6rem;
+    padding: 2px 5px;
+  }
+  .combat-commands {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .btn-command {
+    padding: 8px 6px;
+  }
+  .cmd-icon {
+    font-size: 1.3rem;
+    margin-bottom: 3px;
+  }
+  .cmd-label {
+    font-size: 0.76rem;
+  }
+  .cmd-desc {
+    display: none;
   }
   .calendar-days-grid {
     gap: 4px;
