@@ -137,36 +137,70 @@ async function main() {
     console.error("Strava Sync failed, proceeding with 0 km:", e.message);
   }
 
-  // 2. Fetch push-ups from D:\3-web\strava manual log
+  // 2. Fetch push-ups (merge local accountability log and sibling Strava manual log)
   let pushUpsSummary = { todayCount: 0, totalCount: 0, daily: [] };
+  const pushUpsByDate = new Map();
+
+  // A. Parse local accountability.json for push-ups
+  try {
+    const accPath = join(dirname(fileURLToPath(import.meta.url)), "../src/data/accountability.json");
+    const rawAcc = await readFile(accPath, "utf-8");
+    const accData = JSON.parse(rawAcc);
+    const localEntries = Array.isArray(accData?.entries) ? accData.entries : [];
+    
+    let localCount = 0;
+    localEntries.forEach((entry) => {
+      if (entry.type === "pushups" && entry.timestamp) {
+        const dateStr = entry.timestamp.substring(0, 10); // YYYY-MM-DD
+        if (dateStr >= STRAVA_START_DATE) {
+          const reps = Number(entry.count ?? 50);
+          pushUpsByDate.set(dateStr, (pushUpsByDate.get(dateStr) || 0) + reps);
+          localCount += reps;
+        }
+      }
+    });
+    console.log(`Parsed local push-ups: ${localCount} reps total.`);
+  } catch (e) {
+    console.error("Could not parse local accountability push-ups:", e.message);
+  }
+
+  // B. Parse sibling Strava manual-log.json for push-ups
   if (STRAVA_MANUAL_LOG_PATH) {
     try {
       const rawLog = await readFile(STRAVA_MANUAL_LOG_PATH, "utf-8");
       const logData = JSON.parse(rawLog);
-      const entries = Array.isArray(logData?.entries) ? logData.entries : [];
+      const siblingEntries = Array.isArray(logData?.entries) ? logData.entries : [];
       
-      const validEntries = entries.filter((entry) => entry.date >= STRAVA_START_DATE);
-      
-      const todayStr = dateInTimezone();
-      const todayEntry = validEntries.find((entry) => entry.date === todayStr);
-      
-      const totalCount = validEntries.reduce((sum, entry) => sum + Number(entry.pushUps || 0), 0);
-      
-      pushUpsSummary = {
-        todayCount: todayEntry ? Number(todayEntry.pushUps || 0) : 0,
-        totalCount: totalCount,
-        daily: validEntries.map((entry) => ({
-          date: entry.date,
-          pushUps: Number(entry.pushUps || 0)
-        }))
-      };
-      console.log(`Push-ups successfully synced: ${pushUpsSummary.totalCount} total.`);
+      let siblingCount = 0;
+      siblingEntries.forEach((entry) => {
+        if (entry.date >= STRAVA_START_DATE) {
+          const reps = Number(entry.pushUps || 0);
+          pushUpsByDate.set(entry.date, (pushUpsByDate.get(entry.date) || 0) + reps);
+          siblingCount += reps;
+        }
+      });
+      console.log(`Parsed sibling push-ups: ${siblingCount} reps total.`);
     } catch (e) {
-      console.error("Push-up Log Sync failed, proceeding with 0 push-ups:", e.message);
+      console.error("Push-up Sibling Log Sync failed:", e.message);
     }
   } else {
-    console.warn("No STRAVA_MANUAL_LOG_PATH provided, skipping push-ups sync.");
+    console.warn("No STRAVA_MANUAL_LOG_PATH provided, skipping sibling push-ups sync.");
   }
+
+  // C. Calculate summary statistics
+  const todayStr = dateInTimezone();
+  const totalCount = Array.from(pushUpsByDate.values()).reduce((sum, reps) => sum + reps, 0);
+  const todayCount = pushUpsByDate.get(todayStr) || 0;
+
+  pushUpsSummary = {
+    todayCount,
+    totalCount,
+    daily: Array.from(pushUpsByDate.entries()).map(([date, pushUps]) => ({
+      date,
+      pushUps
+    }))
+  };
+  console.log(`Combined Push-ups successfully synced: ${pushUpsSummary.totalCount} total.`);
 
   // 3. Combine summaries
   const payload = {
