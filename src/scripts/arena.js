@@ -259,3 +259,246 @@ if (!Number.isNaN(startDate.getTime())) {
   setInterval(renderArena, 1000);
   renderArena();
 }
+
+// Willpower Combat Simulator Logic
+const game = {
+  playerHP: 100,
+  playerMaxHP: 100,
+  playerChakra: 50,
+  playerMaxChakra: 100,
+  enemyHP: 120,
+  enemyMaxHP: 120,
+  playerShieldActive: false,
+  isBattleOver: false,
+  isEnemyTurn: false
+};
+
+const gameElements = {
+  playerHpText: document.querySelector("#gamePlayerHpText"),
+  playerHpBar: document.querySelector("#gamePlayerHpBar"),
+  playerChakraText: document.querySelector("#gamePlayerChakraText"),
+  playerChakraBar: document.querySelector("#gamePlayerChakraBar"),
+  enemyHpText: document.querySelector("#gameEnemyHpText"),
+  enemyHpBar: document.querySelector("#gameEnemyHpBar"),
+  combatTicker: document.querySelector("#combatTicker"),
+  gameOverOverlay: document.querySelector("#gameOverOverlay"),
+  overlayResultTitle: document.querySelector("#overlayResultTitle"),
+  overlayResultDesc: document.querySelector("#overlayResultDesc"),
+  
+  ninjaPlayer: document.querySelector("#ninja-player"),
+  ninjaEnemy: document.querySelector("#ninja-enemy"),
+  
+  btnStrike: document.querySelector("#btnStrike"),
+  btnFireJutsu: document.querySelector("#btnFireJutsu"),
+  btnHealJutsu: document.querySelector("#btnHealJutsu"),
+  btnCharge: document.querySelector("#btnCharge"),
+  btnRestartGame: document.querySelector("#btnRestartGame")
+};
+
+function updateGameUi() {
+  if (gameElements.playerHpText) gameElements.playerHpText.textContent = `${game.playerHP}/${game.playerMaxHP}`;
+  if (gameElements.playerHpBar) gameElements.playerHpBar.style.width = `${(game.playerHP / game.playerMaxHP) * 100}%`;
+  
+  if (gameElements.playerChakraText) gameElements.playerChakraText.textContent = `${game.playerChakra}/${game.playerMaxChakra}`;
+  if (gameElements.playerChakraBar) gameElements.playerChakraBar.style.width = `${(game.playerChakra / game.playerMaxChakra) * 100}%`;
+  
+  if (gameElements.enemyHpText) gameElements.enemyHpText.textContent = `${game.enemyHP}/${game.enemyMaxHP}`;
+  if (gameElements.enemyHpBar) gameElements.enemyHpBar.style.width = `${(game.enemyHP / game.enemyMaxHP) * 100}%`;
+  
+  const isDisabled = game.isBattleOver || game.isEnemyTurn;
+  if (gameElements.btnStrike) gameElements.btnStrike.disabled = isDisabled;
+  if (gameElements.btnFireJutsu) gameElements.btnFireJutsu.disabled = isDisabled || game.playerChakra < 20;
+  if (gameElements.btnHealJutsu) gameElements.btnHealJutsu.disabled = isDisabled || game.playerChakra < 15;
+  if (gameElements.btnCharge) gameElements.btnCharge.disabled = isDisabled;
+}
+
+function showFloatingEffect(targetId, text, type) {
+  const container = document.querySelector(targetId);
+  if (!container) return;
+  const floatEl = container.querySelector(".floating-effect");
+  if (!floatEl) return;
+  
+  floatEl.textContent = text;
+  floatEl.className = `floating-effect ${type}`;
+  
+  floatEl.style.animation = "none";
+  floatEl.offsetHeight; // trigger reflow
+  floatEl.style.animation = null;
+}
+
+function shakeElement(element) {
+  if (!element) return;
+  element.classList.add("shake-anim");
+  setTimeout(() => {
+    element.classList.remove("shake-anim");
+  }, 500);
+}
+
+function appendLogToTicker(message) {
+  if (gameElements.combatTicker) {
+    gameElements.combatTicker.innerHTML = message;
+  }
+}
+
+function checkBattleEnd() {
+  if (game.enemyHP <= 0) {
+    game.isBattleOver = true;
+    updateGameUi();
+    setTimeout(() => {
+      if (gameElements.gameOverOverlay) {
+        gameElements.overlayResultTitle.textContent = "Victory!";
+        gameElements.overlayResultTitle.style.color = "var(--accent)";
+        gameElements.overlayResultDesc.textContent = "Shadow urge has been successfully dispelled! Sovereign Mind retains control.";
+        gameElements.gameOverOverlay.style.display = "flex";
+      }
+    }, 800);
+    return true;
+  }
+  
+  if (game.playerHP <= 0) {
+    game.isBattleOver = true;
+    updateGameUi();
+    setTimeout(() => {
+      if (gameElements.gameOverOverlay) {
+        gameElements.overlayResultTitle.textContent = "Defeated!";
+        gameElements.overlayResultTitle.style.color = "#ef4444";
+        gameElements.overlayResultDesc.textContent = "The urge overwhelmed your shield. Clear your mind and try again!";
+        gameElements.gameOverOverlay.style.display = "flex";
+      }
+    }, 800);
+    return true;
+  }
+  return false;
+}
+
+function enemyTurn() {
+  if (game.isBattleOver) return;
+  game.isEnemyTurn = true;
+  updateGameUi();
+  
+  appendLogToTicker("Shadow Demon is preparing an attack...");
+  
+  setTimeout(() => {
+    const roll = Math.random();
+    let dmg = 0;
+    let attackName = "";
+    let description = "";
+    
+    if (roll < 0.5) {
+      attackName = "Urge Whisper";
+      dmg = Math.floor(Math.random() * 7) + 8; // 8 - 14 dmg
+      const stolenChakra = Math.min(game.playerChakra, 10);
+      game.playerChakra = Math.max(0, game.playerChakra - stolenChakra);
+      description = `deals ${dmg} damage and drains ${stolenChakra} Chakra!`;
+    } else if (roll < 0.85) {
+      attackName = "Crave Strike";
+      dmg = Math.floor(Math.random() * 8) + 15; // 15 - 22 dmg
+      description = `deals ${dmg} damage!`;
+    } else {
+      attackName = "Sensory Illusion";
+      dmg = Math.floor(Math.random() * 11) + 25; // 25 - 35 dmg
+      description = `deals a massive ${dmg} damage!`;
+    }
+    
+    if (game.playerShieldActive) {
+      dmg = Math.round(dmg * 0.5);
+      game.playerShieldActive = false;
+      description = `deals blocked ${dmg} damage (50% absorbed by Refusal Shield)!`;
+    }
+    
+    game.playerHP = Math.max(0, game.playerHP - dmg);
+    
+    shakeElement(gameElements.ninjaPlayer);
+    showFloatingEffect("#ninja-player", `-${dmg}`, "damage");
+    appendLogToTicker(`Shadow Demon casts <strong>${attackName}</strong>! It ${description}`);
+    
+    game.isEnemyTurn = false;
+    
+    if (!checkBattleEnd()) {
+      updateGameUi();
+    }
+  }, 1200);
+}
+
+function handleStrike() {
+  const dmg = Math.floor(Math.random() * 9) + 10; // 10 - 18 dmg
+  game.enemyHP = Math.max(0, game.enemyHP - dmg);
+  
+  shakeElement(gameElements.ninjaEnemy);
+  showFloatingEffect("#ninja-enemy", `-${dmg}`, "damage");
+  appendLogToTicker(`Sovereign Ninja uses <strong>Strike</strong>! Dealt ${dmg} damage to Shadow Demon.`);
+  
+  if (!checkBattleEnd()) {
+    enemyTurn();
+  }
+}
+
+function handleFireJutsu() {
+  if (game.playerChakra < 20) return;
+  game.playerChakra -= 20;
+  
+  const dmg = Math.floor(Math.random() * 13) + 24; // 24 - 36 dmg
+  game.enemyHP = Math.max(0, game.enemyHP - dmg);
+  
+  shakeElement(gameElements.ninjaEnemy);
+  showFloatingEffect("#ninja-enemy", `-${dmg}`, "damage");
+  appendLogToTicker(`Sovereign Ninja casts <strong>Jutsu: Will Flame</strong>! Dealt ${dmg} fire damage to Shadow Demon.`);
+  
+  if (!checkBattleEnd()) {
+    enemyTurn();
+  }
+}
+
+function handleHealJutsu() {
+  if (game.playerChakra < 15) return;
+  game.playerChakra -= 15;
+  
+  const heal = 25;
+  game.playerHP = Math.min(game.playerMaxHP, game.playerHP + heal);
+  game.playerShieldActive = true;
+  
+  showFloatingEffect("#ninja-player", `+${heal}`, "heal");
+  appendLogToTicker(`Sovereign Ninja casts <strong>Jutsu: Refusal Shield</strong>! Restored ${heal} HP and raised a defensive barrier.`);
+  
+  if (!checkBattleEnd()) {
+    enemyTurn();
+  }
+}
+
+function handleCharge() {
+  const charge = 40;
+  game.playerChakra = Math.min(game.playerMaxChakra, game.playerChakra + charge);
+  
+  showFloatingEffect("#ninja-player", `+${charge} Chakra`, "chakra-float");
+  appendLogToTicker(`Sovereign Ninja charges Chakra! Restored ${charge} energy.`);
+  
+  if (!checkBattleEnd()) {
+    enemyTurn();
+  }
+}
+
+function restartGame() {
+  game.playerHP = 100;
+  game.playerChakra = 50;
+  game.enemyHP = 120;
+  game.playerShieldActive = false;
+  game.isBattleOver = false;
+  game.isEnemyTurn = false;
+  
+  if (gameElements.gameOverOverlay) gameElements.gameOverOverlay.style.display = "none";
+  appendLogToTicker("Battle reset. Choose your action to begin the strike!");
+  updateGameUi();
+}
+
+function initGameListeners() {
+  gameElements.btnStrike?.addEventListener("click", handleStrike);
+  gameElements.btnFireJutsu?.addEventListener("click", handleFireJutsu);
+  gameElements.btnHealJutsu?.addEventListener("click", handleHealJutsu);
+  gameElements.btnCharge?.addEventListener("click", handleCharge);
+  gameElements.btnRestartGame?.addEventListener("click", restartGame);
+  
+  updateGameUi();
+}
+
+initGameListeners();
+

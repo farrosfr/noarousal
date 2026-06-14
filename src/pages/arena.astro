@@ -124,6 +124,102 @@ const startDateTime = accountabilityData.journeyStart;
           </div>
         </section>
 
+        <!-- Ninja Saga Simulator -->
+        <section class="ninja-simulator reveal-on-scroll" id="ninja-simulator" aria-label="Ninja Saga Battle Simulator">
+          <div class="simulator-header">
+            <span class="panel-label">Interactive Minigame</span>
+            <h2>Willpower Combat <span class="text-gradient">Simulator</span></h2>
+            <p class="simulator-intro">A turn-based mini-game simulating the mental fight against urges. Win or lose here will not affect your actual streak.</p>
+          </div>
+
+          <div class="game-board">
+            <!-- Battle Background Arena -->
+            <div class="battle-bg-arena">
+              <!-- Player Character (Left) -->
+              <div class="ninja-character player" id="ninja-player">
+                <div class="character-avatar-frame">
+                  <div class="character-sprite">🥷</div>
+                </div>
+                <div class="character-name">Sovereign Ninja</div>
+                <!-- Status Bars -->
+                <div class="combat-status-bars">
+                  <div class="bar-container">
+                    <span class="bar-lbl">HP: <span id="gamePlayerHpText">100/100</span></span>
+                    <div class="bar-bg"><div class="bar-fill game-hp" id="gamePlayerHpBar" style="width: 100%"></div></div>
+                  </div>
+                  <div class="bar-container">
+                    <span class="bar-lbl">Chakra: <span id="gamePlayerChakraText">50/100</span></span>
+                    <div class="bar-bg"><div class="bar-fill game-chakra" id="gamePlayerChakraBar" style="width: 50%"></div></div>
+                  </div>
+                </div>
+                <!-- Floating Damage Indicator -->
+                <div class="floating-effect" id="playerDamageFloat"></div>
+              </div>
+
+              <!-- VS Banner -->
+              <div class="vs-banner">VS</div>
+
+              <!-- Enemy Character (Right) -->
+              <div class="ninja-character enemy" id="ninja-enemy">
+                <div class="character-avatar-frame shadow-avatar-border">
+                  <div class="character-sprite shadow-sprite">😈</div>
+                </div>
+                <div class="character-name boss-name">Shadow Demon</div>
+                <!-- Status Bars -->
+                <div class="combat-status-bars">
+                  <div class="bar-container">
+                    <span class="bar-lbl">HP: <span id="gameEnemyHpText">120/120</span></span>
+                    <div class="bar-bg"><div class="bar-fill game-hp" id="gameEnemyHpBar" style="width: 100%"></div></div>
+                  </div>
+                </div>
+                <!-- Floating Damage Indicator -->
+                <div class="floating-effect" id="enemyDamageFloat"></div>
+              </div>
+            </div>
+
+            <!-- Battle Text Console / Combat Ticker -->
+            <div class="combat-ticker" id="combatTicker">
+              Battle initialized. Choose your action to begin the strike!
+            </div>
+
+            <!-- Action Command Panel -->
+            <div class="combat-commands" id="combatCommands">
+              <button type="button" class="btn-command strike" id="btnStrike">
+                <span class="cmd-icon">⚔️</span>
+                <span class="cmd-label">Strike</span>
+                <span class="cmd-desc">Basic physical attack. Cost: 0 Chakra</span>
+              </button>
+              
+              <button type="button" class="btn-command jutsu-fire" id="btnFireJutsu">
+                <span class="cmd-icon">🔥</span>
+                <span class="cmd-label">Will Flame</span>
+                <span class="cmd-desc">Deals high damage. Cost: 20 Chakra</span>
+              </button>
+              
+              <button type="button" class="btn-command jutsu-heal" id="btnHealJutsu">
+                <span class="cmd-icon">🛡️</span>
+                <span class="cmd-label">Refusal Shield</span>
+                <span class="cmd-desc">Heals HP & blocks. Cost: 15 Chakra</span>
+              </button>
+              
+              <button type="button" class="btn-command charge" id="btnCharge">
+                <span class="cmd-icon">🌀</span>
+                <span class="cmd-label">Charge Chakra</span>
+                <span class="cmd-desc">Restore 40 Chakra. Cost: 0 Chakra</span>
+              </button>
+            </div>
+
+            <!-- Game Over Overlay -->
+            <div class="game-overlay" id="gameOverOverlay" style="display: none;">
+              <div class="overlay-box">
+                <h3 id="overlayResultTitle">Victory!</h3>
+                <p id="overlayResultDesc">The urge has been successfully dispelled.</p>
+                <button type="button" class="read-link" id="btnRestartGame">Battle Again</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <!-- RPG Attributes Grid -->
         <section class="attributes-panel reveal-on-scroll" aria-label="Character attributes">
           <h2>RPG Attributes</h2>
