@@ -3287,12 +3287,13 @@ h1 {
 }
 
 .focus-content {
-  position: relative;
+  position: absolute;
+  bottom: 24px;
   z-index: 1002;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
 }
 
 .focus-label {
@@ -3303,7 +3304,7 @@ h1 {
   text-transform: uppercase;
   letter-spacing: 0.18em;
   text-shadow: 0 2px 5px rgba(0, 0, 0, 0.6);
-  margin-top: 155px; /* push below the rings */
+  margin: 0;
 }
 
 .btn-focus-action {
