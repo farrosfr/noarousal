@@ -1041,6 +1041,96 @@ const BOSSES = {
       }, 200);
     }
   },
+  temptress: {
+    name: "Malphas, Shadow Temptress",
+    maxHP: 240,
+    filter: "hue-rotate(300deg) saturate(2) brightness(0.95)",
+    avatar: "/shadow_boss.jpg",
+    description: "A cunning demon of sweet illusion. Attacks deal moderate damage and sap willpower.",
+    aiAction: function() {
+      const roll = Math.random();
+      let dmg = 0;
+      let attackName = "";
+      let description = "";
+      let bypassShield = false;
+
+      if (roll < 0.6) {
+        attackName = "Sapper Kiss";
+        dmg = Math.floor(Math.random() * 5) + 14; // 14-18 damage
+        const stolenChakra = Math.min(game.playerChakra, 15);
+        game.playerChakra = Math.max(0, game.playerChakra - stolenChakra);
+        description = `deals ${dmg} damage and saps ${stolenChakra} Chakra!`;
+        showFloatingEffect("#ninja-player", `-${stolenChakra} Chakra`, "chakra-float");
+      } else {
+        attackName = "Sweet Illusion";
+        dmg = Math.floor(Math.random() * 5) + 10; // 10-14 damage
+        description = `deals ${dmg} damage, <strong>ignoring Refusal Shield entirely</strong>!`;
+        bypassShield = true;
+      }
+
+      // Apply Rage & Time boosts
+      if (game.bossRageActive) dmg = Math.round(dmg * 1.25);
+      if (game.timeOfDayBoost && game.timeOfDayBoost.bossAtkMultiplier) {
+        dmg = Math.round(dmg * game.timeOfDayBoost.bossAtkMultiplier);
+      }
+
+      playSound('enemy_strike');
+      if (gameElements.ninjaEnemy) {
+        gameElements.ninjaEnemy.classList.add("enemy-attack-dash");
+        setTimeout(() => gameElements.ninjaEnemy.classList.remove("enemy-attack-dash"), 600);
+      }
+
+      setTimeout(() => {
+        if (game.playerShieldActive && !bypassShield) {
+          let absorbRate = game.fortressAmuletActive ? 0.4 : 0.5;
+          let shieldDesc = `${(1 - absorbRate)*100}% absorbed by Refusal Shield`;
+          if (game.perfectShieldActive) {
+            absorbRate = 0;
+            shieldDesc = "100% absorbed by PERFECT Refusal Shield";
+          }
+          dmg = Math.round(dmg * absorbRate);
+          game.playerShieldActive = false;
+          game.perfectShieldActive = false;
+          description += ` (${shieldDesc})`;
+          
+          const shieldOverlay = document.querySelector("#refusalShieldOverlay");
+          if (shieldOverlay) {
+            shieldOverlay.classList.remove("shield-active-state");
+            triggerOverlayAnimation("#refusalShieldOverlay");
+          }
+        } else {
+          triggerOverlayAnimation("#enemyStrikeOverlay");
+        }
+        
+        game.playerHP = Math.max(0, game.playerHP - dmg);
+        shakeElement(gameElements.ninjaPlayer);
+        showFloatingEffect("#ninja-player", `-${dmg}`, "damage");
+
+        // Temptress applies Brain Fog (40% chance) or Bleed (30% chance)
+        const debuffRoll = Math.random();
+        if (debuffRoll < 0.4 && !game.playerDebuffs.fog) {
+          game.playerDebuffs.fog = true;
+          playSound('debuff');
+          showFloatingEffect("#ninja-player", "Brain Fog!", "debuff-float");
+          description += ` and inflicts <strong>Brain Fog</strong>!`;
+        } else if (debuffRoll >= 0.4 && debuffRoll < 0.7 && game.playerDebuffs.bleedTurns === 0) {
+          game.playerDebuffs.bleedTurns = 3;
+          playSound('debuff');
+          showFloatingEffect("#ninja-player", "Lingering Urge!", "debuff-float");
+          description += ` and inflicts <strong>Lingering Urge</strong> (bleed)!`;
+        }
+
+        appendLogToTicker(`Malphas casts <strong>${attackName}</strong>! It ${description}`);
+        
+        startPlayerTurn();
+        updateShieldIndicator();
+        
+        if (!checkBattleEnd()) {
+          updateGameUi();
+        }
+      }, 200);
+    }
+  },
   archdemon: {
     name: "Dopamine Archdemon",
     maxHP: 300,
