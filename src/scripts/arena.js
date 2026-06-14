@@ -803,6 +803,7 @@ const BOSSES = {
     name: "Boredom Siren",
     maxHP: 90,
     filter: "hue-rotate(120deg) saturate(1.5)",
+    avatar: "/shadow_avatar.jpg",
     description: "An alluring phantom born of inactivity. Drains chakra.",
     aiAction: function() {
       const roll = Math.random();
@@ -884,6 +885,7 @@ const BOSSES = {
     name: "Stress Goliath",
     maxHP: 150,
     filter: "hue-rotate(220deg) brightness(0.9) saturate(1.8)",
+    avatar: "/shadow_avatar.jpg",
     description: "A colossal titan forged from daily anxiety. Heavy physical hitter.",
     aiAction: function() {
       const roll = Math.random();
@@ -962,6 +964,7 @@ const BOSSES = {
     name: "Shadow Leviathan",
     maxHP: 200,
     filter: "saturate(2.5) contrast(1.2)",
+    avatar: "/shadow_boss.jpg",
     description: "The ultimate representation of chemical compulsion. Ignores shields.",
     aiAction: function() {
       const roll = Math.random();
@@ -1028,6 +1031,90 @@ const BOSSES = {
         }
 
         appendLogToTicker(`Shadow Leviathan casts <strong>${attackName}</strong>! It ${description}`);
+        
+        startPlayerTurn();
+        updateShieldIndicator();
+        
+        if (!checkBattleEnd()) {
+          updateGameUi();
+        }
+      }, 200);
+    }
+  },
+  archdemon: {
+    name: "Dopamine Archdemon",
+    maxHP: 300,
+    filter: "none",
+    avatar: "/dopamine_archdemon.jpg",
+    description: "The ultimate lord of instant gratification. Attacks deal massive damage and inflict Dopamine Crash.",
+    aiAction: function() {
+      const roll = Math.random();
+      let dmg = 0;
+      let attackName = "";
+      let description = "";
+      let bypassShield = false;
+
+      if (roll < 0.6) {
+        attackName = "Dopamine Overload";
+        dmg = Math.floor(Math.random() * 8) + 20; // 20-27 damage
+        const stolenChakra = Math.min(game.playerChakra, 25);
+        game.playerChakra = Math.max(0, game.playerChakra - stolenChakra);
+        description = `deals ${dmg} damage and corrupts ${stolenChakra} Chakra!`;
+        showFloatingEffect("#ninja-player", `-${stolenChakra} Chakra`, "chakra-float");
+      } else {
+        attackName = "Void Temptation";
+        dmg = Math.floor(Math.random() * 6) + 16; // 16-21 damage
+        description = `deals ${dmg} damage, <strong>ignoring Refusal Shield entirely</strong>!`;
+        bypassShield = true;
+      }
+
+      // Apply Rage & Time boosts
+      if (game.bossRageActive) dmg = Math.round(dmg * 1.25);
+      if (game.timeOfDayBoost && game.timeOfDayBoost.bossAtkMultiplier) {
+        dmg = Math.round(dmg * game.timeOfDayBoost.bossAtkMultiplier);
+      }
+
+      playSound('enemy_strike');
+      if (gameElements.ninjaEnemy) {
+        gameElements.ninjaEnemy.classList.add("enemy-attack-dash");
+        setTimeout(() => gameElements.ninjaEnemy.classList.remove("enemy-attack-dash"), 600);
+      }
+
+      setTimeout(() => {
+        if (game.playerShieldActive && !bypassShield) {
+          let absorbRate = game.fortressAmuletActive ? 0.4 : 0.5;
+          let shieldDesc = `${(1 - absorbRate)*100}% absorbed by Refusal Shield`;
+          if (game.perfectShieldActive) {
+            absorbRate = 0;
+            shieldDesc = "100% absorbed by PERFECT Refusal Shield";
+          }
+          dmg = Math.round(dmg * absorbRate);
+          game.playerShieldActive = false;
+          game.perfectShieldActive = false;
+          description += ` (${shieldDesc})`;
+          
+          const shieldOverlay = document.querySelector("#refusalShieldOverlay");
+          if (shieldOverlay) {
+            shieldOverlay.classList.remove("shield-active-state");
+            triggerOverlayAnimation("#refusalShieldOverlay");
+          }
+        } else {
+          triggerOverlayAnimation("#enemyStrikeOverlay");
+        }
+        
+        game.playerHP = Math.max(0, game.playerHP - dmg);
+        shakeElement(gameElements.ninjaPlayer);
+        showFloatingEffect("#ninja-player", `-${dmg}`, "damage");
+
+        // Archdemon applies a heavy bleed "Dopamine Crash" (50% chance, 4 turns)
+        if (Math.random() < 0.5 && game.playerDebuffs.bleedTurns === 0) {
+          game.playerDebuffs.bleedTurns = 4;
+          playSound('debuff');
+          showFloatingEffect("#ninja-player", "Dopamine Crash!", "debuff-float");
+          description += ` and inflicts <strong>Dopamine Crash</strong> (4-turn bleed)!`;
+        }
+
+        appendLogToTicker(`Dopamine Archdemon casts <strong>${attackName}</strong>! It ${description}`);
         
         startPlayerTurn();
         updateShieldIndicator();
@@ -1173,8 +1260,14 @@ function applySelectedBoss() {
     el.textContent = boss.name;
   });
   
+  const dashboardAvatar = document.querySelector(".boss-card .character-avatar");
+  if (dashboardAvatar) {
+    dashboardAvatar.src = boss.avatar || "/shadow_boss.jpg";
+  }
+  
   const enemyAvatar = document.querySelector(".ninja-character.enemy .ninja-avatar-img");
   if (enemyAvatar) {
+    enemyAvatar.src = boss.avatar || "/shadow_avatar.jpg";
     enemyAvatar.style.filter = boss.filter;
   }
 }

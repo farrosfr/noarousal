@@ -1264,8 +1264,9 @@ h1 {
   background: rgba(255, 255, 255, 0.02);
 }
 
-/* Character Card Styles */
-.character-card {
+/* Card Alignment and Center Layout */
+.character-card,
+.boss-card {
   align-items: center;
   text-align: center;
 }
@@ -1366,9 +1367,6 @@ h1 {
 }
 
 /* Boss Card Styles */
-.boss-card {
-  align-items: stretch;
-}
 
 .boss-header {
   display: flex;
