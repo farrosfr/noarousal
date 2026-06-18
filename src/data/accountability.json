@@ -3,6 +3,10 @@
   "timeZone": "Asia/Jakarta",
   "entries": [
     {
+      "type": "refuse",
+      "timestamp": "2026-06-18T07:50:00"
+    },
+    {
       "type": "pushups",
       "count": 50,
       "timestamp": "2026-06-18T04:40:00"
