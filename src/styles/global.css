@@ -958,7 +958,6 @@ h1 {
 }
 
 @media (max-width: 920px) {
-  .intro-section,
   .defense-section {
     grid-template-columns: 1fr;
   }
@@ -1193,6 +1192,13 @@ h1 {
     min-height: 76px;
     padding: 8px 4px;
     font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 560px) {
+  .intro-section {
+    grid-template-columns: 1fr;
+    gap: 18px;
   }
 }
 
