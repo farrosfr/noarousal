@@ -3,8 +3,15 @@ import "@fontsource-variable/inter";
 import "@fontsource-variable/space-grotesk";
 import "../../styles/global.css";
 import { getCollection } from "astro:content";
+import accountabilityData from "../../data/accountability.json";
+import SiteHeader from "../../components/SiteHeader.astro";
+import SectionHeader from "../../components/SectionHeader.astro";
+import Button from "../../components/Button.astro";
+import Tag from "../../components/Tag.astro";
+import Icon from "../../components/Icon.astro";
 
 const sortedPosts = (await getCollection("blog")).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const startDateTime = accountabilityData.journeyStart;
 ---
 
 <!doctype html>
@@ -26,32 +33,15 @@ const sortedPosts = (await getCollection("blog")).sort((a, b) => b.data.date.val
     <meta property="og:description" content="Articles about no-PMO recovery, flatline, attention, discipline, and PMO technology loops." />
     <meta property="og:url" content="https://noa.farros.co/blog/" />
     <meta name="twitter:card" content="summary" />
-    <title>NoArousal Blog</title>
+    <title>Blog | NoArousal</title>
   </head>
-  <body>
-    <header class="site-header">
-      <a class="brand" href="/" aria-label="NoArousal home">
-        <span class="brand-mark">N</span>
-        <span class="brand-text">NoArousal</span>
-      </a>
-      <button class="menu-toggle" type="button" aria-label="Open menu" aria-controls="primaryNav" aria-expanded="false">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-      <nav class="nav-links" id="primaryNav" aria-label="Primary navigation">
-        <span class="menu-label">Menu</span>
-        <a href="/">Home</a>
-        <a href="/arena/">Arena</a>
-        <a href="/blog/">Blog</a>
-        <a href="/quotes/">Quotes</a>
-      </nav>
-    </header>
+  <body data-start={startDateTime}>
+    <SiteHeader />
 
     <main>
       <section class="blog-hero reveal-on-scroll">
         <p class="badge">Knowledge base</p>
-        <h1>NoArousal Blog</h1>
+        <h1>Field notes from the streak.</h1>
         <p>
           Short, practical articles on PMO recovery, flatline, attention, and the discipline that comes from keeping your streak public.
         </p>
@@ -59,23 +49,25 @@ const sortedPosts = (await getCollection("blog")).sort((a, b) => b.data.date.val
 
       <section class="blog-grid" aria-label="NoArousal articles">
         {sortedPosts.map((post) => (
-          <article class="blog-card">
+          <article class="blog-card card">
             <a class="blog-card-image" href={`/blog/${post.id}/`} aria-label={`Read ${post.data.title}`}>
               <img src={post.data.image.url} alt={post.data.image.alt} loading="lazy" />
             </a>
             <div class="post-meta">
-              <span>{post.data.category}</span>
+              <Tag tone="gold">{post.data.category}</Tag>
               <time datetime={post.data.date.toISOString()}>
-                {post.data.date.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
+                {post.data.date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
               </time>
             </div>
             <h2><a href={`/blog/${post.id}/`}>{post.data.title}</a></h2>
             <p>{post.data.description}</p>
             <div class="tag-row">
-              {post.data.tags.map((tag) => <span>{tag}</span>)}
+              {post.data.tags.map((tag) => <Tag tone="muted">{tag}</Tag>)}
             </div>
-            <a class="image-credit" href={post.data.image.creditUrl} rel="noreferrer" target="_blank">{post.data.image.credit}</a>
-            <a class="read-link" href={`/blog/${post.id}/`}>Read article</a>
+            <a class="image-credit" href={post.data.image.creditUrl} rel="noreferrer" target="_blank">Image: {post.data.image.credit}</a>
+            <a class="read-link" href={`/blog/${post.id}/`}>
+              <span>Read article</span> <Icon name="arrow-right" class="icon" />
+            </a>
           </article>
         ))}
       </section>
@@ -86,7 +78,7 @@ const sortedPosts = (await getCollection("blog")).sort((a, b) => b.data.date.val
           <span class="brand-mark">N</span>
           <span class="brand-text">NoArousal</span>
         </a>
-        <p>Public streak. Private discipline. No logs, no triggers, no private recovery data.</p>
+        <p>Built one refusal at a time.</p>
       </div>
       <nav aria-label="Footer navigation">
         <a href="/">Home</a>
@@ -95,6 +87,7 @@ const sortedPosts = (await getCollection("blog")).sort((a, b) => b.data.date.val
         <a href="/quotes/">Quotes</a>
       </nav>
     </footer>
+    <script id="accountabilityData" type="application/json" set:html={JSON.stringify(accountabilityData)}></script>
     <script>
       import "../../scripts/app.js";
     </script>

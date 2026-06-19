@@ -2,6 +2,12 @@
 import "@fontsource-variable/inter";
 import "@fontsource-variable/space-grotesk";
 import "../styles/global.css";
+import accountabilityData from "../data/accountability.json";
+import SiteHeader from "../components/SiteHeader.astro";
+import Icon from "../components/Icon.astro";
+import Button from "../components/Button.astro";
+import SectionHeader from "../components/SectionHeader.astro";
+import Tag from "../components/Tag.astro";
 
 const quotes = [
   { text: "You vs you. Win that fight first.", tag: "identity" },
@@ -59,33 +65,20 @@ const quotes = [
     <meta name="twitter:card" content="summary" />
     <title>Quotes | NoArousal</title>
   </head>
-  <body>
-    <header class="site-header">
-      <a class="brand" href="/" aria-label="NoArousal home">
-        <span class="brand-mark">N</span>
-        <span class="brand-text">NoArousal</span>
-      </a>
-      <button class="menu-toggle" type="button" aria-label="Open menu" aria-controls="primaryNav" aria-expanded="false">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-      <nav class="nav-links" id="primaryNav" aria-label="Primary navigation">
-        <span class="menu-label">Menu</span>
-        <a href="/">Home</a>
-        <a href="/arena/">Arena</a>
-        <a href="/blog/">Blog</a>
-        <a href="/quotes/">Quotes</a>
-      </nav>
-    </header>
+  <body data-start={accountabilityData.journeyStart}>
+    <SiteHeader />
 
     <main>
-      <section class="quotes-shell quotes-hero reveal-on-scroll">
+      <section class="quotes-hero reveal-on-scroll">
         <p class="badge">Hard reminders</p>
         <h1>Quotes for the fight.</h1>
         <p>
           Short lines for the moment when comfort starts negotiating and the standard needs to speak louder.
         </p>
+        <div class="quotes-stats">
+          <Tag tone="gold"><Icon name="quote" class="icon" />{quotes.length} lines</Tag>
+          <Tag tone="muted">Tap, shuffle, fullscreen</Tag>
+        </div>
       </section>
 
       <section class="quote-deck reveal-on-scroll" aria-label="NoArousal discipline quote slides">
@@ -96,15 +89,16 @@ const quotes = [
             style={`--quote-bg: url('/quotes/inner-war-${(index % 3) + 1}.png')`}
             data-quote-slide
           >
+            <span class="quote-mark" aria-hidden="true">"</span>
             <strong>{quote.text}</strong>
-            <span>{quote.tag}</span>
+            <span class="quote-tag"><Tag tone="gold">{quote.tag}</Tag></span>
           </article>
           ))}
         </div>
         <div class="quote-controls">
-          <button type="button" data-quote-next>Next</button>
-          <button type="button" data-quote-shuffle>Shuffle</button>
-          <button type="button" data-quote-fullscreen aria-pressed="false">Fullscreen</button>
+          <Button variant="primary" size="md" data-quote-next arrow={false}><Icon name="chevron-right" class="icon" />Next</Button>
+          <Button variant="secondary" size="md" data-quote-shuffle arrow={false}><Icon name="refresh" class="icon" />Shuffle</Button>
+          <Button variant="ghost" size="md" data-quote-fullscreen arrow={false}><Icon name="arrow-right" class="icon" />Fullscreen</Button>
         </div>
         <p class="quote-count"><span data-quote-current>1</span> / {quotes.length}</p>
       </section>
@@ -115,7 +109,7 @@ const quotes = [
           <span class="brand-mark">N</span>
           <span class="brand-text">NoArousal</span>
         </a>
-        <p>Public streak. Private discipline. No logs, no triggers, no private recovery data.</p>
+        <p>Built one refusal at a time.</p>
       </div>
       <nav aria-label="Footer navigation">
         <a href="/">Home</a>
@@ -124,6 +118,7 @@ const quotes = [
         <a href="/quotes/">Quotes</a>
       </nav>
     </footer>
+    <script id="accountabilityData" type="application/json" set:html={JSON.stringify(accountabilityData)}></script>
     <script>
       import "../scripts/app.js";
       import "../scripts/quotes.js";

@@ -1,0 +1,15 @@
+---
+type Tone = "default" | "gold" | "danger" | "muted";
+
+interface Props {
+  tone?: Tone;
+  class?: string;
+}
+
+const { tone = "default", class: className = "" } = Astro.props;
+const classes = ["tag", tone !== "default" ? `tag-${tone}` : "", className].filter(Boolean).join(" ");
+---
+
+<span class={classes}>
+  <slot />
+</span>

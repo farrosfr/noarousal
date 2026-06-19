@@ -4,8 +4,24 @@ import "@fontsource-variable/space-grotesk";
 import "../styles/global.css";
 import accountabilityData from "../data/accountability.json";
 import fitnessSummaryData from "../../public/data/fitness-summary.json";
+import { streakBadges, refusalBadges, performanceBadges } from "../data/badges.js";
+import SiteHeader from "../components/SiteHeader.astro";
+import Icon from "../components/Icon.astro";
+import Button from "../components/Button.astro";
+import SectionHeader from "../components/SectionHeader.astro";
+import AssetFrame from "../components/AssetFrame.astro";
+import StatChip from "../components/StatChip.astro";
+import Tag from "../components/Tag.astro";
 
 const startDateTime = accountabilityData.journeyStart;
+
+const tabs = [
+  { id: "battle", label: "Battle", icon: "swords" },
+  { id: "attributes", label: "Attributes", icon: "trending-up" },
+  { id: "fitness", label: "Fitness", icon: "dumbbell" },
+  { id: "calendar", label: "Calendar", icon: "calendar" },
+  { id: "achievements", label: "Achievements", icon: "award" }
+];
 ---
 
 <!doctype html>
@@ -30,375 +46,176 @@ const startDateTime = accountabilityData.journeyStart;
     <title>Battle Arena | NoArousal</title>
   </head>
   <body data-start={startDateTime}>
-    <header class="site-header">
-      <a class="brand" href="/" aria-label="NoArousal home">
-        <span class="brand-mark">N</span>
-        <span class="brand-text">NoArousal</span>
-      </a>
-      <button class="menu-toggle" type="button" aria-label="Open menu" aria-controls="primaryNav" aria-expanded="false">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-      <nav class="nav-links" id="primaryNav" aria-label="Primary navigation">
-        <span class="menu-label">Menu</span>
-        <a href="/">Home</a>
-        <a href="/arena/">Arena</a>
-        <a href="/blog/">Blog</a>
-        <a href="/quotes/">Quotes</a>
-      </nav>
-    </header>
+    <SiteHeader />
 
     <main>
       <section class="arena-hero reveal-on-scroll">
         <p class="badge">Inner Battle Arena</p>
-        <h1>you <span class="text-gradient">vs you</span></h1>
+        <h1>It's <span class="text-gradient">you vs you</span></h1>
         <p class="arena-copy">
           Gamifying self-discipline. Clean days build your shield, urges resisted deal damage to the urge boss, and consistent resolve levels up your Sovereign character.
         </p>
+        <div class="hero-stats">
+          <StatChip icon="shield" value="0%" label="Shield" />
+          <StatChip icon="zap" value="0 / 100" label="XP" />
+          <StatChip icon="target" value="0" label="Refusals" tone="positive" />
+        </div>
       </section>
 
+      <nav class="tab-bar" data-tab-bar role="tablist" aria-label="Arena sections">
+        {tabs.map((tab, i) => (
+          <button
+            type="button"
+            class:list={["tab", { "is-active": i === 0 }]}
+            data-tab-trigger={tab.id}
+            role="tab"
+            aria-selected={i === 0 ? "true" : "false"}
+            aria-controls={`tab-panel-${tab.id}`}
+            id={`tab-${tab.id}`}
+          >
+            <Icon name={tab.icon} class="tab-icon" />
+            {tab.label}
+          </button>
+        ))}
+      </nav>
+
       <div class="arena-grid">
-        <!-- Battle Combat Screen -->
-        <section class="combat-screen reveal-on-scroll" aria-label="Active combat arena">
-          <!-- Character Card -->
-          <div class="character-card">
-            <div class="character-avatar-wrapper">
-              <img src="/inner_strength_emblem.jpg" alt="Inner Strength Emblem" class="character-avatar" />
-              <div class="character-badge-overlay">LVL <span id="charLevel">1</span></div>
-            </div>
-            <div class="character-info">
-              <h3>Sovereign Self</h3>
-              <p class="character-class">Sentinel of Will</p>
-              
-              <div class="stats-bar-group">
-                <div class="bar-label">
-                  <span>XP (Experience)</span>
-                  <span id="charXpText">0 / 100 XP</span>
-                </div>
-                <div class="bar-outer">
-                  <div class="bar-inner xp-bar" id="charXpBar" style="width: 0%"></div>
-                </div>
+        <!-- BATTLE TAB -->
+        <section
+          class="tab-panel is-active"
+          data-tab-panel="battle"
+          id="tab-panel-battle"
+          role="tabpanel"
+          aria-labelledby="tab-battle"
+        >
+          <section class="combat-screen reveal-on-scroll" aria-label="Active combat arena">
+            <div class="character-card">
+              <div class="character-avatar-wrapper">
+                <img src="/inner_strength_emblem.jpg" alt="Inner Strength Emblem" class="character-avatar" />
+                <div class="character-badge-overlay">LVL <span id="charLevel">1</span></div>
               </div>
+              <div class="character-info">
+                <h3>Sovereign Self</h3>
+                <p class="character-class">Sentinel of Will</p>
 
-              <div class="stats-bar-group">
-                <div class="bar-label">
-                  <span>Shield Integrity</span>
-                  <span id="charShieldText">0%</span>
+                <div class="stats-bar-group">
+                  <div class="bar-label">
+                    <span>XP (Experience)</span>
+                    <span id="charXpText">0 / 100 XP</span>
+                  </div>
+                  <div class="bar-outer">
+                    <div class="bar-inner xp-bar" id="charXpBar" style="width: 0%"></div>
+                  </div>
                 </div>
-                <div class="bar-outer">
-                  <div class="bar-inner shield-bar" id="charShieldBar" style="width: 0%"></div>
-                </div>
-              </div>
-            </div>
-          </div>
 
-          <!-- VS Divider -->
-          <div class="vs-divider">
-            <div class="vs-text">VS</div>
-            <div class="vs-glow"></div>
-          </div>
-
-          <!-- Boss Card -->
-          <div class="boss-card">
-            <div class="character-avatar-wrapper shadow-avatar-border">
-              <img src="/shadow_boss.jpg" alt="Shadow Urge Boss" class="character-avatar" />
-              <div class="character-badge-overlay shadow-badge-bg">RANK <span id="bossRank">1</span></div>
-            </div>
-            <div class="character-info">
-              <h3 class="boss-name">The Shadow Urge</h3>
-              <p class="boss-class">Compulsive Temptation</p>
-              
-              <div class="stats-bar-group">
-                <div class="bar-label">
-                  <span>Shadow HP</span>
-                  <span id="bossHpText">100 / 100 HP</span>
-                </div>
-                <div class="bar-outer">
-                  <div class="bar-inner boss-hp-bar" id="bossHpBar" style="width: 100%"></div>
-                </div>
-              </div>
-
-              <div class="stats-bar-group">
-                <div class="bar-label">
-                  <span>Boss Status</span>
-                  <span id="bossStatusText" class="status-indicator alive">ACTIVE</span>
+                <div class="stats-bar-group">
+                  <div class="bar-label">
+                    <span>Shield Integrity</span>
+                    <span id="charShieldText">0%</span>
+                  </div>
+                  <div class="bar-outer">
+                    <div class="bar-inner shield-bar" id="charShieldBar" style="width: 0%"></div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+
+            <div class="vs-divider">
+              <div class="vs-text">VS</div>
+              <div class="vs-glow"></div>
+            </div>
+
+            <div class="boss-card">
+              <div class="character-avatar-wrapper shadow-avatar-border">
+                <img src="/shadow_boss.jpg" alt="Shadow Urge Boss" class="character-avatar" />
+                <div class="character-badge-overlay shadow-badge-bg">RANK <span id="bossRank">1</span></div>
+              </div>
+              <div class="character-info">
+                <h3 class="boss-name">The Shadow Urge</h3>
+                <p class="boss-class">Compulsive Temptation</p>
+
+                <div class="stats-bar-group">
+                  <div class="bar-label">
+                    <span>Shadow HP</span>
+                    <span id="bossHpText">100 / 100 HP</span>
+                  </div>
+                  <div class="bar-outer">
+                    <div class="bar-inner boss-hp-bar" id="bossHpBar" style="width: 100%"></div>
+                  </div>
+                </div>
+
+                <div class="stats-bar-group">
+                  <div class="bar-label">
+                    <span>Boss Status</span>
+                    <span id="bossStatusText" class="status-indicator alive">ACTIVE</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="ninja-simulator-launcher reveal-on-scroll" id="ninja-simulator-launcher" aria-label="Willpower Combat Simulator Launcher">
+            <div class="simulator-header">
+              <span class="panel-label">Interactive Minigame</span>
+              <h2>Willpower Combat <span class="text-gradient">Simulator</span></h2>
+              <p class="simulator-intro">A turn-based mini-game simulating the mental fight against urges. Challenge your willpower in an immersive, full-screen combat arena.</p>
+            </div>
+            <div class="launcher-action-container" style="text-align: center; margin-top: 18px;">
+              <button type="button" class="btn-launch-simulator" id="btnLaunchSimulator">
+                <span class="launch-icon">🥷</span>
+                <span class="launch-text">Enter Willpower Battle Arena</span>
+                <span class="launch-badge">Go Full Screen</span>
+              </button>
+            </div>
+          </section>
         </section>
 
-        <!-- Ninja Saga Simulator Launcher -->
-        <section class="ninja-simulator-launcher reveal-on-scroll" id="ninja-simulator-launcher" aria-label="Willpower Combat Simulator Launcher">
-          <div class="simulator-header">
-            <span class="panel-label">Interactive Minigame</span>
-            <h2>Willpower Combat <span class="text-gradient">Simulator</span></h2>
-            <p class="simulator-intro">A turn-based mini-game simulating the mental fight against urges. Challenge your willpower in an immersive, full-screen combat arena.</p>
-          </div>
-          <div class="launcher-action-container" style="text-align: center; margin-top: 18px;">
-            <button type="button" class="btn-launch-simulator" id="btnLaunchSimulator">
-              <span class="launch-icon">🥷</span>
-              <span class="launch-text">Enter Willpower Battle Arena</span>
-              <span class="launch-badge">Go Full Screen</span>
-            </button>
-          </div>
-        </section>
-
-        <!-- Immersive Fullscreen Simulator Container -->
-        <div class="ninja-simulator-fullscreen-container" id="ninjaSimulatorFullscreenContainer" style="display: none;">
-          <!-- Simulator Header / Control Bar -->
-          <div class="simulator-top-bar">
-            <!-- Opponent Select -->
-            <div class="boss-selector-group">
-              <label for="bossSelect">Active Urge Opponent:</label>
-              <select id="bossSelect" class="boss-select-dropdown">
-                <option value="siren">Boredom Siren (Chakra Drain - Lvl 1)</option>
-                <option value="goliath">Stress Goliath (Heavy Hitter - Lvl 5)</option>
-                <option value="leviathan" selected>Shadow Leviathan (Shield Piercer - Lvl 10)</option>
-                <option value="temptress">Malphas, Shadow Temptress (Will Sapper - Lvl 15)</option>
-                <option value="archdemon">Dopamine Archdemon (Desire Overlord - Lvl 20)</option>
-              </select>
-            </div>
-
-            <!-- Companion Select -->
-            <div class="companion-selector-group">
-              <label for="companionSelect">Spirit Companion:</label>
-              <select id="companionSelect" class="companion-select-dropdown">
-                <option value="none" selected>No Companion</option>
-                <option value="fox">🦊 Zen Fox (Chakra Restorer)</option>
-                <option value="crane">🦅 Discipline Crane (Debuff Cleanser)</option>
-                <option value="wolf">🐺 Resolve Wolf (Extra Striker)</option>
-                <option value="turtle">🐢 Patience Turtle (Shield Absorber)</option>
-              </select>
-            </div>
-
-            <!-- Close Button -->
-            <button type="button" class="btn-close-simulator" id="btnCloseSimulator" aria-label="Exit Simulator">
-              <span class="close-icon">&times;</span>
-              <span class="close-label">Exit Arena</span>
-            </button>
-          </div>
-
-          <div class="game-board fullscreen-board" id="fullscreenGameBoard">
-            <!-- Battle Background Arena -->
-            <div class="battle-bg-arena">
-              <!-- Rage Vignette Overlay -->
-              <div class="rage-vignette" id="rageVignette"></div>
-
-              <!-- Mindfulness Focus Ring Overlay -->
-              <div class="focus-ring-overlay" id="focusRingOverlay" style="display: none;">
-                <div class="focus-circle-target"></div>
-                <div class="focus-circle-outer" id="focusCircleOuter"></div>
-                <div class="focus-content">
-                  <div class="focus-label">FOCUS BREATH</div>
-                  <button type="button" class="btn-focus-action" id="btnFocus">TAP FOCUS!</button>
-                </div>
-              </div>
-
-              <!-- Player Character (Left) -->
-              <div class="ninja-character player" id="ninja-player">
-                <div class="character-avatar-frame">
-                  <img src="/ninja_avatar.jpg" alt="Sovereign Ninja" class="ninja-avatar-img" />
-                  <!-- Visual Effects Overlays -->
-                  <div class="refusal-shield-overlay" id="refusalShieldOverlay"></div>
-                  <div class="charge-chakra-overlay" id="chargeChakraOverlay"></div>
-                  <div class="enemy-strike-overlay" id="enemyStrikeOverlay"></div>
-                </div>
-                <div class="character-name">Sovereign Ninja</div>
-                <div class="equipped-talismans" id="equippedTalismans">
-                  <span class="talisman-slot locked" id="talismanFortress" title="Fortress Amulet (Locked: Requires 3-day streak) - Adds +10% shield absorption">🛡️</span>
-                  <span class="talisman-slot locked" id="talismanLotus" title="Lotus Incense (Locked: Requires 7-day streak) - Adds a 2nd Meditation Incense">🕯️</span>
-                  <span class="talisman-slot locked" id="talismanWillfire" title="Willfire Blade (Locked: Requires 10 Refusals) - Adds +15% Jutsu Critical hit chance">⚔️</span>
-                </div>
-                <!-- Spirit Companion Display -->
-                <div class="equipped-companion" id="equippedCompanion" style="display: none;" title="Active Spirit Companion">
-                  <span id="companionIcon" class="companion-icon"></span>
-                  <span id="companionName" class="companion-name"></span>
-                </div>
-                <div class="phoenix-buff-badge" id="phoenixBuffBadge" style="display: none;" title="Phoenix Resolve Active: +30% ATK & Starting Shield (Activated within 24h of a relapse)">
-                  🔥 Phoenix Resolve
-                </div>
-                <!-- Active Debuffs -->
-                <div class="debuffs-container" id="playerDebuffs"></div>
-                <!-- Status Bars -->
-                <div class="combat-status-bars">
-                  <div class="bar-container">
-                    <span class="bar-lbl">HP: <span id="gamePlayerHpText">100/100</span></span>
-                    <div class="bar-bg"><div class="bar-fill game-hp" id="gamePlayerHpBar" style="width: 100%"></div></div>
-                  </div>
-                  <div class="bar-container">
-                    <span class="bar-lbl">Chakra: <span id="gamePlayerChakraText">50/100</span></span>
-                    <div class="bar-bg"><div class="bar-fill game-chakra" id="gamePlayerChakraBar" style="width: 50%"></div></div>
-                  </div>
-                </div>
-                <!-- Floating Damage Indicator -->
-                <div class="floating-effect" id="playerDamageFloat"></div>
-              </div>
-
-              <!-- VS Banner -->
-              <div class="vs-banner">VS</div>
-
-              <!-- Enemy Character (Right) -->
-              <div class="ninja-character enemy" id="ninja-enemy">
-                <div class="character-avatar-frame shadow-avatar-border">
-                  <img src="/shadow_avatar.jpg" alt="Shadow Demon" class="ninja-avatar-img shadow-avatar-img" />
-                  <!-- Visual Effects Overlays -->
-                  <div class="strike-overlay" id="strikeOverlay"></div>
-                  <div class="will-flame-overlay" id="willFlameOverlay"></div>
-                </div>
-                <div class="character-name boss-name">Shadow Demon</div>
-                <!-- Status Bars -->
-                <div class="combat-status-bars">
-                  <div class="bar-container">
-                    <span class="bar-lbl">HP: <span id="gameEnemyHpText">120/120</span></span>
-                    <div class="bar-bg"><div class="bar-fill game-hp" id="gameEnemyHpBar" style="width: 100%"></div></div>
-                  </div>
-                </div>
-                <!-- Floating Damage Indicator -->
-                <div class="floating-effect" id="enemyDamageFloat"></div>
-              </div>
-            </div>
-
-            <!-- Battle Text Console / Combat Ticker -->
-            <div class="combat-ticker" id="combatTicker">
-              Battle initialized. Choose your action to begin the strike!
-            </div>
-
-            <!-- Action Command Panel -->
-            <div class="combat-commands" id="combatCommands">
-              <button type="button" class="btn-command strike" id="btnStrike">
-                <span class="cmd-icon">⚔️</span>
-                <span class="cmd-label">Strike</span>
-                <span class="cmd-desc">Basic physical attack. Cost: 0 Chakra</span>
-              </button>
-              
-              <button type="button" class="btn-command jutsu-fire" id="btnFireJutsu">
-                <span class="cmd-icon">🔥</span>
-                <span class="cmd-label">Will Flame</span>
-                <span class="cmd-desc">Deals high damage. Cost: 20 Chakra</span>
-              </button>
-              
-              <button type="button" class="btn-command jutsu-heal" id="btnHealJutsu">
-                <span class="cmd-icon">🛡️</span>
-                <span class="cmd-label">Refusal Shield</span>
-                <span class="cmd-desc">Heals HP & blocks. Cost: 15 Chakra</span>
-              </button>
-              
-              <button type="button" class="btn-command charge" id="btnCharge">
-                <span class="cmd-icon">🌀</span>
-                <span class="cmd-label">Charge Chakra</span>
-                <span class="cmd-desc">Restore 40 Chakra. Cost: 0 Chakra</span>
-              </button>
-            </div>
-
-            <!-- Grounding Tools Inventory -->
-            <div class="combat-items-panel" id="combatItemsPanel">
-              <div class="items-panel-title">🛡️ Grounding Inventory (Single-Use per Match)</div>
-              <div class="items-grid">
-                <button type="button" class="btn-item-use" id="btnUseColdShower" data-item="coldShower">
-                  <span class="item-icon">🧪</span>
-                  <div class="item-details">
-                    <span class="item-name">Cold Shower Elixir</span>
-                    <span class="item-desc">Heals 50% HP (Disrupt cue loop)</span>
-                  </div>
-                  <span class="item-qty-badge" id="qtyColdShower">1</span>
-                </button>
-                
-                <button type="button" class="btn-item-use" id="btnUsePushUp" data-item="pushUp">
-                  <span class="item-icon">📜</span>
-                  <div class="item-details">
-                    <span class="item-name">Push-Up Scroll</span>
-                    <span class="item-desc">+40 Chakra (Divert blood flow)</span>
-                  </div>
-                  <span class="item-qty-badge" id="qtyPushUp">1</span>
-                </button>
-                
-                <button type="button" class="btn-item-use" id="btnUseMeditation" data-item="meditation">
-                  <span class="item-icon">🕯️</span>
-                  <div class="item-details">
-                    <span class="item-name">Meditation Incense</span>
-                    <span class="item-desc">Stuns boss for 1 turn (Mindfulness)</span>
-                  </div>
-                  <span class="item-qty-badge" id="qtyMeditation">1</span>
-                </button>
-              </div>
-            </div>
-
-            <!-- Game Over Overlay -->
-            <div class="game-overlay" id="gameOverOverlay" style="display: none;">
-              <div class="overlay-box">
-                <h3 id="overlayResultTitle">Victory!</h3>
-                <p id="overlayResultDesc">The urge has been successfully dispelled.</p>
-                <button type="button" class="read-link" id="btnRestartGame">Battle Again</button>
-              </div>
-            </div>
-
-            <!-- Cinematic Victory Cutscene Overlay -->
-            <div class="cinematic-victory-overlay" id="cinematicVictoryOverlay" style="display: none;">
-              <!-- Cinematic Widescreen Crop Bars -->
-              <div class="cinematic-bar top"></div>
-              <div class="cinematic-bar bottom"></div>
-
-              <!-- Epic Cinematic Victory Image -->
-              <div class="cinematic-art-wrapper">
-                <img src="/ninja_victory.jpg" alt="Victory Cutscene Art" class="cinematic-art-img" />
-              </div>
-
-              <!-- Movie Subtitles -->
-              <div class="cinematic-subtitle" id="cinematicSubtitle">
-                "At last... the shadow urge dissipates into the light of resolve."
-              </div>
-
-              <!-- Big Victory Banner -->
-              <div class="cinematic-victory-banner" id="cinematicVictoryBanner">
-                <div class="banner-tagline">SOVEREIGN RESISTANCE</div>
-                <h1 class="victory-title-epic">VICTORY</h1>
-              </div>
-
-              <!-- Continue Button -->
-              <button type="button" class="btn-cinematic-continue" id="btnCinematicContinue">
-                Continue to Rewards &rarr;
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- RPG Attributes Grid -->
-        <section class="attributes-panel reveal-on-scroll" aria-label="Character attributes">
-          <h2>RPG Attributes</h2>
+        <!-- ATTRIBUTES TAB -->
+        <section
+          class="tab-panel"
+          data-tab-panel="attributes"
+          id="tab-panel-attributes"
+          role="tabpanel"
+          aria-labelledby="tab-attributes"
+          hidden
+        >
+          <SectionHeader
+            eyebrow="Stats"
+            title="RPG Attributes"
+            lede="Four numbers that describe who you are in the fight. They feed off each other: willpower wins the moment, fortitude survives it, consistency builds the next one, accuracy decides them all."
+          />
           <div class="attributes-grid">
             <article class="attr-card">
-              <div class="attr-icon">⚔️</div>
+              <div class="attr-icon"><Icon name="swords" /></div>
               <div class="attr-details">
-                <h4>Willpower (ATK)</h4>
+                <h4>Willpower <Tag tone="muted">ATK</Tag></h4>
                 <p>Based on total urge refusals. Higher willpower weakens temptation faster.</p>
                 <div class="attr-value"><span id="attrWillpower">0</span> Pt</div>
               </div>
             </article>
 
             <article class="attr-card">
-              <div class="attr-icon">🛡️</div>
+              <div class="attr-icon"><Icon name="shield" /></div>
               <div class="attr-details">
-                <h4>Fortitude (DEF)</h4>
+                <h4>Fortitude <Tag tone="muted">DEF</Tag></h4>
                 <p>Based on current streak length. Keeps your shield fortified at peak urge.</p>
                 <div class="attr-value"><span id="attrFortitude">0</span> Pt</div>
               </div>
             </article>
 
             <article class="attr-card">
-              <div class="attr-icon">⚡</div>
+              <div class="attr-icon"><Icon name="zap" /></div>
               <div class="attr-details">
-                <h4>Consistency (STM)</h4>
+                <h4>Consistency <Tag tone="muted">STM</Tag></h4>
                 <p>Based on total win (clean) days. Feeds your overall stamina in the long game.</p>
                 <div class="attr-value"><span id="attrConsistency">0</span> Pt</div>
               </div>
             </article>
 
             <article class="attr-card">
-              <div class="attr-icon">🎯</div>
+              <div class="attr-icon"><Icon name="target" /></div>
               <div class="attr-details">
-                <h4>Accuracy (ACC)</h4>
+                <h4>Accuracy <Tag tone="muted">ACC</Tag></h4>
                 <p>Based on win rate. Represents focus and precision in decision-making.</p>
                 <div class="attr-value"><span id="attrAccuracy">0</span>%</div>
               </div>
@@ -406,14 +223,23 @@ const startDateTime = accountabilityData.journeyStart;
           </div>
         </section>
 
-        <!-- Physical Resolve & Fitness Panel -->
-        <section class="fitness-panel reveal-on-scroll" aria-label="Physical resolve and fitness tracking">
-          <h2>Physical Resolve & Fitness</h2>
-          <p class="panel-desc">Real-world physical discipline fuels your mental fortitude. Syncing with Strava activities and push-up logs since June 6, 2026.</p>
-          
+        <!-- FITNESS TAB -->
+        <section
+          class="tab-panel"
+          data-tab-panel="fitness"
+          id="tab-panel-fitness"
+          role="tabpanel"
+          aria-labelledby="tab-fitness"
+          hidden
+        >
+          <SectionHeader
+            eyebrow="Body"
+            title="Physical Resolve & Fitness"
+            lede="Real-world physical discipline fuels your mental fortitude. Synced with Strava activities and push-up logs since June 6, 2026."
+          />
           <div class="fitness-grid">
             <article class="attr-card fitness-card">
-              <div class="attr-icon">🏃‍♂️</div>
+              <div class="attr-icon"><Icon name="activity" /></div>
               <div class="attr-details">
                 <h4>Total Run / Walk</h4>
                 <p>Builds cardio stamina and endurance. Adds directly to your Fortitude (DEF).</p>
@@ -422,7 +248,7 @@ const startDateTime = accountabilityData.journeyStart;
             </article>
 
             <article class="attr-card fitness-card">
-              <div class="attr-icon">💪</div>
+              <div class="attr-icon"><Icon name="dumbbell" /></div>
               <div class="attr-details">
                 <h4>Total Push-ups</h4>
                 <p>Builds raw physical power. Adds +1 Willpower (ATK) per 50 push-ups.</p>
@@ -430,7 +256,7 @@ const startDateTime = accountabilityData.journeyStart;
               </div>
             </article>
           </div>
-          
+
           <div class="fitness-progress-container">
             <div class="fitness-progress-bar-group">
               <div class="bar-label">
@@ -441,7 +267,7 @@ const startDateTime = accountabilityData.journeyStart;
                 <div class="bar-inner fitness-cardio-bar" id="fitWeeklyCardioBar" style="width: 0%"></div>
               </div>
             </div>
-            
+
             <div class="fitness-progress-bar-group">
               <div class="bar-label">
                 <span>Weekly Push-ups Goal Progress</span>
@@ -454,98 +280,277 @@ const startDateTime = accountabilityData.journeyStart;
           </div>
         </section>
 
-        <!-- Willpower Battle Calendar -->
-        <section class="battle-calendar-panel reveal-on-scroll" aria-label="Daily battle calendar">
-          <h2>Willpower Battle Calendar</h2>
-          <p class="panel-desc">Visual history of daily urges resisted. ⚔️ represents a day of victory, while 💥 marks a relapse. Maintain the streak to fortify your character!</p>
+        <!-- CALENDAR TAB -->
+        <section
+          class="tab-panel"
+          data-tab-panel="calendar"
+          id="tab-panel-calendar"
+          role="tabpanel"
+          aria-labelledby="tab-calendar"
+          hidden
+        >
+          <SectionHeader
+            eyebrow="History"
+            title="Willpower Battle Calendar"
+            lede="Every day, a verdict. ⚔ marks a victory, 💥 marks a relapse. Maintain the streak to fortify your character."
+          />
           <div class="calendar-grid-container">
             <div class="calendar-header-months">
               <span id="calendarMonthName">June 2026</span>
             </div>
-            <div class="calendar-days-grid" id="calendarDaysGrid">
-              <!-- Dynamically populated by JS -->
-            </div>
+            <div class="calendar-days-grid" id="calendarDaysGrid"></div>
             <div class="calendar-legend">
-              <span class="legend-item win"><span class="legend-dot win">⚔️</span> Victory Day</span>
-              <span class="legend-item loss"><span class="legend-dot loss">💥</span> Relapse Day</span>
+              <span class="legend-item win"><span class="legend-dot win"><Icon name="swords" /></span> Victory Day</span>
+              <span class="legend-item loss"><span class="legend-dot loss"><Icon name="x" /></span> Relapse Day</span>
               <span class="legend-item empty"><span class="legend-dot empty"></span> Unlogged / Future</span>
             </div>
           </div>
         </section>
 
-        <!-- Achievements & Badges Panel -->
-        <section class="achievements-panel reveal-on-scroll" aria-label="Discipline badges and achievements">
-          <h2>Discipline Badges & Achievements</h2>
-          <p class="achievements-intro">Unlock badges by maintaining streaks and resisting urges.</p>
-          
-          <div class="badges-grid">
-            <article class="badge-card locked" id="badge-first-step">
-              <div class="badge-icon">👣</div>
-              <h4>First Step</h4>
-              <p>Start your journey start timestamp</p>
-            </article>
+        <!-- ACHIEVEMENTS TAB -->
+        <section
+          class="tab-panel"
+          data-tab-panel="achievements"
+          id="tab-panel-achievements"
+          role="tabpanel"
+          aria-labelledby="tab-achievements"
+          hidden
+        >
+          <SectionHeader
+            eyebrow="Trophies"
+            title="Discipline Badges"
+            lede="Twenty-five milestones on the path from Day 1 to Sovereign Master. Three categories: streak days, urges resisted, performance."
+          />
 
-            <article class="badge-card locked" id="badge-first-refusal">
-              <div class="badge-icon">🛡️</div>
-              <h4>Shield Activated</h4>
-              <p>Resist your first urge (1 refusal)</p>
-            </article>
-
-            <article class="badge-card locked" id="badge-consistent-shield">
-              <div class="badge-icon">💎</div>
-              <h4>Consistent Shield</h4>
-              <p>Maintain a clean streak of 3 days</p>
-            </article>
-
-            <article class="badge-card locked" id="badge-week-of-will">
-              <div class="badge-icon">🔥</div>
-              <h4>Week of Will</h4>
-              <p>Maintain a clean streak of 7 days</p>
-            </article>
-
-            <article class="badge-card locked" id="badge-shadow-slayer">
-              <div class="badge-icon">⚔️</div>
-              <h4>Shadow Slayer</h4>
-              <p>Resist 10 urges total (10 refusals)</p>
-            </article>
-
-            <article class="badge-card locked" id="badge-fortress-habit">
-              <div class="badge-icon">🏰</div>
-              <h4>Fortress of Will</h4>
-              <p>Maintain a clean streak of 14 days</p>
-            </article>
-
-            <article class="badge-card locked" id="badge-flawless">
-              <div class="badge-icon">🏆</div>
-              <h4>Flawless Victory</h4>
-              <p>Maintain 95%+ win rate with 5+ win days</p>
-            </article>
-
-            <article class="badge-card locked" id="badge-sovereign-master">
-              <div class="badge-icon">⚡</div>
-              <h4>Sovereign Master</h4>
-              <p>Reach character level 5 or higher</p>
-            </article>
+          <div class="badges-section">
+            <h3 class="badges-section-title"><Icon name="calendar" class="icon" /> Streak Milestones</h3>
+            <div class="badges-grid">
+              {streakBadges.map((badge) => (
+                <article class="badge-card locked" id={`badge-${badge.id}`}>
+                  <div class="badge-icon"><Icon name={badge.icon} /></div>
+                  <h4>{badge.title}</h4>
+                  <p>{badge.desc}</p>
+                  <Tag tone="muted" class="badge-req">{badge.req}</Tag>
+                </article>
+              ))}
+            </div>
           </div>
-          <div class="achievements-panel-cta" style="margin-top: 28px; text-align: center;">
-            <a href="/arena/achievements/" class="read-link">View All Achievements &rarr;</a>
-          </div>
-        </section>
 
-        <!-- Recent Combat History Log -->
-        <section class="combat-history reveal-on-scroll" aria-label="Recent combat log">
-          <h2>Recent Combat Log (Latest 10)</h2>
-          <div class="logs-header-stats">
-            <span>Total Battles: <strong id="logTotalBattles">0</strong></span>
-            <span>Urges Blocked: <strong id="logUrgesBlocked">0</strong></span>
-            <span>Relapses Suffered: <strong id="logRelapses">0</strong></span>
+          <div class="badges-section">
+            <h3 class="badges-section-title"><Icon name="swords" class="icon" /> Refusal Milestones</h3>
+            <div class="badges-grid">
+              {refusalBadges.map((badge) => (
+                <article class="badge-card locked" id={`badge-${badge.id}`}>
+                  <div class="badge-icon"><Icon name={badge.icon} /></div>
+                  <h4>{badge.title}</h4>
+                  <p>{badge.desc}</p>
+                  <Tag tone="muted" class="badge-req">{badge.req}</Tag>
+                </article>
+              ))}
+            </div>
           </div>
-          <div class="full-logs-container">
-            <ul class="battle-logs" id="fullBattleLogs">
-              <li class="log-item default-log">Loading full combat logs...</li>
-            </ul>
+
+          <div class="badges-section">
+            <h3 class="badges-section-title"><Icon name="trending-up" class="icon" /> Performance &amp; Level</h3>
+            <div class="badges-grid">
+              {performanceBadges.map((badge) => (
+                <article class="badge-card locked" id={`badge-${badge.id}`}>
+                  <div class="badge-icon"><Icon name={badge.icon} /></div>
+                  <h4>{badge.title}</h4>
+                  <p>{badge.desc}</p>
+                  <Tag tone="muted" class="badge-req">{badge.req}</Tag>
+                </article>
+              ))}
+            </div>
           </div>
         </section>
+
+        <!-- Immersive Fullscreen Simulator (outside tab system) -->
+        <div class="ninja-simulator-fullscreen-container" id="ninjaSimulatorFullscreenContainer" style="display: none;">
+          <div class="simulator-top-bar">
+            <div class="boss-selector-group">
+              <label for="bossSelect">Active Urge Opponent:</label>
+              <select id="bossSelect" class="boss-select-dropdown">
+                <option value="siren">Boredom Siren (Chakra Drain - Lvl 1)</option>
+                <option value="goliath">Stress Goliath (Heavy Hitter - Lvl 5)</option>
+                <option value="leviathan" selected>Shadow Leviathan (Shield Piercer - Lvl 10)</option>
+                <option value="temptress">Malphas, Shadow Temptress (Will Sapper - Lvl 15)</option>
+                <option value="archdemon">Dopamine Archdemon (Desire Overlord - Lvl 20)</option>
+              </select>
+            </div>
+
+            <div class="companion-selector-group">
+              <label for="companionSelect">Spirit Companion:</label>
+              <select id="companionSelect" class="companion-select-dropdown">
+                <option value="none" selected>No Companion</option>
+                <option value="fox">🦊 Zen Fox (Chakra Restorer)</option>
+                <option value="crane">🦅 Discipline Crane (Debuff Cleanser)</option>
+                <option value="wolf">🐺 Resolve Wolf (Extra Striker)</option>
+                <option value="turtle">🐢 Patience Turtle (Shield Absorber)</option>
+              </select>
+            </div>
+
+            <button type="button" class="btn-close-simulator" id="btnCloseSimulator" aria-label="Exit Simulator">
+              <span class="close-icon">&times;</span>
+              <span class="close-label">Exit Arena</span>
+            </button>
+          </div>
+
+          <div class="game-board fullscreen-board" id="fullscreenGameBoard">
+            <div class="battle-bg-arena">
+              <div class="rage-vignette" id="rageVignette"></div>
+
+              <div class="focus-ring-overlay" id="focusRingOverlay" style="display: none;">
+                <div class="focus-circle-target"></div>
+                <div class="focus-circle-outer" id="focusCircleOuter"></div>
+                <div class="focus-content">
+                  <div class="focus-label">FOCUS BREATH</div>
+                  <button type="button" class="btn-focus-action" id="btnFocus">TAP FOCUS!</button>
+                </div>
+              </div>
+
+              <div class="ninja-character player" id="ninja-player">
+                <div class="character-avatar-frame">
+                  <img src="/ninja_avatar.jpg" alt="Sovereign Ninja" class="ninja-avatar-img" />
+                  <div class="refusal-shield-overlay" id="refusalShieldOverlay"></div>
+                  <div class="charge-chakra-overlay" id="chargeChakraOverlay"></div>
+                  <div class="enemy-strike-overlay" id="enemyStrikeOverlay"></div>
+                </div>
+                <div class="character-name">Sovereign Ninja</div>
+                <div class="equipped-talismans" id="equippedTalismans">
+                  <span class="talisman-slot locked" id="talismanFortress" title="Fortress Amulet (Locked: Requires 3-day streak) - Adds +10% shield absorption">🛡️</span>
+                  <span class="talisman-slot locked" id="talismanLotus" title="Lotus Incense (Locked: Requires 7-day streak) - Adds a 2nd Meditation Incense">🕯️</span>
+                  <span class="talisman-slot locked" id="talismanWillfire" title="Willfire Blade (Locked: Requires 10 Refusals) - Adds +15% Jutsu Critical hit chance">⚔️</span>
+                </div>
+                <div class="equipped-companion" id="equippedCompanion" style="display: none;" title="Active Spirit Companion">
+                  <span id="companionIcon" class="companion-icon"></span>
+                  <span id="companionName" class="companion-name"></span>
+                </div>
+                <div class="phoenix-buff-badge" id="phoenixBuffBadge" style="display: none;" title="Phoenix Resolve Active: +30% ATK & Starting Shield (Activated within 24h of a relapse)">
+                  🔥 Phoenix Resolve
+                </div>
+                <div class="debuffs-container" id="playerDebuffs"></div>
+                <div class="combat-status-bars">
+                  <div class="bar-container">
+                    <span class="bar-lbl">HP: <span id="gamePlayerHpText">100/100</span></span>
+                    <div class="bar-bg"><div class="bar-fill game-hp" id="gamePlayerHpBar" style="width: 100%"></div></div>
+                  </div>
+                  <div class="bar-container">
+                    <span class="bar-lbl">Chakra: <span id="gamePlayerChakraText">50/100</span></span>
+                    <div class="bar-bg"><div class="bar-fill game-chakra" id="gamePlayerChakraBar" style="width: 50%"></div></div>
+                  </div>
+                </div>
+                <div class="floating-effect" id="playerDamageFloat"></div>
+              </div>
+
+              <div class="vs-banner">VS</div>
+
+              <div class="ninja-character enemy" id="ninja-enemy">
+                <div class="character-avatar-frame shadow-avatar-border">
+                  <img src="/shadow_avatar.jpg" alt="Shadow Demon" class="ninja-avatar-img shadow-avatar-img" />
+                  <div class="strike-overlay" id="strikeOverlay"></div>
+                  <div class="will-flame-overlay" id="willFlameOverlay"></div>
+                </div>
+                <div class="character-name boss-name">Shadow Demon</div>
+                <div class="combat-status-bars">
+                  <div class="bar-container">
+                    <span class="bar-lbl">HP: <span id="gameEnemyHpText">120/120</span></span>
+                    <div class="bar-bg"><div class="bar-fill game-hp" id="gameEnemyHpBar" style="width: 100%"></div></div>
+                  </div>
+                </div>
+                <div class="floating-effect" id="enemyDamageFloat"></div>
+              </div>
+            </div>
+
+            <div class="combat-ticker" id="combatTicker">
+              Battle initialized. Choose your action to begin the strike!
+            </div>
+
+            <div class="combat-commands" id="combatCommands">
+              <button type="button" class="btn-command strike" id="btnStrike">
+                <span class="cmd-icon">⚔️</span>
+                <span class="cmd-label">Strike</span>
+                <span class="cmd-desc">Basic physical attack. Cost: 0 Chakra</span>
+              </button>
+
+              <button type="button" class="btn-command jutsu-fire" id="btnFireJutsu">
+                <span class="cmd-icon">🔥</span>
+                <span class="cmd-label">Will Flame</span>
+                <span class="cmd-desc">Deals high damage. Cost: 20 Chakra</span>
+              </button>
+
+              <button type="button" class="btn-command jutsu-heal" id="btnHealJutsu">
+                <span class="cmd-icon">🛡️</span>
+                <span class="cmd-label">Refusal Shield</span>
+                <span class="cmd-desc">Heals HP & blocks. Cost: 15 Chakra</span>
+              </button>
+
+              <button type="button" class="btn-command charge" id="btnCharge">
+                <span class="cmd-icon">🌀</span>
+                <span class="cmd-label">Charge Chakra</span>
+                <span class="cmd-desc">Restore 40 Chakra. Cost: 0 Chakra</span>
+              </button>
+            </div>
+
+            <div class="combat-items-panel" id="combatItemsPanel">
+              <div class="items-panel-title">🛡️ Grounding Inventory (Single-Use per Match)</div>
+              <div class="items-grid">
+                <button type="button" class="btn-item-use" id="btnUseColdShower" data-item="coldShower">
+                  <span class="item-icon">🧪</span>
+                  <div class="item-details">
+                    <span class="item-name">Cold Shower Elixir</span>
+                    <span class="item-desc">Heals 50% HP (Disrupt cue loop)</span>
+                  </div>
+                  <span class="item-qty-badge" id="qtyColdShower">1</span>
+                </button>
+
+                <button type="button" class="btn-item-use" id="btnUsePushUp" data-item="pushUp">
+                  <span class="item-icon">📜</span>
+                  <div class="item-details">
+                    <span class="item-name">Push-Up Scroll</span>
+                    <span class="item-desc">+40 Chakra (Divert blood flow)</span>
+                  </div>
+                  <span class="item-qty-badge" id="qtyPushUp">1</span>
+                </button>
+
+                <button type="button" class="btn-item-use" id="btnUseMeditation" data-item="meditation">
+                  <span class="item-icon">🕯️</span>
+                  <div class="item-details">
+                    <span class="item-name">Meditation Incense</span>
+                    <span class="item-desc">Stuns boss for 1 turn (Mindfulness)</span>
+                  </div>
+                  <span class="item-qty-badge" id="qtyMeditation">1</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="game-overlay" id="gameOverOverlay" style="display: none;">
+              <div class="overlay-box">
+                <h3 id="overlayResultTitle">Victory!</h3>
+                <p id="overlayResultDesc">The urge has been successfully dispelled.</p>
+                <button type="button" class="read-link" id="btnRestartGame">Battle Again</button>
+              </div>
+            </div>
+
+            <div class="cinematic-victory-overlay" id="cinematicVictoryOverlay" style="display: none;">
+              <div class="cinematic-bar top"></div>
+              <div class="cinematic-bar bottom"></div>
+              <div class="cinematic-art-wrapper">
+                <img src="/ninja_victory.jpg" alt="Victory Cutscene Art" class="cinematic-art-img" />
+              </div>
+              <div class="cinematic-subtitle" id="cinematicSubtitle">
+                "At last... the shadow urge dissipates into the light of resolve."
+              </div>
+              <div class="cinematic-victory-banner" id="cinematicVictoryBanner">
+                <div class="banner-tagline">SOVEREIGN RESISTANCE</div>
+                <h1 class="victory-title-epic">VICTORY</h1>
+              </div>
+              <button type="button" class="btn-cinematic-continue" id="btnCinematicContinue">
+                Continue to Rewards &rarr;
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </main>
 
@@ -555,7 +560,7 @@ const startDateTime = accountabilityData.journeyStart;
           <span class="brand-mark">N</span>
           <span class="brand-text">NoArousal</span>
         </a>
-        <p>Public streak, win rate, and accountability log.</p>
+        <p>Built one refusal at a time.</p>
       </div>
       <nav aria-label="Footer navigation">
         <a href="/">Home</a>
@@ -569,6 +574,7 @@ const startDateTime = accountabilityData.journeyStart;
     <script id="fitnessSummaryData" type="application/json" set:html={JSON.stringify(fitnessSummaryData)}></script>
     <script>
       import "../scripts/arena.js";
+      import "../scripts/arena-tabs.js";
     </script>
   </body>
 </html>

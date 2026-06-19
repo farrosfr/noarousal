@@ -1,0 +1,29 @@
+---
+import Icon from "./Icon.astro";
+
+interface Props {
+  icon: string;
+  label?: string;
+  value: string | number;
+  tone?: "default" | "positive" | "danger" | "neutral";
+  class?: string;
+}
+
+const { icon, label, value, tone = "default", class: className = "" } = Astro.props;
+const toneClass = tone === "default" ? "" : `tone-${tone}`;
+---
+
+<span class:list={["stat-chip", toneClass, className]}>
+  <Icon name={icon} class="stat-icon" />
+  <span class="stat-value">{value}</span>
+  {label && <span class="stat-label">{label}</span>}
+</span>
+
+<style>
+  .tone-positive { color: var(--gold-bright); border-color: rgba(245, 158, 11, 0.45); background: var(--gold-soft); }
+  .tone-positive .stat-icon { color: var(--gold-bright); }
+  .tone-danger { color: var(--danger); border-color: rgba(239, 68, 68, 0.45); background: var(--danger-soft); }
+  .tone-danger .stat-icon { color: var(--danger); }
+  .tone-neutral { color: var(--muted); }
+  .stat-value { font-family: var(--font-mono); font-weight: 800; }
+</style>

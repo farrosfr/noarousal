@@ -1,0 +1,14 @@
+---
+interface Props {
+  src: string;
+  alt: string;
+  size?: number;
+  class?: string;
+}
+
+const { src, alt, size = 120, class: className = "" } = Astro.props;
+---
+
+<span class:list={["asset-frame", className]} style={`--frame-size: ${size}px;`}>
+  <img src={src} alt={alt} loading="lazy" />
+</span>

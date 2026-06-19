@@ -3,51 +3,58 @@ import "@fontsource-variable/inter";
 import "@fontsource-variable/space-grotesk";
 import "../styles/global.css";
 import accountabilityData from "../data/accountability.json";
+import SiteHeader from "../components/SiteHeader.astro";
+import Button from "../components/Button.astro";
+import SectionHeader from "../components/SectionHeader.astro";
+import AssetFrame from "../components/AssetFrame.astro";
+import StatChip from "../components/StatChip.astro";
+import Tag from "../components/Tag.astro";
+import Icon from "../components/Icon.astro";
 
 const startDateTime = accountabilityData.journeyStart;
 
 const categories = [
   {
-    id: "sociology",
-    eyebrow: "Sociology",
-    title: "How PMO Can Reshape Social Life",
+    id: "costs",
+    eyebrow: "What it costs",
+    title: "The Price You Pay In The Quiet",
     points: [
-      "Secrecy can shrink honest conversation and make support harder to ask for.",
-      "High novelty media can distort expectations about intimacy, consent, and ordinary relationships.",
-      "Social comparison can become harsher when real people are measured against edited, optimized content.",
-      "Isolation is both a trigger and a consequence: boredom, shame, and private device use can reinforce each other."
+      "The secret room shrinks the honest room. Support gets harder to ask for, shame gets louder.",
+      "Curated content rewires what intimacy should feel like. Real people stop looking like enough.",
+      "Optimized feeds become the comparison. You start editing yourself before you live yourself.",
+      "Isolation is both the trigger and the consequence. Alone, tired, device in hand — the loop closes."
     ]
   },
   {
-    id: "psychology",
-    eyebrow: "Psychology",
-    title: "Habit Loops And Compulsion Risk",
+    id: "fighting",
+    eyebrow: "What you're fighting",
+    title: "The Loop, Not The Lapse",
     points: [
-      "PMO can become a cue-craving-response-reward loop, especially during stress, loneliness, fatigue, or boredom.",
-      "The strongest habit chains often start before the explicit decision: opening feeds, staying up late, or browsing alone.",
-      "Shame after use can increase stress, and stress can become the next trigger if there is no healthier response.",
-      "Problematic use is not defined by moral guilt alone; loss of control, distress, and life impairment matter."
+      "It's a loop, not a failure. Cue, craving, response, reward — run it enough times and it runs you.",
+      "The chain starts before the choice. Feed open, lights low, alone with a screen — that's move one.",
+      "Shame after use becomes the next trigger. The fix becomes the next dose.",
+      "The bar isn't \"never.\" The bar is no loss of control, no real-life harm, no quiet despair."
     ]
   },
   {
-    id: "technology",
-    eyebrow: "Brain + Technology",
-    title: "Novelty, Reward, And Platforms",
+    id: "beats-it",
+    eyebrow: "What beats it",
+    title: "Environment Beats Motivation",
     points: [
-      "Novelty and anticipation can train attention toward quick reward instead of slower goals.",
-      "Recommendation systems, infinite scroll, private browsing, and autoplay reduce friction at exactly the wrong moment.",
-      "Repeated cue exposure can make urges feel automatic, even when the long-term goal is to stop.",
-      "Recovery improves when technology is redesigned: fewer cues, more blockers, public-device rules, and planned offline time."
+      "Strip the cues. Block sites, kill autoplay, log out, charge the phone outside the bedroom.",
+      "Add friction. Vault your passwords, install blockers, delete the apps, remove the bookmarks.",
+      "Replace the slot, not the urge. Sleep, walk, train, write — anything that uses the same hour.",
+      "Make it public. Private shame grows. A logged refusal shrinks it. One refusal posted beats ten kept quiet."
     ]
   }
 ];
 
 const defenses = [
-  "No phone in bed or bathroom.",
-  "Block high-risk sites and feeds before the urge appears.",
-  "Replace late-night browsing with sleep, walking, reading, or training.",
-  "Use accountability when loss of control or distress becomes persistent.",
-  "Treat slips as data: identify the trigger, add one rule, continue."
+  "Keep the phone out of the bedroom and the bathroom.",
+  "Block the high-risk sites before the urge hits, not during it.",
+  "Swap late-night scrolling for sleep, a walk, a book, or a workout.",
+  "Bring in accountability the moment control starts to slip.",
+  "Treat a slip as data: find the trigger, add one rule, keep going."
 ];
 ---
 
@@ -56,7 +63,7 @@ const defenses = [
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="NoArousal is a public PMO-free streak and evidence-based education page about sociology, psychology, and brain technology risks." />
+    <meta name="description" content="NoArousal: a public PMO-free streak, a personal discipline log, and an evidence-based arena for the loop you're trying to break." />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://noa.farros.co/" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
@@ -67,46 +74,29 @@ const defenses = [
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="NoArousal" />
     <meta property="og:title" content="NoArousal" />
-    <meta property="og:description" content="Public streak. Private discipline. A no-PMO accountability streak and education page." />
+    <meta property="og:description" content="Public streak. Private discipline. A no-PMO accountability streak, gamified arena, and the playbook behind the clean day." />
     <meta property="og:url" content="https://noa.farros.co/" />
     <meta name="twitter:card" content="summary" />
     <title>NoArousal</title>
   </head>
   <body data-start={startDateTime}>
-    <header class="site-header">
-      <a class="brand" href="/" aria-label="NoArousal home">
-        <span class="brand-mark">N</span>
-        <span class="brand-text">NoArousal</span>
-      </a>
-      <button class="menu-toggle" type="button" aria-label="Open menu" aria-controls="primaryNav" aria-expanded="false">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-      <nav class="nav-links" id="primaryNav" aria-label="Primary navigation">
-        <span class="menu-label">Menu</span>
-        <a href="/">Home</a>
-        <a href="/arena/">Arena</a>
-        <a href="/blog/">Blog</a>
-        <a href="/quotes/">Quotes</a>
-      </nav>
-    </header>
+    <SiteHeader />
 
     <main>
       <section class="hero-section">
         <div class="hero-bg" aria-hidden="true"></div>
         <div class="hero-inner reveal-on-scroll">
-          <p class="badge">Public streak. Private discipline.</p>
-          <h1>Protect the streak. <span class="text-gradient">Rebuild control.</span></h1>
+          <p class="badge">Every clean day is a choice.</p>
+          <h1>It's <span class="text-gradient">you vs you</span>.</h1>
           <p class="hero-copy">
-            This page publishes the journey start, current streak, and win rate from an accountability log.
+            Track the streak. Watch the boss fall. Level up the person you said you'd become.
           </p>
 
           <article class="streak-panel" aria-live="polite">
             <div class="streak-main">
-              <span class="panel-label">Current streak</span>
+              <span class="panel-label">The streak</span>
               <strong id="streakDays">0 days</strong>
-              <p>Every clean day is one more vote for the person you said you would become.</p>
+              <p>You're not waiting for a feeling. You're building one.</p>
             </div>
             <div class="streak-detail">
               <div class="clock-grid" aria-label="Detailed streak time">
@@ -114,7 +104,7 @@ const defenses = [
                 <span><strong id="streakMinutes">00</strong>minutes</span>
                 <span><strong id="streakSeconds">00</strong>seconds</span>
               </div>
-              <p>Journey started June 6, 2026 at 12:00 PM GMT+7.</p>
+              <p>Clock started June 6, 2026. It's still running.</p>
             </div>
           </article>
 
@@ -122,7 +112,7 @@ const defenses = [
             <div class="accountability-heading">
               <span class="panel-label">Win rate</span>
               <strong id="winRate">100%</strong>
-              <p>Completed 24-hour streak days count as wins unless the log marks that period as a loss.</p>
+              <p>A clean day is a win. A marked day is a loss. The math is simple.</p>
             </div>
             <div class="accountability-grid">
               <span>
@@ -149,8 +139,8 @@ const defenses = [
           <section class="battle-arena-panel reveal-on-scroll" id="battle-arena" aria-label="Inner Battle Status">
             <div class="battle-arena-header">
               <span class="panel-label">Gamified Arena Status</span>
-              <h2>you <span class="text-gradient">vs you</span></h2>
-              <p class="battle-intro">Track your level, shield, and active boss fight balance.</p>
+              <h2>It's <span class="text-gradient">you vs you</span></h2>
+              <p class="battle-intro">Track your level, shield, and the boss's HP. The math is honest; the work is yours.</p>
             </div>
             
             <div class="battle-arena-content mini-widget">
@@ -199,7 +189,7 @@ const defenses = [
                 <ul id="battleLogs" style="display: none;"></ul>
 
                 <div class="widget-cta">
-                  <a href="/arena/" class="read-link">Enter Full Battle Arena &rarr;</a>
+                  <Button href="/arena/" variant="primary" size="md">Enter the arena</Button>
                 </div>
               </div>
             </div>
@@ -209,11 +199,11 @@ const defenses = [
 
       <section class="intro-section reveal-on-scroll">
         <div>
-          <p class="eyebrow">Why this matters</p>
-          <h2>PMO is easiest to fight when the system is visible.</h2>
+          <p class="eyebrow">Why this works</p>
+          <h2>Visibility beats willpower. Every time.</h2>
         </div>
         <p>
-          Porn, masturbation, and orgasm habits are not dangerous for every person in the same way. The risk rises when the pattern becomes difficult to control, displaces responsibilities, increases distress, or trains attention toward short-term escape. The goal here is education, friction, and clearer decisions.
+          You don't beat this by gritting harder. You beat it by making the cost visible, the loop obvious, and the environment hostile to the old pattern. Three cards, three tools, no magic.
         </p>
       </section>
 
@@ -231,10 +221,10 @@ const defenses = [
 
       <section class="defense-section" id="defense">
         <div class="defense-copy reveal-on-scroll">
-          <p class="eyebrow">Defense principles</p>
-          <h2>Do not rely on willpower at peak urge.</h2>
+          <p class="eyebrow">Defense</p>
+          <h2>You don't out-think the urge. You out-design it.</h2>
           <p>
-            A practical recovery system changes the environment before the craving arrives. Less cue exposure, more friction, better sleep, and visible accountability usually beat private debate.
+            The brain in the moment is not the brain that wrote the rules. Make the rule the wall, not the willpower.
           </p>
         </div>
         <div class="defense-list reveal-on-scroll">
@@ -248,42 +238,17 @@ const defenses = [
       </section>
 
       <section class="source-section reveal-on-scroll">
-        <p class="eyebrow">Evidence notes</p>
-        <h2>Careful claims, not panic claims.</h2>
-        <div class="source-grid">
-          <article>
-            <h3>Clinical framing</h3>
-            <p>
-              ICD-11 recognizes compulsive sexual behaviour disorder around persistent loss of control, distress, and impairment. Moral disapproval alone is not enough.
-            </p>
-            <a href="https://icd.who.int/" rel="noreferrer" target="_blank">WHO ICD-11</a>
-          </article>
-          <article>
-            <h3>Research framing</h3>
-            <p>
-              Reviews describe problematic pornography use through biopsychosocial factors, cognitive bias, reward learning, and context. The evidence is mixed and still developing.
-            </p>
-            <a href="https://pubmed.ncbi.nlm.nih.gov/38026725/" rel="noreferrer" target="_blank">Systematic review</a>
-          </article>
-          <article>
-            <h3>Personal framing</h3>
-            <p>
-              This site is educational and not medical advice. If the pattern causes distress, relationship harm, or loss of control, qualified support is worth using.
-            </p>
-            <a href="https://onlinelibrary.wiley.com/doi/10.1002/wps.20499" rel="noreferrer" target="_blank">CSBD in ICD-11</a>
-          </article>
-        </div>
+        <p class="eyebrow">Sources</p>
+        <h2>Sources and research notes — coming soon.</h2>
       </section>
 
       <section class="blog-preview reveal-on-scroll">
-        <div>
-          <p class="eyebrow">Articles</p>
-          <h2>Read the NoArousal blog.</h2>
-          <p>
-            Learn about no-PMO benefits, flatline, early recovery, and the technology loops that make the habit feel automatic.
-          </p>
-        </div>
-        <a class="read-link" href="/blog/">Open blog</a>
+        <SectionHeader
+          eyebrow="Articles"
+          title="The playbook behind the streak."
+          lede="Flatline, attention, environment design, the technology that makes the habit feel automatic. Read the field notes."
+        />
+        <Button href="/blog/" variant="secondary">Open the blog</Button>
       </section>
     </main>
     <footer class="site-footer">
@@ -292,7 +257,7 @@ const defenses = [
           <span class="brand-mark">N</span>
           <span class="brand-text">NoArousal</span>
         </a>
-        <p>Public streak, win rate, and accountability log.</p>
+        <p>Built one refusal at a time.</p>
       </div>
       <nav aria-label="Footer navigation">
         <a href="/">Home</a>

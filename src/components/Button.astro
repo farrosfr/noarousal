@@ -1,0 +1,50 @@
+---
+type Variant = "primary" | "secondary" | "ghost";
+type Size = "sm" | "md" | "lg";
+
+interface Props {
+  href?: string;
+  variant?: Variant;
+  size?: Size;
+  type?: "button" | "submit";
+  arrow?: boolean;
+  fullWidth?: boolean;
+  class?: string;
+}
+
+const {
+  href,
+  variant = "primary",
+  size = "md",
+  type = "button",
+  arrow = true,
+  fullWidth = false,
+  class: className = "",
+  ...rest
+} = Astro.props;
+
+const Tag = href ? "a" : "button";
+const classes = [
+  "btn",
+  `btn-${variant}`,
+  size === "sm" ? "btn-sm" : size === "lg" ? "btn-lg" : "",
+  fullWidth ? "btn-block" : "",
+  className
+].filter(Boolean).join(" ");
+---
+
+<Tag
+  class={classes}
+  href={href}
+  type={!href ? type : undefined}
+  {...rest}
+>
+  <slot />
+  {arrow && <span class="arrow" aria-hidden="true">&rarr;</span>}
+</Tag>
+
+<style>
+  .btn-sm { --btn-pad-y: 6px; --btn-pad-x: 12px; font-size: 0.72rem; }
+  .btn-lg { --btn-pad-y: 14px; --btn-pad-x: 26px; font-size: 0.95rem; }
+  .btn-block { width: 100%; }
+</style>

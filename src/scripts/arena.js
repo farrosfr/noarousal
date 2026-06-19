@@ -13,10 +13,6 @@ const elements = {
   attrFortitude: document.querySelector("#attrFortitude"),
   attrConsistency: document.querySelector("#attrConsistency"),
   attrAccuracy: document.querySelector("#attrAccuracy"),
-  logTotalBattles: document.querySelector("#logTotalBattles"),
-  logUrgesBlocked: document.querySelector("#logUrgesBlocked"),
-  logRelapses: document.querySelector("#logRelapses"),
-  fullBattleLogs: document.querySelector("#fullBattleLogs")
 };
 
 const accountabilityDataElement = document.querySelector("#accountabilityData");
@@ -24,12 +20,6 @@ const accountabilityData = parseAccountabilityData(accountabilityDataElement?.te
 const fitnessSummaryDataElement = document.querySelector("#fitnessSummaryData");
 const fitnessData = parseAccountabilityData(fitnessSummaryDataElement?.textContent);
 const streakStartDate = getCurrentStreakStartDate(accountabilityData, startDate);
-
-const menuToggle = document.querySelector(".menu-toggle");
-const primaryNav = document.querySelector("#primaryNav");
-const siteHeader = document.querySelector(".site-header");
-let lastScrollY = window.scrollY;
-let isMobileViewport = window.matchMedia("(max-width: 760px)").matches;
 
 function parseAccountabilityData(rawData) {
   if (!rawData) return null;
@@ -265,42 +255,6 @@ function renderArena() {
   // Update Talismans & Phoenix buff UI
   updateEquippedTalismansUi();
   updatePhoenixBuffUi();
-
-  // Combat Log Stats
-  const relapseCount = entries.filter((e) => isRelapseEntry(e)).length;
-  if (elements.logTotalBattles) elements.logTotalBattles.textContent = String(entries.length);
-  if (elements.logUrgesBlocked) elements.logUrgesBlocked.textContent = String(refusalCount);
-  if (elements.logRelapses) elements.logRelapses.textContent = String(relapseCount);
-
-  // Full Combat History Logs (Latest 10)
-  if (elements.fullBattleLogs) {
-    const sortedEntries = [...entries]
-      .sort((a, b) => new Date(getEntryTimestamp(b)).getTime() - new Date(getEntryTimestamp(a)).getTime())
-      .slice(0, 10);
-
-    if (sortedEntries.length === 0) {
-      elements.fullBattleLogs.innerHTML = `<li class="log-item default-log">No battles logged. Clean slate.</li>`;
-    } else {
-      elements.fullBattleLogs.innerHTML = sortedEntries
-        .map((entry) => {
-          const isRelapse = isRelapseEntry(entry);
-          const timestamp = getEntryTimestamp(entry);
-          const formattedDate = formatPublicTimestamp(timestamp, timeZone);
-          if (isRelapse) {
-            return `<li class="log-item loss-log">
-              <span class="log-icon">💥</span>
-              <span class="log-text"><strong>Shield Broken:</strong> Relapsed on ${formattedDate}. HP restored for boss.</span>
-            </li>`;
-          } else {
-            return `<li class="log-item win-log">
-              <span class="log-icon">🛡️</span>
-              <span class="log-text"><strong>Perfect Block:</strong> Refused temptation on ${formattedDate}. Dealt 20 damage.</span>
-            </li>`;
-          }
-        })
-        .join("");
-    }
-  }
 }
 
 // Intersection Observer for scroll animations
@@ -311,40 +265,6 @@ const observer = new IntersectionObserver((entries) => {
 });
 
 document.querySelectorAll(".reveal-on-scroll").forEach((element) => observer.observe(element));
-
-// Responsive Navigation Menu Toggle
-function setMenuState(isOpen) {
-  document.body.classList.toggle("menu-open", isOpen);
-  menuToggle?.setAttribute("aria-expanded", String(isOpen));
-  menuToggle?.setAttribute("aria-label", isOpen ? "Close menu" : "Open menu");
-  if (isOpen) document.body.classList.remove("header-hidden");
-}
-
-menuToggle?.addEventListener("click", () => {
-  setMenuState(!document.body.classList.contains("menu-open"));
-});
-
-primaryNav?.addEventListener("click", (event) => {
-  if (event.target.closest("a")) setMenuState(false);
-});
-
-window.addEventListener("resize", () => {
-  isMobileViewport = window.matchMedia("(max-width: 760px)").matches;
-  if (!isMobileViewport) setMenuState(false);
-});
-
-window.addEventListener("scroll", () => {
-  if (!siteHeader || document.body.classList.contains("menu-open")) return;
-  const currentScrollY = window.scrollY;
-  if (!isMobileViewport) {
-    document.body.classList.remove("header-hidden");
-    lastScrollY = currentScrollY;
-    return;
-  }
-  if (currentScrollY > lastScrollY && currentScrollY > 90) document.body.classList.add("header-hidden");
-  if (currentScrollY < lastScrollY - 6) document.body.classList.remove("header-hidden");
-  lastScrollY = Math.max(0, currentScrollY);
-}, { passive: true });
 
 // Initial render
 // Initial render and calendar generation
