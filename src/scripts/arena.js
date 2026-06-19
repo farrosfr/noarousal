@@ -697,6 +697,8 @@ const game = {
   isEnemyTurn: false,
   isBossStunned: false,
   companion: "none",
+  turnCount: 0,
+  refusalsThisFight: 0,
   playerDebuffs: {
     fog: false,
     weight: false,
@@ -1373,22 +1375,64 @@ function applySelectedBoss() {
 
 function updateGameUi() {
   if (gameElements.playerHpText) gameElements.playerHpText.textContent = `${game.playerHP}/${game.playerMaxHP}`;
-  if (gameElements.playerHpBar) gameElements.playerHpBar.style.width = `${(game.playerHP / game.playerMaxHP) * 100}%`;
-  
+  if (gameElements.playerHpBar) {
+    gameElements.playerHpBar.style.width = `${(game.playerHP / game.playerMaxHP) * 100}%`;
+    // Damage flash when HP decreases
+    if (gameElements.playerHpBar.dataset.lastWidth && parseFloat(gameElements.playerHpBar.dataset.lastWidth) > (game.playerHP / game.playerMaxHP) * 100) {
+      const parent = gameElements.playerHpBar.closest(".bar-bg");
+      if (parent) {
+        parent.classList.remove("bar-damage-flash");
+        parent.offsetHeight;
+        parent.classList.add("bar-damage-flash");
+      }
+    }
+    gameElements.playerHpBar.dataset.lastWidth = String((game.playerHP / game.playerMaxHP) * 100);
+  }
+
   if (gameElements.playerChakraText) gameElements.playerChakraText.textContent = `${game.playerChakra}/${game.playerMaxChakra}`;
-  if (gameElements.playerChakraBar) gameElements.playerChakraBar.style.width = `${(game.playerChakra / game.playerMaxChakra) * 100}%`;
-  
+  if (gameElements.playerChakraBar) {
+    gameElements.playerChakraBar.style.width = `${(game.playerChakra / game.playerMaxChakra) * 100}%`;
+    if (gameElements.playerChakraBar.dataset.lastWidth && parseFloat(gameElements.playerChakraBar.dataset.lastWidth) < (game.playerChakra / game.playerMaxChakra) * 100) {
+      const parent = gameElements.playerChakraBar.closest(".bar-bg");
+      if (parent) {
+        parent.classList.remove("bar-regen-flash");
+        parent.offsetHeight;
+        parent.classList.add("bar-regen-flash");
+      }
+    }
+    gameElements.playerChakraBar.dataset.lastWidth = String((game.playerChakra / game.playerMaxChakra) * 100);
+  }
+
   if (gameElements.enemyHpText) gameElements.enemyHpText.textContent = `${game.enemyHP}/${game.enemyMaxHP}`;
-  if (gameElements.enemyHpBar) gameElements.enemyHpBar.style.width = `${(game.enemyHP / game.enemyMaxHP) * 100}%`;
-  
+  if (gameElements.enemyHpBar) {
+    gameElements.enemyHpBar.style.width = `${(game.enemyHP / game.enemyMaxHP) * 100}%`;
+  }
+
+  // Top bar boss HP
+  const topBarHpBar = document.querySelector("#topBarBossHpBar");
+  const topBarHpText = document.querySelector("#topBarBossHpText");
+  if (topBarHpBar) topBarHpBar.style.width = `${(game.enemyHP / game.enemyMaxHP) * 100}%`;
+  if (topBarHpText) topBarHpText.textContent = `${game.enemyHP}/${game.enemyMaxHP}`;
+
   const isDisabled = game.isBattleOver || game.isEnemyTurn;
   const fireCost = 20 + (game.playerDebuffs.weight ? 5 : 0);
   const healCost = 15 + (game.playerDebuffs.weight ? 5 : 0);
 
+  // Command buttons with affordability highlighting
   if (gameElements.btnStrike) gameElements.btnStrike.disabled = isDisabled;
-  if (gameElements.btnFireJutsu) gameElements.btnFireJutsu.disabled = isDisabled || game.playerChakra < fireCost;
-  if (gameElements.btnHealJutsu) gameElements.btnHealJutsu.disabled = isDisabled || game.playerChakra < healCost;
-  if (gameElements.btnCharge) gameElements.btnCharge.disabled = isDisabled;
+  if (gameElements.btnFireJutsu) {
+    gameElements.btnFireJutsu.disabled = isDisabled || game.playerChakra < fireCost;
+    gameElements.btnFireJutsu.classList.toggle("is-affordable", game.playerChakra >= fireCost && !isDisabled);
+  }
+  if (gameElements.btnHealJutsu) {
+    gameElements.btnHealJutsu.disabled = isDisabled || game.playerChakra < healCost;
+    gameElements.btnHealJutsu.classList.toggle("is-affordable", game.playerChakra >= healCost && !isDisabled);
+  }
+  if (gameElements.btnCharge) {
+    gameElements.btnCharge.disabled = isDisabled;
+    gameElements.btnCharge.classList.toggle("is-affordable", !isDisabled);
+  }
+  if (gameElements.btnStrike) gameElements.btnStrike.classList.toggle("is-affordable", !isDisabled);
 
   // Grounding Items States
   const btnCold = document.querySelector("#btnUseColdShower");
@@ -1466,11 +1510,22 @@ function startCinematicVictory() {
   if (continueBtn) {
     continueBtn.onclick = () => {
       cinematicOverlay.style.display = "none";
-      if (gameElements.gameOverOverlay) {
-        gameElements.overlayResultTitle.textContent = "Victory!";
-        gameElements.overlayResultTitle.style.color = "var(--accent)";
-        gameElements.overlayResultDesc.textContent = `${BOSSES[currentBossKey].name} has been successfully dispelled! Sovereign Mind retains control.`;
-        gameElements.gameOverOverlay.style.display = "flex";
+      // Show results card with battle stats
+      const resultsScreen = document.querySelector("#resultsCardScreen");
+      if (resultsScreen) {
+        const xpEl = document.querySelector("#resultsXpGained");
+        const refEl = document.querySelector("#resultsRefusals");
+        const bossEl = document.querySelector("#resultsBossName");
+        const turnsEl = document.querySelector("#resultsTurns");
+        const subEl = document.querySelector("#resultsCardSub");
+        const boss = BOSSES[currentBossKey];
+        const refusalsThisFight = Math.max(0, (game.turnCount || 0));
+        if (xpEl) xpEl.textContent = `+${25 + (boss?.level || 1) * 5}`;
+        if (refEl) refEl.textContent = String(refusalsThisFight);
+        if (bossEl) bossEl.textContent = boss?.name || "—";
+        if (turnsEl) turnsEl.textContent = String(game.turnCount || 0);
+        if (subEl) subEl.textContent = `${boss?.name || "The urge"} has fallen. Sovereign Mind retains control.`;
+        resultsScreen.style.display = "flex";
       }
     };
   }
@@ -1492,11 +1547,20 @@ function checkBattleEnd() {
     updateGameUi();
     playSound('defeat');
     setTimeout(() => {
-      if (gameElements.gameOverOverlay) {
-        gameElements.overlayResultTitle.textContent = "Defeated!";
-        gameElements.overlayResultTitle.style.color = "#ef4444";
-        gameElements.overlayResultDesc.textContent = `The urge overwhelmed your shield. Clear your mind and try again!`;
-        gameElements.gameOverOverlay.style.display = "flex";
+      const resultsScreen = document.querySelector("#resultsCardScreen");
+      if (resultsScreen) {
+        const xpEl = document.querySelector("#resultsXpGained");
+        const refEl = document.querySelector("#resultsRefusals");
+        const bossEl = document.querySelector("#resultsBossName");
+        const turnsEl = document.querySelector("#resultsTurns");
+        const subEl = document.querySelector("#resultsCardSub");
+        const boss = BOSSES[currentBossKey];
+        if (xpEl) xpEl.textContent = "+0";
+        if (refEl) refEl.textContent = String(game.turnCount || 0);
+        if (bossEl) bossEl.textContent = boss?.name || "—";
+        if (turnsEl) turnsEl.textContent = String(game.turnCount || 0);
+        if (subEl) subEl.textContent = "The urge overwhelmed your shield. Clear your mind and try again.";
+        resultsScreen.style.display = "flex";
       }
     }, 800);
     return true;
@@ -1589,20 +1653,24 @@ function triggerFocusEvent(onComplete) {
   const handleFocusClick = () => {
     if (clicked) return;
     clicked = true;
-    
+
     const elapsed = Date.now() - startTime;
     // Perfect alignment window is 80% to 95% of the 1-second animation (800ms to 950ms)
     if (elapsed >= 800 && elapsed <= 950) {
       game.perfectFocusActive = true;
+      overlay.classList.remove("is-fail");
+      overlay.classList.add("is-success");
       playSound('focus_success');
       showFloatingEffect("#ninja-player", "PERFECT FOCUS!", "heal");
     } else {
       game.perfectFocusActive = false;
+      overlay.classList.remove("is-success");
+      overlay.classList.add("is-fail");
       playSound('focus_fail');
       showFloatingEffect("#ninja-player", "MISSED FOCUS", "damage");
     }
 
-    cleanup();
+    setTimeout(cleanup, 350);
   };
 
   const cleanup = () => {
@@ -1610,6 +1678,8 @@ function triggerFocusEvent(onComplete) {
     btnFocus.removeEventListener("click", handleFocusClick);
     overlay.style.display = "none";
     overlay.classList.remove("animating");
+    overlay.classList.remove("is-success");
+    overlay.classList.remove("is-fail");
     onComplete();
   };
 
@@ -1619,14 +1689,18 @@ function triggerFocusEvent(onComplete) {
     if (!clicked) {
       clicked = true;
       game.perfectFocusActive = false;
+      overlay.classList.remove("is-success");
+      overlay.classList.add("is-fail");
       playSound('focus_fail');
       showFloatingEffect("#ninja-player", "MISSED FOCUS", "damage");
-      cleanup();
+      setTimeout(cleanup, 350);
     }
   }, 1100);
 }
 
 function handleStrike() {
+  if (game.isBattleOver) return;
+  game.turnCount++;
   if (game.playerDebuffs.fog && Math.random() < 0.25) {
     playSound('focus_fail');
     showFloatingEffect("#ninja-enemy", "MISS!", "damage-miss");
@@ -1665,9 +1739,11 @@ function handleStrike() {
 }
 
 function handleFireJutsu() {
+  if (game.isBattleOver) return;
   const cost = 20 + (game.playerDebuffs.weight ? 5 : 0);
   if (game.playerChakra < cost) return;
-  
+  game.turnCount++;
+
   triggerFocusEvent(() => {
     game.playerChakra -= cost;
     
@@ -1719,9 +1795,11 @@ function handleFireJutsu() {
 }
 
 function handleHealJutsu() {
+  if (game.isBattleOver) return;
   const cost = 15 + (game.playerDebuffs.weight ? 5 : 0);
   if (game.playerChakra < cost) return;
-  
+  game.turnCount++;
+
   triggerFocusEvent(() => {
     game.playerChakra -= cost;
     
@@ -1754,12 +1832,14 @@ function handleHealJutsu() {
 }
 
 function handleCharge() {
+  if (game.isBattleOver) return;
+  game.turnCount++;
   const charge = 40;
   game.playerChakra = Math.min(game.playerMaxChakra, game.playerChakra + charge);
   playSound('charge');
-  
+
   triggerOverlayAnimation("#chargeChakraOverlay");
-  
+
   showFloatingEffect("#ninja-player", `+${charge} Chakra`, "chakra-float");
   appendLogToTicker(`Sovereign Ninja charges Chakra! Restored ${charge} energy.`);
   
@@ -1794,19 +1874,21 @@ function updateCompanionUi() {
 function restartGame() {
   // Initialize Stats
   initDynamicStats();
-  
+
   // Apply Boss HP
   applySelectedBoss();
-  
+
   game.playerShieldActive = game.phoenixResolveActive;
   game.perfectShieldActive = false;
   game.perfectFocusActive = false;
+  game.turnCount = 0;
+  game.refusalsThisFight = 0;
   updateShieldIndicator();
   updateCompanionUi();
-  
+
   const vignette = document.querySelector("#rageVignette");
   if (vignette) vignette.classList.remove("rage-active");
-  
+
   if (gameElements.gameOverOverlay) gameElements.gameOverOverlay.style.display = "none";
   
   let startLog = `Battle reset. Choose your action to begin the strike against ${BOSSES[currentBossKey].name}!`;
@@ -1883,7 +1965,7 @@ function initGameListeners() {
     }
   });
 
-  // Boss Select Listener
+  // Boss Select Listener (old dropdown - kept for backward compat, but new flow uses boss-select-screen)
   const bossSelect = document.querySelector("#bossSelect");
   bossSelect?.addEventListener("change", (e) => {
     currentBossKey = e.target.value;
@@ -1900,6 +1982,73 @@ function initGameListeners() {
   const launchBtn = document.querySelector("#btnLaunchSimulator");
   const closeBtn = document.querySelector("#btnCloseSimulator");
   const fullscreenContainer = document.querySelector("#ninjaSimulatorFullscreenContainer");
+  const bossSelectScreen = document.querySelector("#bossSelectScreen");
+  const combatScreenWrap = document.querySelector("#combatScreenWrap");
+  const bossPortraitCards = document.querySelectorAll("[data-boss-card]");
+  const companionPortraitCards = document.querySelectorAll("[data-companion-card]");
+  const btnBeginBattle = document.querySelector("#btnBeginBattle");
+  const btnBackFromBossSelect = document.querySelector("#btnBackFromBossSelect");
+  const resultsCardScreen = document.querySelector("#resultsCardScreen");
+  const btnResultsAgain = document.querySelector("#btnResultsAgain");
+  const btnResultsExit = document.querySelector("#btnResultsExit");
+  const topBarBossName = document.querySelector("#topBarBossName");
+  const topBarBossLevel = document.querySelector("#topBarBossLevel");
+  const topBarBossPortrait = document.querySelector("#topBarBossPortrait");
+  const topBarBossHpBar = document.querySelector("#topBarBossHpBar");
+  const topBarBossHpText = document.querySelector("#topBarBossHpText");
+
+  const BOSS_PORTRAIT_FILTERS = {
+    siren:    "sepia(0.4) saturate(1.3) hue-rotate(290deg)",
+    goliath:  "sepia(0.5) saturate(0.9) hue-rotate(20deg) brightness(0.9)",
+    leviathan:"sepia(0.5) saturate(1.4) hue-rotate(140deg)",
+    temptress:"sepia(0.4) saturate(1.2) hue-rotate(310deg)",
+    archdemon:"sepia(0.6) saturate(1.6) hue-rotate(0deg) contrast(1.2)"
+  };
+
+  function updateTopBarBoss(bossKey) {
+    const boss = BOSSES[bossKey];
+    if (!boss) return;
+    if (topBarBossName) topBarBossName.textContent = boss.name;
+    if (topBarBossLevel) topBarBossLevel.textContent = `Lvl ${boss.level} · ${boss.attackName || boss.class || "Opponent"}`;
+    if (topBarBossPortrait) {
+      topBarBossPortrait.style.backgroundImage = `url('${boss.avatar}')`;
+      topBarBossPortrait.style.filter = BOSS_PORTRAIT_FILTERS[bossKey] || "sepia(0.4) saturate(1.2)";
+    }
+  }
+
+  function showBossSelectScreen() {
+    if (bossSelectScreen) bossSelectScreen.style.display = "flex";
+    if (combatScreenWrap) combatScreenWrap.style.display = "none";
+    if (resultsCardScreen) resultsCardScreen.style.display = "none";
+    if (gameElements.cinematicVictoryOverlay) gameElements.cinematicVictoryOverlay.style.display = "none";
+    if (gameElements.gameOverOverlay) gameElements.gameOverOverlay.style.display = "none";
+  }
+
+  function showCombatScreen() {
+    if (bossSelectScreen) bossSelectScreen.style.display = "none";
+    if (combatScreenWrap) combatScreenWrap.style.display = "flex";
+    if (resultsCardScreen) resultsCardScreen.style.display = "none";
+    if (gameElements.cinematicVictoryOverlay) gameElements.cinematicVictoryOverlay.style.display = "none";
+    if (gameElements.gameOverOverlay) gameElements.gameOverOverlay.style.display = "none";
+  }
+
+  function showResultsScreen(stats) {
+    if (bossSelectScreen) bossSelectScreen.style.display = "none";
+    if (combatScreenWrap) combatScreenWrap.style.display = "none";
+    if (resultsCardScreen) {
+      resultsCardScreen.style.display = "flex";
+      const xpEl = document.querySelector("#resultsXpGained");
+      const refEl = document.querySelector("#resultsRefusals");
+      const bossEl = document.querySelector("#resultsBossName");
+      const turnsEl = document.querySelector("#resultsTurns");
+      const subEl = document.querySelector("#resultsCardSub");
+      if (xpEl) xpEl.textContent = `+${stats.xpGained}`;
+      if (refEl) refEl.textContent = String(stats.refusals);
+      if (bossEl) bossEl.textContent = stats.bossName;
+      if (turnsEl) turnsEl.textContent = String(stats.turns);
+      if (subEl && stats.subMessage) subEl.textContent = stats.subMessage;
+    }
+  }
 
   launchBtn?.addEventListener("click", () => {
     if (fullscreenContainer) {
@@ -1911,10 +2060,51 @@ function initGameListeners() {
       } else if (fullscreenContainer.webkitRequestFullscreen) {
         fullscreenContainer.webkitRequestFullscreen();
       }
-      restartGame(); // initialize stats and boss HP on opening the arena
-      setDynamicGameBackground();
-      updateShieldIndicator();
+      showBossSelectScreen();
     }
+  });
+
+  // Boss card selection
+  bossPortraitCards.forEach((card) => {
+    card.addEventListener("click", () => {
+      const bossKey = card.getAttribute("data-boss-card");
+      bossPortraitCards.forEach((c) => {
+        c.classList.remove("is-selected");
+        c.setAttribute("aria-checked", "false");
+      });
+      card.classList.add("is-selected");
+      card.setAttribute("aria-checked", "true");
+      currentBossKey = bossKey;
+    });
+  });
+
+  // Companion card selection
+  companionPortraitCards.forEach((card) => {
+    card.addEventListener("click", () => {
+      const companionKey = card.getAttribute("data-companion-card");
+      companionPortraitCards.forEach((c) => {
+        c.classList.remove("is-selected");
+        c.setAttribute("aria-checked", "false");
+      });
+      card.classList.add("is-selected");
+      card.setAttribute("aria-checked", "true");
+      game.companion = companionKey;
+    });
+  });
+
+  // Begin the fight
+  btnBeginBattle?.addEventListener("click", () => {
+    showCombatScreen();
+    updateTopBarBoss(currentBossKey);
+    restartGame();
+    setDynamicGameBackground();
+    updateShieldIndicator();
+  });
+
+  // Back to arena (from boss select)
+  btnBackFromBossSelect?.addEventListener("click", (e) => {
+    e.preventDefault();
+    closeFullscreenSimulator();
   });
 
   const closeFullscreenSimulator = () => {
@@ -1928,10 +2118,23 @@ function initGameListeners() {
     }
   };
 
-  closeBtn?.addEventListener("click", closeFullscreenSimulator);
+  closeBtn?.addEventListener("click", () => {
+    // Exit goes back to boss select, not fully exit
+    showBossSelectScreen();
+  });
+
+  // Results card buttons
+  btnResultsAgain?.addEventListener("click", () => {
+    showBossSelectScreen();
+  });
+
+  btnResultsExit?.addEventListener("click", () => {
+    closeFullscreenSimulator();
+  });
 
   document.addEventListener("fullscreenchange", () => {
     if (!document.fullscreenElement && fullscreenContainer && fullscreenContainer.style.display === "flex") {
+      // When user exits fullscreen via ESC, close the simulator entirely
       closeFullscreenSimulator();
     }
   });
