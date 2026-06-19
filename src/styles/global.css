@@ -56,8 +56,10 @@ h3 {
   align-items: center;
   justify-content: space-between;
   gap: 24px;
+  width: min(1180px, calc(100% - 36px));
+  margin: 0 auto;
   border-bottom: 1px solid var(--line);
-  padding: 16px clamp(18px, 5vw, 72px);
+  padding: 16px 0;
   background: rgba(9, 9, 11, 0.76);
   backdrop-filter: blur(18px);
   transition: transform 0.24s ease;
@@ -997,14 +999,12 @@ h1 {
 
 @media (max-width: 760px) {
   .site-header {
-    left: 12px;
-    right: 12px;
-    width: min(100% - 24px, 520px);
+    width: min(1180px, calc(100% - 36px));
     margin: 10px auto 0;
     align-items: center;
     border: 1px solid var(--line);
     border-radius: 999px;
-    padding: 8px 8px 8px 10px;
+    padding: 8px 14px;
     background: rgba(9, 9, 11, 0.82);
     backdrop-filter: blur(8px);
     will-change: transform;
@@ -3442,7 +3442,7 @@ h1 {
    ========================================================================== */
 
 .fitness-panel {
-  background: var(--card-bg);
+  background: var(--panel);
   border: 1px solid var(--line);
   border-radius: 24px;
   padding: 32px;
