@@ -3,6 +3,7 @@ import "@fontsource-variable/inter";
 import "@fontsource-variable/space-grotesk";
 import "../../styles/global.css";
 import accountabilityData from "../../data/accountability.json";
+import fitnessSummaryData from "../../../public/data/fitness-summary.json";
 import SiteHeader from "../../components/SiteHeader.astro";
 import Icon from "../../components/Icon.astro";
 import Button from "../../components/Button.astro";
@@ -123,6 +124,7 @@ const startDateTime = accountabilityData.journeyStart;
     </footer>
 
     <script id="accountabilityData" type="application/json" set:html={JSON.stringify(accountabilityData)}></script>
+    <script id="fitnessSummaryData" type="application/json" set:html={JSON.stringify(fitnessSummaryData)}></script>
     <script>
       import "../../scripts/achievements.js";
     </script>

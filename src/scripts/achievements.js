@@ -1,6 +1,8 @@
 const startDate = new Date(document.body.dataset.start);
 const accountabilityDataElement = document.querySelector("#accountabilityData");
 const accountabilityData = parseAccountabilityData(accountabilityDataElement?.textContent);
+const fitnessSummaryDataElement = document.querySelector("#fitnessSummaryData");
+const fitnessData = parseAccountabilityData(fitnessSummaryDataElement?.textContent);
 const streakStartDate = getCurrentStreakStartDate(accountabilityData, startDate);
 
 function parseAccountabilityData(rawData) {
@@ -73,6 +75,7 @@ function evaluateAchievements() {
     if (entry?.type === "refuse") return total + 1;
     return total + (Array.isArray(entry?.refusals) ? entry.refusals.length : 0);
   }, 0);
+  const fitnessPushUps = fitnessData?.summary?.totalPushUps || 0;
 
   // Level and XP
   const totalXp = (winDays * 10) + (refusalCount * 25);
@@ -95,7 +98,11 @@ function evaluateAchievements() {
   if (currentStreakDays >= 90) unlockBadge("badge-quarterly-sovereign"); // Day 90
   if (currentStreakDays >= 120) unlockBadge("badge-golden-shield"); // Day 120
   if (currentStreakDays >= 150) unlockBadge("badge-unshakable-mind"); // Day 150
-  if (currentStreakDays >= 180) unlockBadge("badge-half-year"); // Day 180
+  if (currentStreakDays >= 180) unlockBadge("badge-half-year");
+  if (currentStreakDays >= 200) unlockBadge("badge-crucible");
+  if (currentStreakDays >= 250) unlockBadge("badge-deep-discipline");
+  if (currentStreakDays >= 300) unlockBadge("badge-anchor-dropped");
+  if (currentStreakDays >= 365) unlockBadge("badge-year-one"); // Day 180
 
   // 2. Unlock Refusal Badges
   if (refusalCount >= 1) unlockBadge("badge-first-refusal");
@@ -105,6 +112,9 @@ function evaluateAchievements() {
   if (refusalCount >= 30) unlockBadge("badge-perfect-defender");
   if (refusalCount >= 50) unlockBadge("badge-indomitable");
   if (refusalCount >= 100) unlockBadge("badge-shield-eternity");
+  if (refusalCount >= 150) unlockBadge("badge-iron-wall");
+  if (refusalCount >= 250) unlockBadge("badge-reflex-sharpened");
+  if (refusalCount >= 500) unlockBadge("badge-refusal-veteran");
 
   // 3. Unlock Performance & Level Badges
   if (winRate >= 95 && winDays >= 5) unlockBadge("badge-flawless");
@@ -112,6 +122,9 @@ function evaluateAchievements() {
   if (level >= 5) unlockBadge("badge-sovereign-master");
   if (level >= 10) unlockBadge("badge-grand-champion");
   if (level >= 15) unlockBadge("badge-ascendant-sentinel");
+  if (level >= 20) unlockBadge("badge-iron-will");
+  if (level >= 25) unlockBadge("badge-elite-tier");
+  if (fitnessPushUps >= 25) unlockBadge("badge-body-returns");
 }
 
 // Intersection Observer for scroll animations
