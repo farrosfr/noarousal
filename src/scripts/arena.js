@@ -243,14 +243,31 @@ function renderArena() {
   renderFitnessSummary();
 
   // Unlock Badges dynamically
-  unlockBadge("badge-first-step"); // Started journey
-  if (refusalCount >= 1) unlockBadge("badge-first-refusal");
+  unlockBadge("badge-first-step");
   if (currentStreakDays >= 3) unlockBadge("badge-consistent-shield");
   if (currentStreakDays >= 7) unlockBadge("badge-week-of-will");
-  if (refusalCount >= 10) unlockBadge("badge-shadow-slayer");
+  if (currentStreakDays >= 10) unlockBadge("badge-double-digits");
   if (currentStreakDays >= 14) unlockBadge("badge-fortress-habit");
+  if (currentStreakDays >= 21) unlockBadge("badge-three-weeks");
+  if (currentStreakDays >= 30) unlockBadge("badge-monthly-sovereign");
+  if (currentStreakDays >= 45) unlockBadge("badge-vanguard-focus");
+  if (currentStreakDays >= 60) unlockBadge("badge-habit-breaker");
+  if (currentStreakDays >= 90) unlockBadge("badge-quarterly-sovereign");
+  if (currentStreakDays >= 120) unlockBadge("badge-golden-shield");
+  if (currentStreakDays >= 150) unlockBadge("badge-unshakable-mind");
+  if (currentStreakDays >= 180) unlockBadge("badge-half-year");
+  if (refusalCount >= 1) unlockBadge("badge-first-refusal");
+  if (refusalCount >= 5) unlockBadge("badge-temptation-blocker");
+  if (refusalCount >= 10) unlockBadge("badge-shadow-slayer");
+  if (refusalCount >= 20) unlockBadge("badge-urge-master");
+  if (refusalCount >= 30) unlockBadge("badge-perfect-defender");
+  if (refusalCount >= 50) unlockBadge("badge-indomitable");
+  if (refusalCount >= 100) unlockBadge("badge-shield-eternity");
   if (winRate >= 95 && winDays >= 5) unlockBadge("badge-flawless");
+  if (winRate === 100 && winDays >= 14) unlockBadge("badge-absolute-control");
   if (level >= 5) unlockBadge("badge-sovereign-master");
+  if (level >= 10) unlockBadge("badge-grand-champion");
+  if (level >= 15) unlockBadge("badge-ascendant-sentinel");
 
   // Update Talismans & Phoenix buff UI
   updateEquippedTalismansUi();
