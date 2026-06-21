@@ -1717,7 +1717,7 @@ h1 {
 
 /* Arena Hero Section */
 .arena-hero {
-  max-width: 900px;
+  max-width: 1180px;
   margin: 0 auto;
   padding: 72px clamp(18px, 5vw, 72px) 44px;
   text-align: center;
@@ -2071,12 +2071,19 @@ h1 {
 }
 
 .game-board {
-  margin-top: 24px;
+  margin-top: auto;
+  margin-bottom: auto;
   border: 1px solid var(--line);
   border-radius: 18px;
   background: #09090b;
   overflow: hidden;
   position: relative;
+}
+
+.combat-screen-wrap > .game-board {
+  width: 100%;
+  max-width: 1080px;
+  margin: auto auto;
 }
 
 /* Battle Background Arena */
@@ -2194,6 +2201,16 @@ h1 {
   line-height: 1.4;
   border-bottom: 1px solid var(--line);
   text-align: left;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+@media (max-width: 760px) {
+  .combat-ticker {
+    padding: 12px 14px;
+    font-size: 0.74rem;
+    line-height: 1.35;
+  }
 }
 
 /* Action Command Panel */
@@ -3663,12 +3680,12 @@ h1 {
 
 
 /* ============================================================
-   DESIGN SYSTEM — game-skin component primitives
+   DESIGN SYSTEM ï¿½ game-skin component primitives
    Tool with game skin: chamfered cards, gold accents,
    three-tier buttons, tight density.
    ============================================================ */
 
-/* Chamfered rectangle — top-right & bottom-left clipped */
+/* Chamfered rectangle ï¿½ top-right & bottom-left clipped */
 .chamfered {
   clip-path: polygon(
     0 0,
@@ -3735,7 +3752,7 @@ h1 {
   max-width: 64ch;
 }
 
-/* Three-tier button system — all chamfered */
+/* Three-tier button system ï¿½ all chamfered */
 .btn {
   --btn-pad-y: 10px;
   --btn-pad-x: 18px;
@@ -3804,7 +3821,7 @@ h1 {
 .btn { clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px)); }
 .btn-ghost { clip-path: none; }
 
-/* Stat chip — for in-content stats, mirrors header HUD */
+/* Stat chip ï¿½ for in-content stats, mirrors header HUD */
 .stat-chip {
   display: inline-flex;
   align-items: center;
@@ -3864,7 +3881,7 @@ h1 {
   box-shadow: 0 0 10px rgba(45, 212, 191, 0.5);
 }
 
-/* Asset frame — gold chamfered border around images */
+/* Asset frame ï¿½ gold chamfered border around images */
 .asset-frame {
   position: relative;
   display: inline-block;
@@ -3909,9 +3926,9 @@ h1 {
   border: 1px solid transparent;
   border-radius: 6px;
   font-family: var(--font-display);
-  font-size: 0.82rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--muted);
   background: transparent;
@@ -4050,6 +4067,14 @@ h1 {
   .panel { padding: 16px; }
 }
 
+/* Desktop: center tab bar, shrink to content */
+@media (min-width: 761px) {
+  .tab-bar {
+    width: fit-content;
+    margin: 24px auto 16px;
+  }
+}
+
 /* Tab panel: hidden by default, visible when active */
 .tab-panel {
   display: block;
@@ -4071,6 +4096,7 @@ h1 {
   flex-wrap: wrap;
   gap: 8px;
   margin-top: 18px;
+  justify-content: center;
 }
 
 /* Icon inside attribute / card titles */

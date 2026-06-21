@@ -1922,24 +1922,24 @@ function restartGame() {
   const activeBuffs = [];
   if (game.companion && game.companion !== "none") {
     const comps = {
-      fox: "🦊 Zen Fox (Chakra Restorer)",
-      crane: "🦅 Discipline Crane (Debuff Cleanser)",
-      wolf: "🐺 Resolve Wolf (Extra Striker)",
-      turtle: "🐢 Patience Turtle (Shield Absorber)"
+      fox: "🦊 Fox (Chakra+)",
+      crane: "🦅 Crane (Cleanse)",
+      wolf: "🐺 Wolf (Striker)",
+      turtle: "🐢 Turtle (Shield+)"
     };
     if (comps[game.companion]) activeBuffs.push(comps[game.companion]);
   }
-  if (game.phoenixResolveActive) activeBuffs.push("🔥 Phoenix Resolve (+30% ATK, starting shield)");
-  if (game.fortressAmuletActive) activeBuffs.push("🛡️ Fortress Amulet (+10% shield absorption)");
-  if (game.lotusIncenseActive) activeBuffs.push("🕯️ Lotus Incense (2x Meditation Incense)");
-  if (game.willfireBladeActive) activeBuffs.push("⚔️ Willfire Blade (+15% crit chance on Jutsus)");
-  
+  if (game.phoenixResolveActive) activeBuffs.push("🔥 Phoenix (+30% ATK, shield)");
+  if (game.fortressAmuletActive) activeBuffs.push("🛡️ Fortress (+10% shield)");
+  if (game.lotusIncenseActive) activeBuffs.push("🕯️ Lotus (2x Meditate)");
+  if (game.willfireBladeActive) activeBuffs.push("⚔️ Willfire (+15% crit)");
+
   const hour = new Date().getHours();
-  if (hour >= 6 && hour < 17) activeBuffs.push("☀️ Daytime Boost (+15% heals)");
-  if (hour >= 19 || hour < 6) activeBuffs.push("🌙 Nighttime Aura (+10% Boss ATK, +30% Jutsu Crit damage)");
+  if (hour >= 6 && hour < 17) activeBuffs.push("☀️ Day (+15% heal)");
+  if (hour >= 19 || hour < 6) activeBuffs.push("🌙 Night (+10% Boss, +30% crit)");
 
   if (activeBuffs.length > 0) {
-    startLog += `<br/><span style="color: var(--accent); font-weight: bold;">Active Talismans/Buffs:</span> ${activeBuffs.join(", ")}`;
+    startLog += `<br/><span style="color: var(--accent); font-weight: bold;">Active Buffs:</span> ${activeBuffs.join(", ")}`;
   }
   
   appendLogToTicker(startLog);
@@ -2016,32 +2016,8 @@ function initGameListeners() {
   const btnBeginBattle = document.querySelector("#btnBeginBattle");
   const btnBackFromBossSelect = document.querySelector("#btnBackFromBossSelect");
   const resultsCardScreen = document.querySelector("#resultsCardScreen");
-  const btnResultsAgain = document.querySelector("#btnResultsAgain");
-  const btnResultsExit = document.querySelector("#btnResultsExit");
-  const topBarBossName = document.querySelector("#topBarBossName");
-  const topBarBossLevel = document.querySelector("#topBarBossLevel");
-  const topBarBossPortrait = document.querySelector("#topBarBossPortrait");
-  const topBarBossHpBar = document.querySelector("#topBarBossHpBar");
-  const topBarBossHpText = document.querySelector("#topBarBossHpText");
-
-  const BOSS_PORTRAIT_FILTERS = {
-    siren:    "sepia(0.4) saturate(1.3) hue-rotate(290deg)",
-    goliath:  "sepia(0.5) saturate(0.9) hue-rotate(20deg) brightness(0.9)",
-    leviathan:"sepia(0.5) saturate(1.4) hue-rotate(140deg)",
-    temptress:"sepia(0.4) saturate(1.2) hue-rotate(310deg)",
-    archdemon:"sepia(0.6) saturate(1.6) hue-rotate(0deg) contrast(1.2)"
-  };
-
-  function updateTopBarBoss(bossKey) {
-    const boss = BOSSES[bossKey];
-    if (!boss) return;
-    if (topBarBossName) topBarBossName.textContent = boss.name;
-    if (topBarBossLevel) topBarBossLevel.textContent = `Lvl ${boss.level} · ${boss.attackName || boss.class || "Opponent"}`;
-    if (topBarBossPortrait) {
-      topBarBossPortrait.style.backgroundImage = `url('${boss.avatar}')`;
-      topBarBossPortrait.style.filter = BOSS_PORTRAIT_FILTERS[bossKey] || "sepia(0.4) saturate(1.2)";
-    }
-  }
+const btnResultsAgain = document.querySelector("#btnResultsAgain");
+  const btnResultsExit = document.querySelector("#resultsExit");
 
   function showBossSelectScreen() {
     if (bossSelectScreen) bossSelectScreen.style.display = "flex";
@@ -2122,7 +2098,6 @@ function initGameListeners() {
   // Begin the fight
   btnBeginBattle?.addEventListener("click", () => {
     showCombatScreen();
-    updateTopBarBoss(currentBossKey);
     restartGame();
     setDynamicGameBackground();
     updateShieldIndicator();
