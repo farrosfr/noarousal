@@ -45,7 +45,7 @@ const lossPeriods = new Set(
 );
 const winDays = Math.max(0, trackedDays - lossPeriods.size);
 const refusalCount = entries.filter((e) => e?.type === "refuse").length;
-const totalXp = winDays * 10 + refusalCount * 25;
+const totalXp = winDays * 10 + refusalCount * 25 + fitnessPushUps * 1 + (fitnessRuns || 0) * 10;
 const level = 1 + Math.floor(totalXp / 100);
 const xpInLevel = totalXp % 100;
 const shieldPct = Math.min(100, streakDays * 20);
@@ -691,7 +691,7 @@ const heroRefusals = String(willpowerPts);
                   <span class="results-stat-val" id="resultsRefusals">0</span>
                 </div>
                 <div class="results-stat">
-                  <span class="results-stat-key">Boss Defeated</span>
+                  <span class="results-stat-key">Outcome</span>
                   <span class="results-stat-val" id="resultsBossName">—</span>
                 </div>
                 <div class="results-stat">

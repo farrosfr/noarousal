@@ -181,7 +181,7 @@ function renderArena() {
   }, 0);
 
   // Level and XP
-  const totalXp = (winDays * 10) + (refusalCount * 25);
+  const totalXp = (winDays * 10) + (refusalCount * 25) + (fitnessPushUps * 1) + ((fitnessData?.summary?.totalRunWalkKm || 0) * 10);
   const level = 1 + Math.floor(totalXp / 100);
   const xpInCurrentLevel = totalXp % 100;
 
@@ -1547,9 +1547,9 @@ function startCinematicVictory() {
         const subEl = document.querySelector("#resultsCardSub");
         const boss = BOSSES[currentBossKey];
         const refusalsThisFight = Math.max(0, (game.turnCount || 0));
-        if (xpEl) xpEl.textContent = `+${25 + (boss?.level || 1) * 5}`;
+        if (xpEl) xpEl.textContent = "+0";
         if (refEl) refEl.textContent = String(refusalsThisFight);
-        if (bossEl) bossEl.textContent = boss?.name || "—";
+        if (bossEl) bossEl.textContent = "Victory";
         if (turnsEl) turnsEl.textContent = String(game.turnCount || 0);
         if (subEl) subEl.textContent = `${boss?.name || "The urge"} has fallen. Sovereign Mind retains control.`;
         resultsScreen.style.display = "flex";
@@ -1584,7 +1584,7 @@ function checkBattleEnd() {
         const boss = BOSSES[currentBossKey];
         if (xpEl) xpEl.textContent = "+0";
         if (refEl) refEl.textContent = String(game.turnCount || 0);
-        if (bossEl) bossEl.textContent = boss?.name || "—";
+        if (bossEl) bossEl.textContent = "Defeat";
         if (turnsEl) turnsEl.textContent = String(game.turnCount || 0);
         if (subEl) subEl.textContent = "The urge overwhelmed your shield. Clear your mind and try again.";
         resultsScreen.style.display = "flex";

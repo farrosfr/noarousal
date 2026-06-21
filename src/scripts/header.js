@@ -44,7 +44,7 @@ function getCompletedTrackedDays(start, now = Date.now()) {
   return Math.floor((now - start.getTime()) / 86400000);
 }
 
-function initHud() {
+async function initHud() {
   if (!hudLevel || !hudXp || !hudDay || !hudShield) return;
 
   const startDateAttr = document.body.dataset.start;
@@ -73,7 +73,18 @@ function initHud() {
       return total + (Array.isArray(entry?.refusals) ? entry.refusals.length : 0);
     }, 0);
 
-    const totalXp = winDays * 10 + refusalCount * 25;
+    let fitnessPushUps = 0;
+    let fitnessRunWalkKm = 0;
+    try {
+      const res = await fetch("/data/fitness-summary.json");
+      if (res.ok) {
+        const data = await res.json();
+        fitnessPushUps = data?.summary?.totalPushUps || 0;
+        fitnessRunWalkKm = data?.summary?.totalRunWalkKm || 0;
+      }
+    } catch (_) { /* fitness data optional */ }
+
+    const totalXp = winDays * 10 + refusalCount * 25 + fitnessPushUps * 1 + fitnessRunWalkKm * 10;
     const level = 1 + Math.floor(totalXp / 100);
     const xpInLevel = totalXp % 100;
 

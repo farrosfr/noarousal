@@ -76,9 +76,10 @@ function evaluateAchievements() {
     return total + (Array.isArray(entry?.refusals) ? entry.refusals.length : 0);
   }, 0);
   const fitnessPushUps = fitnessData?.summary?.totalPushUps || 0;
+  const fitnessRuns = fitnessData?.summary?.totalRunWalkKm || 0;
 
   // Level and XP
-  const totalXp = (winDays * 10) + (refusalCount * 25);
+  const totalXp = (winDays * 10) + (refusalCount * 25) + (fitnessPushUps * 1) + (fitnessRuns * 10);
   const level = 1 + Math.floor(totalXp / 100);
 
   // Current Streak Calculation

@@ -150,8 +150,19 @@ function renderBattleArena() {
 
   // Level and XP Calculation:
   // Every win day counts for 10 XP. Every refusal counts for 25 XP.
-  // 100 XP per level.
-  const totalXp = (winDays * 10) + (refusalCount * 25);
+  // Every push-up = 1 XP, every km run/walk = 10 XP. 100 XP per level.
+  let fitnessPushUps = 0;
+  let fitnessRunWalkKm = 0;
+  try {
+    const fitnessRes = await fetch("/data/fitness-summary.json");
+    if (fitnessRes.ok) {
+      const fitnessData = await fitnessRes.json();
+      fitnessPushUps = fitnessData?.summary?.totalPushUps || 0;
+      fitnessRunWalkKm = fitnessData?.summary?.totalRunWalkKm || 0;
+    }
+  } catch (_) { /* fitness data optional */ }
+
+  const totalXp = (winDays * 10) + (refusalCount * 25) + (fitnessPushUps * 1) + (fitnessRunWalkKm * 10);
   const level = 1 + Math.floor(totalXp / 100);
   const xpInCurrentLevel = totalXp % 100;
 
@@ -218,7 +229,7 @@ function renderBattleArena() {
   }
 }
 
-function render() {
+async function render() {
   if (!elements.days || !elements.hours || !elements.minutes || !elements.seconds || Number.isNaN(streakStartDate.getTime())) return;
   const elapsed = formatDuration(Date.now() - streakStartDate.getTime());
   elements.days.textContent = `${elapsed.days} day${elapsed.days === 1 ? "" : "s"}`;
