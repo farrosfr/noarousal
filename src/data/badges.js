@@ -42,5 +42,16 @@ export const performanceBadges = [
   { id: "ascendant-sentinel", icon: "flame", title: "Ascendant Sentinel", desc: "Reach character level 15", req: "Level 15" },
   { id: "iron-will", icon: "flame", title: "Iron Will", desc: "Level twenty. The build is taking shape.", req: "Level 20" },
   { id: "elite-tier", icon: "skull", title: "Elite Tier", desc: "Level twenty-five. The work is the reward.", req: "Level 25" },
-  { id: "body-returns", icon: "heart", title: "Body Returns", desc: "Twenty-five pushups. The body is part of the answer.", req: "25 Pushups" }
+  { id: "body-returns", icon: "heart", title: "Body Returns", desc: "Twenty-five pushups. The body is part of the answer.", req: "25 Pushups" },
+  { id: "physical-resolve", icon: "dumbbell", title: "Physical Resolve", desc: "Two hundred and fifty pushups. Physical discipline builds mental walls.", req: "250 Pushups" },
+  { id: "iron-discipline", icon: "swords", title: "Iron Discipline", desc: "Five hundred pushups. The body follows the mind, the mind follows the resolve.", req: "500 Pushups" },
+  { id: "titan-physique", icon: "crown", title: "Titan Physique", desc: "One thousand pushups. A fortress forged through sweat and repetition.", req: "1000 Pushups" },
+  { id: "resolve-unbroken", icon: "zap", title: "Resolve Unbroken", desc: "Two thousand five hundred pushups. The rhythm is second nature.", req: "2500 Pushups" },
+  { id: "apex-body", icon: "skull", title: "Apex Body", desc: "Five thousand pushups. The body is fully aligned with the mind.", req: "5000 Pushups" },
+  { id: "legendary-will", icon: "award", title: "Legendary Will", desc: "Ten thousand pushups. An absolute monument of physical resolve.", req: "10000 Pushups" },
+  { id: "first-mile", icon: "footprints", title: "First Mile", desc: "Ten kilometers run or walked total. The journey of a thousand miles begins.", req: "10 Km" },
+  { id: "cardio-endurance", icon: "heart", title: "Cardio Endurance", desc: "Fifty kilometers run or walked total. The heart beats strong.", req: "50 Km" },
+  { id: "road-warrior", icon: "swords", title: "Road Warrior", desc: "One hundred kilometers run or walked. Carving resolve into the pavement.", req: "100 Km" },
+  { id: "marathoner-mind", icon: "crown", title: "Marathoner Mind", desc: "Two hundred and fifty kilometers run or walked. Unyielding stamina.", req: "250 Km" },
+  { id: "zenith-runner", icon: "award", title: "Zenith Runner", desc: "Five hundred kilometers run or walked. Transcending physical boundaries.", req: "500 Km" }
 ];

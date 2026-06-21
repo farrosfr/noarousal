@@ -84,12 +84,68 @@ async function initHud() {
       }
     } catch (_) { /* fitness data optional */ }
 
-    const totalXp = winDays * 10 + refusalCount * 25 + fitnessPushUps * 1 + fitnessRunWalkKm * 10;
+    const winRate = trackedDays > 0 ? Math.round((winDays / trackedDays) * 100) : 100;
+    const streakMs = Date.now() - streakStart.getTime();
+    const streakDays = Math.max(0, Math.floor(streakMs / 86400000));
+
+    function getAchievementXp(currentStreakDays, refusalCount, winRate, winDays, fitnessPushUps, fitnessRuns) {
+      let count = 0;
+      
+      // Streak Badges
+      if (currentStreakDays >= 0) count++;
+      if (currentStreakDays >= 3) count++;
+      if (currentStreakDays >= 7) count++;
+      if (currentStreakDays >= 10) count++;
+      if (currentStreakDays >= 14) count++;
+      if (currentStreakDays >= 21) count++;
+      if (currentStreakDays >= 30) count++;
+      if (currentStreakDays >= 45) count++;
+      if (currentStreakDays >= 60) count++;
+      if (currentStreakDays >= 90) count++;
+      if (currentStreakDays >= 120) count++;
+      if (currentStreakDays >= 150) count++;
+      if (currentStreakDays >= 180) count++;
+      if (currentStreakDays >= 200) count++;
+      if (currentStreakDays >= 250) count++;
+      if (currentStreakDays >= 300) count++;
+      if (currentStreakDays >= 365) count++;
+
+      // Refusal Badges
+      if (refusalCount >= 1) count++;
+      if (refusalCount >= 5) count++;
+      if (refusalCount >= 10) count++;
+      if (refusalCount >= 20) count++;
+      if (refusalCount >= 30) count++;
+      if (refusalCount >= 50) count++;
+      if (refusalCount >= 100) count++;
+      if (refusalCount >= 150) count++;
+      if (refusalCount >= 250) count++;
+      if (refusalCount >= 500) count++;
+
+      // Performance Badges
+      if (winRate >= 95 && winDays >= 5) count++;
+      if (winRate === 100 && winDays >= 14) count++;
+      if (fitnessPushUps >= 25) count++;
+      if (fitnessPushUps >= 250) count++;
+      if (fitnessPushUps >= 500) count++;
+      if (fitnessPushUps >= 1000) count++;
+      if (fitnessPushUps >= 2500) count++;
+      if (fitnessPushUps >= 5000) count++;
+      if (fitnessPushUps >= 10000) count++;
+      if (fitnessRuns >= 10) count++;
+      if (fitnessRuns >= 50) count++;
+      if (fitnessRuns >= 100) count++;
+      if (fitnessRuns >= 250) count++;
+      if (fitnessRuns >= 500) count++;
+
+      return count * 50;
+    }
+
+    const achievementXp = getAchievementXp(streakDays, refusalCount, winRate, winDays, fitnessPushUps, fitnessRunWalkKm);
+    const totalXp = winDays * 10 + refusalCount * 25 + fitnessPushUps * 1 + fitnessRunWalkKm * 10 + achievementXp;
     const level = 1 + Math.floor(totalXp / 100);
     const xpInLevel = Math.round(totalXp % 100);
 
-    const streakMs = Date.now() - streakStart.getTime();
-    const streakDays = Math.max(0, Math.floor(streakMs / 86400000));
     const shield = Math.min(100, streakDays * 20);
 
     hudLevel.textContent = String(level);

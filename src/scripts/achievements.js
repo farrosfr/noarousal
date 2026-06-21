@@ -78,13 +78,67 @@ function evaluateAchievements() {
   const fitnessPushUps = fitnessData?.summary?.totalPushUps || 0;
   const fitnessRuns = fitnessData?.summary?.totalRunWalkKm || 0;
 
-  // Level and XP
-  const totalXp = (winDays * 10) + (refusalCount * 25) + (fitnessPushUps * 1) + (fitnessRuns * 10);
-  const level = 1 + Math.floor(totalXp / 100);
-
   // Current Streak Calculation
   const currentStreakMs = Date.now() - streakStartDate.getTime();
   const currentStreakDays = Math.max(0, Math.floor(currentStreakMs / 86400000));
+
+  function getAchievementXp(currentStreakDays, refusalCount, winRate, winDays, fitnessPushUps, fitnessRuns) {
+    let count = 0;
+    
+    // Streak Badges
+    if (currentStreakDays >= 0) count++;
+    if (currentStreakDays >= 3) count++;
+    if (currentStreakDays >= 7) count++;
+    if (currentStreakDays >= 10) count++;
+    if (currentStreakDays >= 14) count++;
+    if (currentStreakDays >= 21) count++;
+    if (currentStreakDays >= 30) count++;
+    if (currentStreakDays >= 45) count++;
+    if (currentStreakDays >= 60) count++;
+    if (currentStreakDays >= 90) count++;
+    if (currentStreakDays >= 120) count++;
+    if (currentStreakDays >= 150) count++;
+    if (currentStreakDays >= 180) count++;
+    if (currentStreakDays >= 200) count++;
+    if (currentStreakDays >= 250) count++;
+    if (currentStreakDays >= 300) count++;
+    if (currentStreakDays >= 365) count++;
+
+    // Refusal Badges
+    if (refusalCount >= 1) count++;
+    if (refusalCount >= 5) count++;
+    if (refusalCount >= 10) count++;
+    if (refusalCount >= 20) count++;
+    if (refusalCount >= 30) count++;
+    if (refusalCount >= 50) count++;
+    if (refusalCount >= 100) count++;
+    if (refusalCount >= 150) count++;
+    if (refusalCount >= 250) count++;
+    if (refusalCount >= 500) count++;
+
+    // Performance Badges
+    if (winRate >= 95 && winDays >= 5) count++;
+    if (winRate === 100 && winDays >= 14) count++;
+    if (fitnessPushUps >= 25) count++;
+    if (fitnessPushUps >= 250) count++;
+    if (fitnessPushUps >= 500) count++;
+    if (fitnessPushUps >= 1000) count++;
+    if (fitnessPushUps >= 2500) count++;
+    if (fitnessPushUps >= 5000) count++;
+    if (fitnessPushUps >= 10000) count++;
+    if (fitnessRuns >= 10) count++;
+    if (fitnessRuns >= 50) count++;
+    if (fitnessRuns >= 100) count++;
+    if (fitnessRuns >= 250) count++;
+    if (fitnessRuns >= 500) count++;
+
+    return count * 50;
+  }
+
+  // Level and XP
+  const achievementXp = getAchievementXp(currentStreakDays, refusalCount, winRate, winDays, fitnessPushUps, fitnessRuns);
+  const totalXp = (winDays * 10) + (refusalCount * 25) + (fitnessPushUps * 1) + (fitnessRuns * 10) + achievementXp;
+  const level = 1 + Math.floor(totalXp / 100);
 
   // 1. Unlock Streak Badges
   unlockBadge("badge-first-step"); // Day 0
@@ -126,6 +180,18 @@ function evaluateAchievements() {
   if (level >= 20) unlockBadge("badge-iron-will");
   if (level >= 25) unlockBadge("badge-elite-tier");
   if (fitnessPushUps >= 25) unlockBadge("badge-body-returns");
+  if (fitnessPushUps >= 250) unlockBadge("badge-physical-resolve");
+  if (fitnessPushUps >= 500) unlockBadge("badge-iron-discipline");
+  if (fitnessPushUps >= 1000) unlockBadge("badge-titan-physique");
+  if (fitnessPushUps >= 2500) unlockBadge("badge-resolve-unbroken");
+  if (fitnessPushUps >= 5000) unlockBadge("badge-apex-body");
+  if (fitnessPushUps >= 10000) unlockBadge("badge-legendary-will");
+
+  if (fitnessRuns >= 10) unlockBadge("badge-first-mile");
+  if (fitnessRuns >= 50) unlockBadge("badge-cardio-endurance");
+  if (fitnessRuns >= 100) unlockBadge("badge-road-warrior");
+  if (fitnessRuns >= 250) unlockBadge("badge-marathoner-mind");
+  if (fitnessRuns >= 500) unlockBadge("badge-zenith-runner");
 }
 
 // Intersection Observer for scroll animations
