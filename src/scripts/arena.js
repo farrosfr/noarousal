@@ -183,7 +183,7 @@ function renderArena() {
   // Level and XP
   const totalXp = (winDays * 10) + (refusalCount * 25) + (fitnessPushUps * 1) + ((fitnessData?.summary?.totalRunWalkKm || 0) * 10);
   const level = 1 + Math.floor(totalXp / 100);
-  const xpInCurrentLevel = totalXp % 100;
+  const xpInCurrentLevel = Math.round(totalXp % 100);
 
   if (elements.charLevel) elements.charLevel.textContent = String(level);
   if (elements.charXpText) elements.charXpText.textContent = `${xpInCurrentLevel} / 100 XP`;

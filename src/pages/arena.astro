@@ -47,7 +47,7 @@ const winDays = Math.max(0, trackedDays - lossPeriods.size);
 const refusalCount = entries.filter((e) => e?.type === "refuse").length;
 const totalXp = winDays * 10 + refusalCount * 25 + fitnessPushUps * 1 + (fitnessRuns || 0) * 10;
 const level = 1 + Math.floor(totalXp / 100);
-const xpInLevel = totalXp % 100;
+const xpInLevel = Math.round(totalXp % 100);
 const shieldPct = Math.min(100, streakDays * 20);
 const willpowerPts = refusalCount + Math.floor(fitnessPushUps / 50);
 const fortitudePts = streakDays + Math.floor(fitnessRuns);

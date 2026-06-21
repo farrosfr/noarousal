@@ -127,7 +127,7 @@ function renderAccountability() {
   elements.lastRelapse.textContent = lastRelapseEntry ? formatPublicTimestamp(getEntryTimestamp(lastRelapseEntry), timeZone) : "none logged";
 }
 
-function renderBattleArena() {
+async function renderBattleArena() {
   if (!elements.charLevel || !accountabilityData) return;
 
   const entries = Array.isArray(accountabilityData.entries) ? accountabilityData.entries : [];
@@ -164,7 +164,7 @@ function renderBattleArena() {
 
   const totalXp = (winDays * 10) + (refusalCount * 25) + (fitnessPushUps * 1) + (fitnessRunWalkKm * 10);
   const level = 1 + Math.floor(totalXp / 100);
-  const xpInCurrentLevel = totalXp % 100;
+  const xpInCurrentLevel = Math.round(totalXp % 100);
 
   elements.charLevel.textContent = String(level);
   elements.charXpText.textContent = `${xpInCurrentLevel} / 100 XP`;
@@ -237,7 +237,7 @@ async function render() {
   elements.minutes.textContent = String(elapsed.minutes).padStart(2, "0");
   elements.seconds.textContent = String(elapsed.seconds).padStart(2, "0");
   renderAccountability();
-  renderBattleArena();
+  await renderBattleArena();
 }
 
 const observer = new IntersectionObserver((entries) => {

@@ -57,7 +57,7 @@ async function initHud() {
   const entries = Array.isArray(data?.entries) ? data.entries : [];
   const streakStart = getCurrentStreakStartDate(data, journeyStart);
 
-  const update = () => {
+  const update = async () => {
     const trackedDays = getCompletedTrackedDays(journeyStart);
     const lossPeriods = new Set();
     for (const entry of entries) {
@@ -86,7 +86,7 @@ async function initHud() {
 
     const totalXp = winDays * 10 + refusalCount * 25 + fitnessPushUps * 1 + fitnessRunWalkKm * 10;
     const level = 1 + Math.floor(totalXp / 100);
-    const xpInLevel = totalXp % 100;
+    const xpInLevel = Math.round(totalXp % 100);
 
     const streakMs = Date.now() - streakStart.getTime();
     const streakDays = Math.max(0, Math.floor(streakMs / 86400000));
