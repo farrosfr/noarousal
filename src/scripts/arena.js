@@ -180,6 +180,8 @@ function renderArena() {
     return total + (Array.isArray(entry?.refusals) ? entry.refusals.length : 0);
   }, 0);
 
+  const fitnessPushUps = fitnessData?.summary?.totalPushUps || 0;
+
   // Level and XP
   const totalXp = (winDays * 10) + (refusalCount * 25) + (fitnessPushUps * 1) + ((fitnessData?.summary?.totalRunWalkKm || 0) * 10);
   const level = 1 + Math.floor(totalXp / 100);
@@ -226,7 +228,6 @@ function renderArena() {
   }
 
   // RPG Attributes & Fitness Bridging
-  const fitnessPushUps = fitnessData?.summary?.totalPushUps || 0;
   const willpowerBonus = Math.floor(fitnessPushUps / 50);
   const totalWillpower = refusalCount + willpowerBonus;
   
@@ -1546,7 +1547,7 @@ function startCinematicVictory() {
         const turnsEl = document.querySelector("#resultsTurns");
         const subEl = document.querySelector("#resultsCardSub");
         const boss = BOSSES[currentBossKey];
-        const refusalsThisFight = Math.max(0, (game.turnCount || 0));
+        const refusalsThisFight = 1;
         if (xpEl) xpEl.textContent = "+0";
         if (refEl) refEl.textContent = String(refusalsThisFight);
         if (bossEl) bossEl.textContent = "Victory";
@@ -1583,7 +1584,7 @@ function checkBattleEnd() {
         const subEl = document.querySelector("#resultsCardSub");
         const boss = BOSSES[currentBossKey];
         if (xpEl) xpEl.textContent = "+0";
-        if (refEl) refEl.textContent = String(game.turnCount || 0);
+        if (refEl) refEl.textContent = "0";
         if (bossEl) bossEl.textContent = "Defeat";
         if (turnsEl) turnsEl.textContent = String(game.turnCount || 0);
         if (subEl) subEl.textContent = "The urge overwhelmed your shield. Clear your mind and try again.";
@@ -2017,7 +2018,7 @@ function initGameListeners() {
   const btnBackFromBossSelect = document.querySelector("#btnBackFromBossSelect");
   const resultsCardScreen = document.querySelector("#resultsCardScreen");
 const btnResultsAgain = document.querySelector("#btnResultsAgain");
-  const btnResultsExit = document.querySelector("#resultsExit");
+  const btnResultsExit = document.querySelector("#btnResultsExit");
 
   function showBossSelectScreen() {
     if (bossSelectScreen) bossSelectScreen.style.display = "flex";

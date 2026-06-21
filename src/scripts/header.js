@@ -130,7 +130,6 @@ function initMenu() {
 function initScrollHide() {
   let lastY = window.scrollY;
   let ticking = false;
-  const isMobile = window.matchMedia("(max-width: 760px)").matches;
 
   const onScroll = () => {
     const y = window.scrollY;
@@ -149,7 +148,7 @@ function initScrollHide() {
   };
 
   window.addEventListener("scroll", () => {
-    if (!ticking && isMobile) {
+    if (!ticking) {
       window.requestAnimationFrame(onScroll);
       ticking = true;
     }

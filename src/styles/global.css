@@ -3916,6 +3916,10 @@ h1 {
   overflow-x: auto;
   scrollbar-width: thin;
   backdrop-filter: blur(12px);
+  transition: top 0.24s ease;
+}
+.header-hidden .tab-bar {
+  top: 12px;
 }
 
 .tab {
@@ -4063,7 +4067,18 @@ h1 {
 
 /* Mobile: tab bar sticks below header */
 @media (max-width: 760px) {
-  .tab-bar { top: 70px; }
+  .tab-bar {
+    top: 70px;
+    flex-wrap: wrap;
+    overflow-x: visible;
+    justify-content: center;
+  }
+  .tab {
+    flex: 1 1 auto;
+    justify-content: center;
+    padding: 8px 12px;
+    font-size: 0.78rem;
+  }
   .panel { padding: 16px; }
 }
 
