@@ -1,14 +1,29 @@
 {
-  "updatedAt": "2026-06-21T16:20:50.166Z",
+  "updatedAt": "2026-06-27T17:24:00.529Z",
   "timezone": "Asia/Jakarta",
   "startDate": "2026-06-06",
   "summary": {
     "todayRunWalkKm": 0,
-    "totalRunWalkKm": 8.77,
-    "todayPushUps": 50,
-    "totalPushUps": 250
+    "totalRunWalkKm": 12.15,
+    "todayPushUps": 0,
+    "totalPushUps": 400
   },
   "daily": [
+    {
+      "date": "2026-06-27",
+      "runWalkKm": 0,
+      "pushUps": 150
+    },
+    {
+      "date": "2026-06-26",
+      "runWalkKm": 2.38,
+      "pushUps": 0
+    },
+    {
+      "date": "2026-06-23",
+      "runWalkKm": 1,
+      "pushUps": 0
+    },
     {
       "date": "2026-06-21",
       "runWalkKm": 0,
@@ -78,6 +93,20 @@
       "type": "Run",
       "date": "2026-06-13",
       "distanceKm": 2.76
+    },
+    {
+      "id": 19035123085,
+      "name": "Evening Run",
+      "type": "Run",
+      "date": "2026-06-23",
+      "distanceKm": 1
+    },
+    {
+      "id": 19068066928,
+      "name": "Morning Run",
+      "type": "Run",
+      "date": "2026-06-26",
+      "distanceKm": 2.38
     }
   ]
 }

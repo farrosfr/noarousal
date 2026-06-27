@@ -5,8 +5,7 @@ import "@fontsource-variable/inter";
 import "@fontsource-variable/space-grotesk";
 import "../styles/global.css";
 import "../styles/game-extras.css";
-import { getAccountabilityData } from "../utils/db";
-import fitnessSummaryData from "../../public/data/fitness-summary.json";
+import { getAccountabilityData, getDynamicFitnessSummary } from "../utils/db";
 import { streakBadges, refusalBadges, performanceBadges } from "../data/badges.js";
 import SiteHeader from "../components/SiteHeader.astro";
 import Icon from "../components/Icon.astro";
@@ -17,8 +16,10 @@ import StatChip from "../components/StatChip.astro";
 import Tag from "../components/Tag.astro";
 
 let accountabilityData;
+let fitnessSummaryData;
 try {
   accountabilityData = await getAccountabilityData(Astro.locals);
+  fitnessSummaryData = await getDynamicFitnessSummary(Astro.locals);
 } catch (e) {
   console.error("ERROR IN ARENA.ASTRO:", e);
 }

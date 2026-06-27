@@ -29,7 +29,7 @@ const {
   STRAVA_MANUAL_LOG_PATH
 } = process.env;
 
-const OUTPUT_FILE = new URL("../public/data/fitness-summary.json", import.meta.url);
+const OUTPUT_FILE = new URL("../src/data/fitness-summary.json", import.meta.url);
 const RUN_WALK_TYPES = new Set(["Run", "Walk", "Hike", "TrailRun", "VirtualRun"]);
 
 function dateInTimezone(date = new Date(), timezone = STRAVA_TIMEZONE) {

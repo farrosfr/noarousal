@@ -1,4 +1,5 @@
 import accountabilityJson from "../data/accountability.json";
+import fitnessSummaryBaseline from "../data/fitness-summary.json";
 
 export interface AccountabilityEntry {
   type: string;
@@ -77,4 +78,66 @@ export async function getAccountabilityData(locals?: any): Promise<Accountabilit
     console.error("Failed to query Cloudflare D1. Falling back to static JSON:", err);
     return accountabilityJson as AccountabilityData;
   }
+}
+
+function dateInTimezone(date: Date = new Date(), timezone: string = "Asia/Jakarta") {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: timezone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(date);
+  const lookup = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+  return `${lookup.year}-${lookup.month}-${lookup.day}`;
+}
+
+export async function getDynamicFitnessSummary(locals?: any): Promise<any> {
+  const accData = await getAccountabilityData(locals);
+  
+  // Start with a copy of the Strava baseline
+  const summary = JSON.parse(JSON.stringify(fitnessSummaryBaseline));
+  
+  const pushUpsByDate = new Map<string, number>();
+  const timezone = accData.timeZone || "Asia/Jakarta";
+  const startDate = "2026-06-06";
+  
+  accData.entries.forEach((entry) => {
+    if (entry.type === "pushups" && entry.timestamp) {
+      const dateStr = entry.timestamp.substring(0, 10); // YYYY-MM-DD
+      if (dateStr >= startDate) {
+        const reps = Number(entry.count ?? 50);
+        pushUpsByDate.set(dateStr, (pushUpsByDate.get(dateStr) || 0) + reps);
+      }
+    }
+  });
+  
+  const todayStr = dateInTimezone(new Date(), timezone);
+  const totalPushUps = Array.from(pushUpsByDate.values()).reduce((sum, reps) => sum + reps, 0);
+  const todayPushUps = pushUpsByDate.get(todayStr) || 0;
+  
+  summary.summary.totalPushUps = totalPushUps;
+  summary.summary.todayPushUps = todayPushUps;
+  
+  // Clear baseline pushups to recalculate from DB
+  const dailyMap = new Map<string, any>();
+  summary.daily.forEach((day: any) => {
+    dailyMap.set(day.date, { ...day, pushUps: 0 });
+  });
+  
+  // Merge DB pushups
+  pushUpsByDate.forEach((pushUps, date) => {
+    if (dailyMap.has(date)) {
+      const existing = dailyMap.get(date);
+      existing.pushUps = pushUps;
+    } else {
+      dailyMap.set(date, {
+        date,
+        runWalkKm: 0,
+        pushUps
+      });
+    }
+  });
+  
+  summary.daily = Array.from(dailyMap.values()).sort((a, b) => b.date.localeCompare(a.date));
+  return summary;
 }
