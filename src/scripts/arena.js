@@ -1372,6 +1372,10 @@ function startPlayerTurn() {
 function initDynamicStats() {
   const willpower = parseInt(document.querySelector("#attrWillpower")?.textContent || "0", 10);
   const fortitude = parseInt(document.querySelector("#attrFortitude")?.textContent || "0", 10);
+  const accuracy = parseFloat(document.querySelector("#attrAccuracy")?.textContent || "100");
+
+  // Base crit chance scales from 5% to 15% based on accuracy
+  game.critChance = Math.max(0.05, (accuracy / 100) * 0.15);
 
   // Sync companion from UI selection dropdown
   const companionSelect = document.querySelector("#companionSelect");
@@ -1805,7 +1809,12 @@ function handleStrike() {
     return;
   }
 
+  let isCrit = Math.random() < (game.critChance || 0.1);
   let dmg = Math.floor(Math.random() * (game.strikeMaxDmg - game.strikeMinDmg + 1)) + game.strikeMinDmg;
+  
+  if (isCrit) {
+    dmg = Math.round(dmg * 1.5);
+  }
   if (game.atkMultiplier) {
     dmg = Math.round(dmg * game.atkMultiplier);
   }
@@ -1821,11 +1830,17 @@ function handleStrike() {
   
   setTimeout(() => {
     shakeElement(gameElements.ninjaEnemy);
-    showFloatingEffect("#ninja-enemy", `-${dmg}`, "damage");
+    const floatText = isCrit ? `CRIT! -${dmg}` : `-${dmg}`;
+    const floatType = isCrit ? "damage-crit" : "damage";
+    showFloatingEffect("#ninja-enemy", floatText, floatType);
     triggerOverlayAnimation("#strikeOverlay");
   }, 200);
 
-  appendLogToTicker(`Sovereign Ninja uses <strong>Strike</strong>! Dealt ${dmg} damage to ${BOSSES[currentBossKey].name}.`);
+  const strikeMsg = isCrit
+    ? `Sovereign Ninja uses <strong>Strike</strong>! 💥<strong>CRITICAL HIT!</strong> Dealt ${dmg} damage to ${BOSSES[currentBossKey].name}.`
+    : `Sovereign Ninja uses <strong>Strike</strong>! Dealt ${dmg} damage to ${BOSSES[currentBossKey].name}.`;
+
+  appendLogToTicker(strikeMsg);
   
   if (!checkBattleEnd()) {
     enemyTurn();
@@ -1851,7 +1866,7 @@ function handleFireJutsu() {
       isCrit = true;
       const critMul = game.timeOfDayBoost.playerFlameCrit || 1.5;
       dmg = Math.round(dmg * critMul);
-    } else if (game.willfireBladeActive && Math.random() < 0.15) {
+    } else if (game.willfireBladeActive && Math.random() < game.critChance) {
       isCrit = true;
       const critMul = game.timeOfDayBoost.playerFlameCrit || 1.5;
       dmg = Math.round(dmg * critMul);
