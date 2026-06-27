@@ -1,433 +1,306 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex, nofollow" />
-    <meta name="color-scheme" content="light dark" />
+    <meta name="color-scheme" content="dark" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <title>NoArousal Data CMS</title>
+    <title>NoArousal Sovereign Control Center</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Space+Grotesk:wght@500;700;900&display=swap" rel="stylesheet" />
-    <script>
-      (function setInitialTheme() {
-        document.documentElement.dataset.theme = "dark";
-        document.documentElement.style.colorScheme = "dark";
-      })();
-    </script>
     <style>
-      html,
+      *, *::before, *::after {
+        box-sizing: border-box;
+      }
       body {
         margin: 0;
-        min-height: 100%;
-        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      }
-
-      html[data-theme="light"],
-      html[data-theme="light"] body {
-        background: #f7f4ee;
-        color: #151515;
-        --sui-foreground-color-1-hsl: 0 0% 5%;
-        --sui-foreground-color-2-hsl: 0 0% 18%;
-        --sui-foreground-color-3-hsl: 0 0% 30%;
-        --sui-background-color-1-hsl: 0 0% 100%;
-        --sui-background-color-2-hsl: 36 24% 97%;
-        --sui-background-color-3-hsl: 36 20% 94%;
-        --sui-background-color-4-hsl: 36 16% 90%;
-        --sui-background-color-5-hsl: 36 12% 82%;
-      }
-
-      html[data-theme="dark"],
-      html[data-theme="dark"] body {
+        padding: 0;
         background: #0b0d10;
         color: #f7f2ea;
-        --sui-foreground-color-1-hsl: 36 28% 96%;
-        --sui-foreground-color-2-hsl: 36 18% 82%;
-        --sui-foreground-color-3-hsl: 36 12% 70%;
-        --sui-background-color-1-hsl: 210 10% 8%;
-        --sui-background-color-2-hsl: 210 10% 10%;
-        --sui-background-color-3-hsl: 210 10% 13%;
-        --sui-background-color-4-hsl: 210 10% 16%;
-        --sui-background-color-5-hsl: 210 10% 26%;
-      }
-
-      #nc-root {
-        position: relative;
-        z-index: 1;
+        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
         min-height: 100vh;
-      }
-
-      #nc-root,
-      #nc-root * {
-        visibility: visible;
-      }
-
-      html[data-theme="light"] #nc-root,
-      html[data-theme="light"] #nc-root .sui.app-shell,
-      html[data-theme="light"] #nc-root .main {
-        color: #151515;
-        background-color: #f7f4ee;
-      }
-
-      html[data-theme="dark"] #nc-root,
-      html[data-theme="dark"] #nc-root .sui.app-shell,
-      html[data-theme="dark"] #nc-root .main {
-        color: #f7f2ea;
-        background-color: #0f1318;
-      }
-
-      .cms-fallback {
-        display: grid;
-        position: fixed;
-        z-index: 2147483646;
-        inset: 0;
-        min-height: 100vh;
-        place-items: center;
-        padding: 24px;
-        pointer-events: none;
-      }
-
-      .cms-fallback__inner {
-        width: min(460px, 100%);
-        border: 1px solid rgba(21, 21, 21, 0.14);
-        border-radius: 8px;
-        padding: 24px;
-        background: #ffffff;
-        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.18);
-        pointer-events: auto;
-      }
-
-      html[data-theme="dark"] .cms-fallback__inner {
-        border-color: rgba(247, 242, 234, 0.16);
-        background: #11151b;
-      }
-
-      .cms-fallback h1 {
-        margin: 0 0 8px;
-        font-size: 24px;
-      }
-
-      .cms-fallback p {
-        margin: 0;
-        color: #514b44;
-        line-height: 1.55;
-      }
-
-      html[data-theme="dark"] .cms-fallback p {
-        color: #b9b0a3;
-      }
-
-      .cms-fallback p + p {
-        margin-top: 12px;
-      }
-
-      .cms-actions {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin-top: 18px;
-      }
-
-      .cms-actions button,
-      .cms-actions a {
-        border: 1px solid rgba(21, 21, 21, 0.18);
-        border-radius: 999px;
-        padding: 9px 12px;
-        color: #151515;
-        background: #f2eee7;
-        font: 600 13px/1 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        text-decoration: none;
-        cursor: pointer;
-      }
-
-      html[data-theme="dark"] .cms-actions button,
-      html[data-theme="dark"] .cms-actions a {
-        border-color: rgba(247, 242, 234, 0.18);
-        color: #f7f2ea;
-        background: #1d232d;
-      }
-
-      html[data-cms-loaded="true"] .cms-fallback {
-        display: none;
-      }
-
-      html[data-cms-blank="true"] .cms-fallback {
-        inset: 0;
-        display: grid;
-        min-height: 100vh;
-        padding: 24px;
-      }
-
-      html[data-cms-blank="true"] .cms-fallback__inner {
-        width: min(560px, 100%);
-        padding: 24px;
-      }
-
-      html[data-cms-blank="true"] .cms-fallback h1,
-      html[data-cms-blank="true"] .cms-fallback p + p,
-      html[data-cms-blank="true"] .cms-actions {
-        display: block;
-      }
-
-      html[data-cms-blank="true"] .cms-actions {
-        display: flex;
-      }
-
-      .quick-refuse {
-        display: none !important;
-        position: fixed !important;
-        z-index: 2147483647 !important;
-        bottom: 16px !important;
-        right: 16px !important;
-        width: min(340px, calc(100vw - 32px)) !important;
-        border: 1px solid rgba(21, 21, 21, 0.2) !important;
-        border-radius: 8px !important;
-        padding: 14px !important;
-        background: #ffffff !important;
-        color: #151515 !important;
-        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2) !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-        pointer-events: auto !important;
-      }
-
-      html[data-cms-auth="true"] .quick-refuse {
-        display: block !important;
-      }
-
-      html[data-theme="dark"] .quick-refuse {
-        background: #1d232d !important;
-        color: #f7f2ea !important;
-        border-color: rgba(247, 242, 234, 0.2) !important;
-      }
-
-      .quick-refuse strong {
-        display: block;
-        margin-bottom: 4px;
-        font-size: 14px;
-        color: inherit !important;
-      }
-
-      .quick-refuse p {
-        margin: 0 0 10px;
-        font-size: 12px;
-        line-height: 1.45;
-        color: inherit !important;
-        opacity: 0.8;
-      }
-
-      .quick-refuse button {
-        width: 100%;
-        border: 0;
-        border-radius: 999px;
-        padding: 11px 14px;
-        color: #ffffff !important;
-        background: #151515 !important;
-        font: 700 13px/1 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        cursor: pointer;
-      }
-
-      html[data-theme="dark"] .quick-refuse button {
-        background: #f7f2ea !important;
-        color: #151515 !important;
-      }
-
-      .quick-refuse button:disabled {
-        cursor: wait;
-        opacity: 0.65;
-      }
-
-      .quick-refuse__status {
-        min-height: 17px;
-        margin-top: 10px;
-        font-size: 12px;
-        line-height: 1.4;
-        color: inherit !important;
-        opacity: 0.8;
-      }
-
-      /* CINEMATIC VICTORY CUTSCENE ANIMATIONS */
-      .cinematic-victory-overlay {
-        position: fixed;
-        inset: 0;
-        background: #020203;
-        z-index: 100001;
-        overflow: hidden;
-        box-sizing: border-box;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
+        padding: 16px;
+      }
+      
+      .admin-container {
+        width: 100%;
+        max-width: 440px;
+        background: rgba(17, 21, 27, 0.8);
+        border: 1px solid rgba(247, 242, 234, 0.12);
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 24px 64px rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(12px);
       }
 
-      /* Cinematic Widescreen Crop Bars */
+      header {
+        text-align: center;
+        margin-bottom: 24px;
+      }
+      h1 {
+        font-family: 'Space Grotesk', sans-serif;
+        font-weight: 900;
+        font-size: 24px;
+        margin: 0 0 6px;
+        letter-spacing: -0.02em;
+        background: linear-gradient(135deg, #fff 30%, #a3a3a3 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .subtitle {
+        font-size: 11px;
+        color: #b9b0a3;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin: 0;
+        opacity: 0.8;
+      }
+
+      /* Stats Grid */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-bottom: 24px;
+      }
+      .stat-card {
+        background: rgba(29, 35, 45, 0.5);
+        border: 1px solid rgba(247, 242, 234, 0.06);
+        border-radius: 10px;
+        padding: 12px 6px;
+        text-align: center;
+      }
+      .stat-value {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 18px;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 2px;
+      }
+      .stat-label {
+        font-size: 9px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #b9b0a3;
+        opacity: 0.8;
+      }
+
+      /* Button grids */
+      .control-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 20px;
+      }
+      .btn-main {
+        width: 100%;
+        border: 0;
+        border-radius: 10px;
+        padding: 14px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-weight: 700;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      }
+      .btn-refuse {
+        background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+        color: #fff;
+      }
+      .btn-refuse:hover {
+        background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+        transform: translateY(-1.5px);
+        box-shadow: 0 8px 20px rgba(234, 88, 12, 0.25);
+      }
+      
+      .pushups-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+      }
+      .btn-pushup {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        color: #fff;
+        padding: 12px 6px;
+        font-size: 12px;
+      }
+      .btn-pushup:hover {
+        background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+        transform: translateY(-1.5px);
+        box-shadow: 0 8px 20px rgba(245, 158, 11, 0.25);
+      }
+
+      .btn-main:active, .btn-pushup:active {
+        transform: translateY(1px);
+      }
+      .btn-main:disabled, .btn-pushup:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+        transform: none !important;
+        box-shadow: none !important;
+      }
+
+      /* Console logs */
+      .status-box {
+        background: rgba(0, 0, 0, 0.25);
+        border: 1px solid rgba(247, 242, 234, 0.05);
+        border-radius: 8px;
+        padding: 10px 12px;
+        min-height: 42px;
+        font-family: monospace;
+        font-size: 11px;
+        color: #b9b0a3;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        margin-bottom: 24px;
+      }
+
+      /* Footer */
+      .admin-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        border-top: 1px solid rgba(247, 242, 234, 0.08);
+        padding-top: 16px;
+      }
+      .btn-secondary {
+        background: transparent;
+        border: 1px solid rgba(247, 242, 234, 0.15);
+        color: #b9b0a3;
+        border-radius: 8px;
+        padding: 7px 12px;
+        font-size: 11px;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.2s;
+      }
+      .btn-secondary:hover {
+        color: #fff;
+        border-color: rgba(247, 242, 234, 0.4);
+        background: rgba(255,255,255,0.02);
+      }
+
+      /* CINEMATIC VICTORY CUTSCENE OVERLAY */
+      .cinematic-victory-overlay {
+        position: fixed;
+        inset: 0;
+        background: #000;
+        z-index: 999999;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+
       .cinematic-bar {
         position: absolute;
         left: 0;
-        right: 0;
-        height: 10%;
+        width: 100%;
+        height: 15%;
         background: #000;
-        z-index: 100003;
-        transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+        z-index: 10;
       }
       .cinematic-bar.top {
         top: 0;
-        transform: translateY(-100%);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
       }
       .cinematic-bar.bottom {
         bottom: 0;
-        transform: translateY(100%);
-      }
-      .play-animation .cinematic-bar.top {
-        transform: translateY(0);
-      }
-      .play-animation .cinematic-bar.bottom {
-        transform: translateY(0);
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
       }
 
-      /* Epic Victory Widescreen Art - Vertically Centered and Scaled */
       .cinematic-art-wrapper {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%) scale(0.95);
-        width: min(840px, 92%);
-        max-height: 56vh; /* Keeps artwork strictly bounded from overlapping top/bottom titles */
-        border-radius: 16px;
-        overflow: hidden;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.95);
-        opacity: 0;
-        transition: all 1.2s cubic-bezier(0.25, 1, 0.5, 1) 0.3s;
-        z-index: 100002;
-      }
-      .play-animation .cinematic-art-wrapper {
-        opacity: 1;
-        transform: translate(-50%, -50%) scale(1);
-      }
-
-      .cinematic-art-img {
+        position: relative;
         width: 100%;
-        max-height: 56vh;
-        object-fit: cover;
-        display: block;
-        transform: scale(1.1);
-        transition: transform 7s cubic-bezier(0.1, 0.8, 0.3, 1) 0.5s;
+        height: 70%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
-      .play-animation .cinematic-art-img {
-        transform: scale(1);
+      .cinematic-art-img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        filter: brightness(0.85) contrast(1.1);
+        border: 1px solid rgba(255, 255, 255, 0.03);
+        box-shadow: 0 0 80px rgba(0, 0, 0, 0.9);
       }
 
-      /* Dynamic movie style subtitles - Positioned just above the bottom black bar */
       .cinematic-subtitle {
         position: absolute;
-        bottom: 14%;
-        left: 50%;
-        transform: translate(-50%, 0) translateY(10px);
-        opacity: 0;
-        color: #fef08a; /* Soft warning yellow, highly readable */
-        font-family: "Space Grotesk", "Inter", system-ui, sans-serif;
-        font-style: normal;
-        font-weight: 600;
-        font-size: clamp(1rem, 2.4vw, 1.2rem);
+        bottom: 18%;
+        z-index: 12;
+        color: #f3f4f6;
+        font-family: Georgia, serif;
+        font-style: italic;
+        font-size: 1.15rem;
         text-align: center;
-        width: max-content;
-        max-width: min(680px, 85%);
-        background: rgba(0, 0, 0, 0.75); /* Dark background box for subtitles */
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        padding: 10px 24px;
-        border-radius: 12px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-        backdrop-filter: blur(8px);
-        z-index: 100004;
-        transition: all 0.8s ease 1s;
-      }
-      .play-animation .cinematic-subtitle {
-        opacity: 1;
-        transform: translate(-50%, 0);
+        max-width: 600px;
+        line-height: 1.6;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
       }
 
-      /* Levelup/Victory epic slash overlay - Positioned at the top covering the top bar */
       .cinematic-victory-banner {
         position: absolute;
-        top: 15%;
-        left: 50%;
-        transform: translate(-50%, -50%) scale(0.9);
-        opacity: 0;
-        z-index: 100005;
+        top: 18%;
+        z-index: 12;
         text-align: center;
-        transition: all 1s cubic-bezier(0.25, 1, 0.5, 1) 1.5s;
+        pointer-events: none;
       }
-      .play-animation .cinematic-victory-banner {
-        transform: translate(-50%, -50%) scale(1);
-        opacity: 1;
-      }
-
       .banner-tagline {
-        font-family: "Space Grotesk", sans-serif;
+        font-family: 'Space Grotesk', sans-serif;
+        color: #ea580c;
+        font-weight: 700;
+        letter-spacing: 0.4em;
         font-size: 0.8rem;
-        font-weight: 900;
-        color: #2dd4bf;
-        letter-spacing: 0.5em;
-        margin-bottom: 6px;
         text-transform: uppercase;
-        opacity: 0.95;
-        text-shadow: 0 0 10px rgba(45, 212, 191, 0.4);
+        margin-bottom: 8px;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
       }
-
       .victory-title-epic {
-        font-family: "Space Grotesk", sans-serif;
-        font-size: clamp(2.4rem, 8vw, 4.8rem);
-        font-weight: 950;
-        color: transparent;
-        background: linear-gradient(135deg, #2dd4bf 0%, #3b82f6 50%, #2dd4bf 100%);
-        background-size: 200% auto;
-        -webkit-background-clip: text;
-        background-clip: text;
-        letter-spacing: 0.25em;
+        font-family: 'Space Grotesk', sans-serif;
+        font-weight: 900;
+        font-size: 4.5rem;
+        letter-spacing: 0.1em;
         margin: 0;
-        text-transform: uppercase;
-        animation: shimmerGradient 4s linear infinite;
-        filter: drop-shadow(0 4px 15px rgba(0,0,0,0.85));
+        background: linear-gradient(180deg, #ffffff 40%, #a3a3a3 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.9));
       }
 
-      @keyframes shimmerGradient {
-        to { background-position: 200% center; }
-      }
-
-      /* Widescreen continue button - Positioned perfectly inside the bottom black bar */
       .btn-cinematic-continue {
         position: absolute;
-        bottom: 4%;
-        left: 50%;
-        transform: translate(-50%, 0) translateY(15px);
-        opacity: 0;
-        background: linear-gradient(135deg, #2dd4bf 0%, #3b82f6 100%);
-        color: #000 !important;
+        bottom: 5%;
+        z-index: 20;
+        background: #f7f2ea;
+        color: #0b0d10;
         border: 0;
-        font-family: "Space Grotesk", sans-serif;
-        font-weight: 900;
-        font-size: 0.85rem;
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-        border-radius: 99px;
-        padding: 11px 32px;
+        border-radius: 999px;
+        padding: 12px 36px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-weight: 700;
+        font-size: 0.9rem;
         cursor: pointer;
-        z-index: 100006;
-        box-shadow: 0 0 20px rgba(45, 212, 191, 0.4);
-        transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1) 4.2s;
-      }
-      .play-animation .btn-cinematic-continue {
-        opacity: 1;
-        transform: translate(-50%, 0);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        transition: transform 0.2s;
       }
       .btn-cinematic-continue:hover {
-        transform: translate(-50%, -3px) scale(1.04);
-        box-shadow: 0 0 35px rgba(45, 212, 191, 0.75);
+        transform: scale(1.05);
       }
       .btn-cinematic-continue:active {
-        transform: translate(-50%, 1px) scale(0.98);
+        transform: scale(0.98);
       }
 
       @media (max-width: 768px) {
@@ -447,60 +320,69 @@
           padding: 8px 24px;
           font-size: 0.78rem;
         }
-        .quick-refuse {
-          bottom: 85px !important; /* Raised to avoid overlapping bottom tab-bar on mobile */
-        }
       }
     </style>
   </head>
   <body>
-    <aside class="quick-refuse" aria-label="Quick accountability shortcut">
-      <strong>Shortcut</strong>
-      <p>Instantly log a Refusal win or Push-ups to your public log.</p>
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-        <button id="quickRefuseButton" type="button" style="font-size: 11.5px; padding: 11px 8px;">Refuse (now)</button>
-        <button id="quickPushups5Button" type="button" style="background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%) !important; color: #fff !important; font-weight: 800; font-size: 11.5px; padding: 11px 8px;">+5 Push-ups</button>
-        <button id="quickPushups10Button" type="button" style="background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%) !important; color: #fff !important; font-weight: 800; font-size: 11.5px; padding: 11px 8px;">+10 Push-ups</button>
-        <button id="quickPushups50Button" type="button" style="background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%) !important; color: #fff !important; font-weight: 800; font-size: 11.5px; padding: 11px 8px;">+50 Push-ups</button>
-      </div>
-      <div class="quick-refuse__status" id="quickRefuseStatus" role="status" aria-live="polite"></div>
-    </aside>
-    <div class="cms-fallback" id="cmsFallback">
-      <div class="cms-fallback__inner">
-        <h1>NoArousal CMS</h1>
-        <p id="cmsStatus">Loading the editor...</p>
-        <p>If this stays here, refresh once or check the browser console for the exact loading error.</p>
-        <div class="cms-actions">
-          <button id="cmsResetButton" type="button">Reset CMS cache</button>
-          <a href="/admin/?reset=1">Open clean</a>
+    <main class="admin-container">
+      <header>
+        <h1>SOVEREIGN CONTROL</h1>
+        <p class="subtitle">Dynamic Admin Center</p>
+      </header>
+
+      <section class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value" id="statRefuses">-</div>
+          <div class="stat-label">Refuses</div>
         </div>
+        <div class="stat-card">
+          <div class="stat-value" id="statPushups">-</div>
+          <div class="stat-label">Push-ups</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="statDistance">-</div>
+          <div class="stat-label">Distance</div>
+        </div>
+      </section>
+
+      <section class="control-grid">
+        <button id="quickRefuseButton" class="btn-main btn-refuse" type="button">Refuse to lose (now)</button>
+        
+        <div class="pushups-grid">
+          <button id="quickPushups5Button" class="btn-main btn-pushup" type="button">+5 reps</button>
+          <button id="quickPushups10Button" class="btn-main btn-pushup" type="button">+10 reps</button>
+          <button id="quickPushups50Button" class="btn-main btn-pushup" type="button">+50 reps</button>
+        </div>
+      </section>
+
+      <div class="status-box" id="quickRefuseStatus" role="status" aria-live="polite">
+        Dashboard ready.
       </div>
-    </div>
-    <div id="nc-root"></div>
+
+      <footer class="admin-footer">
+        <button id="cmsResetButton" class="btn-secondary" type="button">Change Admin Key</button>
+        <a href="/arena/" class="btn-secondary">Go to Arena &rarr;</a>
+      </footer>
+    </main>
 
     <!-- Cinematic Victory Cutscene Overlay -->
     <div class="cinematic-victory-overlay" id="cinematicVictoryOverlay" style="display: none;">
-      <!-- Cinematic Widescreen Crop Bars -->
       <div class="cinematic-bar top"></div>
       <div class="cinematic-bar bottom"></div>
 
-      <!-- Epic Cinematic Victory Image -->
       <div class="cinematic-art-wrapper">
         <img src="/ninja_victory.jpg" alt="Victory Cutscene Art" class="cinematic-art-img" />
       </div>
 
-      <!-- Movie Subtitles -->
       <div class="cinematic-subtitle" id="cinematicSubtitle">
         "At last... the shadow urge dissipates into the light of resolve."
       </div>
 
-      <!-- Big Victory Banner -->
       <div class="cinematic-victory-banner" id="cinematicVictoryBanner">
         <div class="banner-tagline">SOVEREIGN RESISTANCE</div>
         <h1 class="victory-title-epic">VICTORY</h1>
       </div>
 
-      <!-- Continue Button -->
       <button type="button" class="btn-cinematic-continue" id="btnCinematicContinue">
         Continue &rarr;
       </button>
@@ -510,226 +392,48 @@
       let currentRefuseCount = 0;
       let isRefuseCountInitialized = false;
 
-      async function getSavedTokenSilently() {
-        try {
-          const sveltiaUser = JSON.parse(localStorage.getItem("sveltia-cms.user") || "{}");
-          if (sveltiaUser.token) return sveltiaUser.token;
-        } catch (e) {}
-        return localStorage.getItem("noa-github-token") || "";
-      }
-
-      async function updateInitialRefuseCount() {
+      // Update statistics
+      async function updateDashboardStats() {
         try {
           const res = await fetch("/api/entries");
           if (res.ok) {
             const data = await res.json();
             if (data && Array.isArray(data.entries)) {
-              currentRefuseCount = data.entries.filter(e => e.type === "refuse").length;
+              const refuses = data.entries.filter(e => e.type === "refuse").length;
+              const totalReps = data.entries.filter(e => e.type === "pushups").reduce((sum, e) => sum + Number(e.count ?? 50), 0);
+              
+              document.getElementById("statRefuses").textContent = refuses;
+              document.getElementById("statPushups").textContent = totalReps;
+              currentRefuseCount = refuses;
               isRefuseCountInitialized = true;
-              console.log("Initial refuse count initialized from D1 API:", currentRefuseCount);
             }
           }
+          
+          const fitRes = await fetch("/data/fitness-summary.json");
+          if (fitRes.ok) {
+            const fitData = await fitRes.json();
+            const distance = fitData?.summary?.totalRunWalkKm || 0;
+            document.getElementById("statDistance").textContent = distance.toFixed(2) + " km";
+          }
         } catch (e) {
-          console.error("Failed to fetch initial refuse count:", e);
+          console.error("Failed to load dashboard stats:", e);
         }
       }
 
-      // Initialize on load
-      updateInitialRefuseCount();
+      // Initialize
+      updateDashboardStats();
 
-      // Periodically check if still 0
-      window.setInterval(async () => {
-        if (!isRefuseCountInitialized) {
-          await updateInitialRefuseCount();
+      // Periodically check if still 0 (for hot refreshing)
+      setInterval(() => {
+        const refusesEl = document.getElementById("statRefuses");
+        if (refusesEl && (refusesEl.textContent === "-" || refusesEl.textContent === "0")) {
+          updateDashboardStats();
         }
       }, 5000);
 
-      function startCinematicVictory() {
-        const cinematicOverlay = document.querySelector("#cinematicVictoryOverlay");
-        if (!cinematicOverlay) return;
-        
-        cinematicOverlay.style.display = "flex";
-        cinematicOverlay.classList.remove("play-animation");
-        cinematicOverlay.offsetHeight; // trigger reflow
-        cinematicOverlay.classList.add("play-animation");
-
-        const subtitle = document.querySelector("#cinematicSubtitle");
-        if (subtitle) {
-          subtitle.textContent = `"At last... the shadow urge dissipates into the light of resolve."`;
-          if (window.victorySubtitleTimeout) clearTimeout(window.victorySubtitleTimeout);
-          window.victorySubtitleTimeout = setTimeout(() => {
-            subtitle.textContent = `"My willpower is absolute. The Sovereign Mind remains master of itself."`;
-          }, 3500);
-        }
-
-        const continueBtn = document.querySelector("#btnCinematicContinue");
-        if (continueBtn) {
-          continueBtn.onclick = () => {
-            cinematicOverlay.style.display = "none";
-            cinematicOverlay.classList.remove("play-animation");
-          };
-        }
-      }
-
-      // Intercept window.fetch to catch PUT updates to accountability
-      const originalFetch = window.fetch;
-      window.fetch = async function(resource, options) {
-        const url = typeof resource === 'string' ? resource : (resource instanceof Request ? resource.url : '');
-        const method = options && options.method ? options.method.toUpperCase() : 'GET';
-        
-        if (url.includes('contents/src/data/accountability.json') && method === 'PUT') {
-          // Attempt to fetch current count if not initialized yet
-          if (!isRefuseCountInitialized) {
-            let authHeader = '';
-            if (options.headers) {
-              if (typeof options.headers.get === 'function') {
-                authHeader = options.headers.get('Authorization') || options.headers.get('authorization');
-              } else {
-                authHeader = options.headers.Authorization || options.headers.authorization;
-              }
-            }
-            try {
-              const headers = {};
-              if (authHeader) headers["Authorization"] = authHeader;
-              const apiUrl = "https://api.github.com/repos/farrosfr/noarousal/contents/src/data/accountability.json?ref=main";
-              const res = await originalFetch(apiUrl, { headers });
-              if (res.ok) {
-                const currentFile = await res.json();
-                const currentData = JSON.parse(decodeBase64Utf8(currentFile.content));
-                if (currentData && Array.isArray(currentData.entries)) {
-                  currentRefuseCount = currentData.entries.filter(e => e.type === "refuse").length;
-                  isRefuseCountInitialized = true;
-                }
-              }
-            } catch (e) {
-              console.error("Failed to fetch count before save", e);
-            }
-          }
-
-          let bodyData = null;
-          try {
-            if (options.body) {
-              if (typeof options.body === 'string') {
-                bodyData = JSON.parse(options.body);
-              } else if (options.body instanceof Blob) {
-                const text = await options.body.text();
-                bodyData = JSON.parse(text);
-              }
-            }
-          } catch(e) {
-            console.error("Failed to parse request body", e);
-          }
-          
-          const response = await originalFetch.apply(this, arguments);
-          
-          if (response.ok && bodyData && bodyData.content) {
-            try {
-              const decoded = decodeBase64Utf8(bodyData.content);
-              const data = JSON.parse(decoded);
-              if (data && Array.isArray(data.entries)) {
-                const newRefuseCount = data.entries.filter(e => e.type === "refuse").length;
-                console.log("Intercepted PUT. Old count:", currentRefuseCount, "New count:", newRefuseCount);
-                if (newRefuseCount > currentRefuseCount) {
-                  currentRefuseCount = newRefuseCount;
-                  setTimeout(() => {
-                    startCinematicVictory();
-                  }, 800);
-                } else {
-                  currentRefuseCount = newRefuseCount;
-                }
-              }
-            } catch (e) {
-              console.error("Error parsing intercepted PUT content", e);
-            }
-          }
-          return response;
-        }
-        
-        return originalFetch.apply(this, arguments);
-      };
-
-      window.CMS_MANUAL_INIT = true;
-      window.checkCmsAuth = function () {
-        const rootText = document.getElementById("nc-root")?.innerText?.trim() || "";
-        const isAuth = rootText && !/sign in|work with local|sveltia cms/i.test(rootText) && /blog|accountability/i.test(rootText);
-        
-        if (isAuth) {
-          document.documentElement.dataset.cmsAuth = "true";
-        } else {
-          delete document.documentElement.dataset.cmsAuth;
-        }
-      };
-
-      window.setCmsLoaded = function () {
-        window.setTimeout(function () {
-          const rootText = document.getElementById("nc-root")?.innerText?.trim() || "";
-          const hasUsableUi = /sign in|work with local|sveltia cms/i.test(rootText);
-
-          if (!hasUsableUi) {
-            delete document.documentElement.dataset.cmsLoaded;
-            document.documentElement.dataset.cmsBlank = "true";
-            showCmsStatus("Sveltia loaded, but your PC browser rendered the CMS area blank. Use Reset CMS cache, then reload. If it stays blank, disable forced dark mode or extensions for this site.");
-            return;
-          }
-
-          delete document.documentElement.dataset.cmsBlank;
-          document.documentElement.dataset.cmsLoaded = "true";
-          window.checkCmsAuth();
-        }, 500);
-      };
-      window.showCmsStatus = function (message) {
-        const status = document.getElementById("cmsStatus");
-        if (status) status.textContent = message;
-      };
-      window.setInterval(function () {
-        if (document.documentElement.dataset.theme !== "dark") {
-          document.documentElement.dataset.theme = "dark";
-          document.documentElement.style.colorScheme = "dark";
-        }
-        window.checkCmsAuth();
-      }, 750);
-
-      async function clearCmsCache() {
-        showCmsStatus("Clearing CMS cache...");
-        try {
-          localStorage.clear();
-          sessionStorage.clear();
-        } catch {}
-
-        try {
-          if (window.indexedDB?.databases) {
-            const databases = await indexedDB.databases();
-            await Promise.all(databases.map((database) => database.name && new Promise((resolve) => {
-              const request = indexedDB.deleteDatabase(database.name);
-              request.onsuccess = request.onerror = request.onblocked = resolve;
-            })));
-          }
-        } catch {}
-
-        try {
-          if (window.caches) {
-            const keys = await caches.keys();
-            await Promise.all(keys.map((key) => caches.delete(key)));
-          }
-        } catch {}
-
-        window.location.href = "/admin/?fresh=" + Date.now();
-      }
-
-      document.getElementById("cmsResetButton")?.addEventListener("click", clearCmsCache);
-      if (new URLSearchParams(window.location.search).get("reset") === "1") clearCmsCache();
-      window.setTimeout(function () {
-        if (!document.documentElement.dataset.cmsLoaded && !document.documentElement.dataset.cmsBlank) {
-          const rootText = document.getElementById("nc-root")?.innerText?.trim() || "";
-          if (!/sign in|work with local|sveltia cms/i.test(rootText)) {
-            document.documentElement.dataset.cmsBlank = "true";
-            showCmsStatus("The CMS did not produce visible UI on this PC browser. Use Reset CMS cache, or try this page with extensions disabled.");
-          }
-        }
-      }, 6000);
-
-      function formatJakartaTimestamp(date = new Date()) {
-        const parts = new Intl.DateTimeFormat("en-CA", {
+      function formatJakartaTimestamp() {
+        const date = new Date();
+        const parts = new Intl.DateTimeFormat("en-US", {
           timeZone: "Asia/Jakarta",
           year: "numeric",
           month: "2-digit",
@@ -743,21 +447,6 @@
         return `${value("year")}-${value("month")}-${value("day")}T${value("hour")}:${value("minute")}:00`;
       }
 
-      function decodeBase64Utf8(value) {
-        const binary = atob(value.replace(/\n/g, ""));
-        const bytes = Uint8Array.from(binary, (character) => character.charCodeAt(0));
-        return new TextDecoder().decode(bytes);
-      }
-
-      function encodeBase64Utf8(value) {
-        const bytes = new TextEncoder().encode(value);
-        let binary = "";
-        bytes.forEach((byte) => {
-          binary += String.fromCharCode(byte);
-        });
-        return btoa(binary);
-      }
-
       async function getAdminApiKey() {
         const savedToken = localStorage.getItem("noa-admin-api-key");
         if (savedToken) return savedToken;
@@ -767,6 +456,15 @@
         localStorage.setItem("noa-admin-api-key", token.trim());
         return token.trim();
       }
+
+      document.getElementById("cmsResetButton")?.addEventListener("click", () => {
+        localStorage.removeItem("noa-admin-api-key");
+        const status = document.getElementById("quickRefuseStatus");
+        if (status) status.textContent = "Admin API key cleared. Re-prompting...";
+        getAdminApiKey().then(() => {
+          updateDashboardStats();
+        });
+      });
 
       async function addRefuseNow() {
         const button = document.getElementById("quickRefuseButton");
@@ -806,12 +504,18 @@
             throw new Error(error.error || `Save failed (${res.status})`);
           }
 
-          currentRefuseCount++;
-          setTimeout(() => {
-            startCinematicVictory();
-          }, 800);
-
-          setStatus(`Saved refuse win at ${timestamp}.`);
+          setStatus(`Refusal recorded! Playing victory sequence.`);
+          
+          // Trigger the epic victory cutscene overlay
+          const overlay = document.getElementById("cinematicVictoryOverlay");
+          if (overlay) {
+            overlay.style.display = "flex";
+            const currentStreak = currentRefuseCount + 1;
+            const subtitleEl = document.getElementById("cinematicSubtitle");
+            if (subtitleEl) {
+              subtitleEl.textContent = `"Resolved: ${currentStreak} urges defeated. The mind reigns supreme over the shadows."`;
+            }
+          }
         } catch (error) {
           console.error(error);
           setStatus(error.message || "Could not save refuse event.");
@@ -860,6 +564,7 @@
           }
 
           setStatus(`Saved ${count} push-ups at ${timestamp}.`);
+          updateDashboardStats();
         } catch (error) {
           console.error(error);
           setStatus(error.message || `Could not save ${count} push-ups.`);
@@ -868,138 +573,17 @@
         }
       }
 
+      // Close cinematic overlay and reload stats
+      document.getElementById("btnCinematicContinue")?.addEventListener("click", () => {
+        const overlay = document.getElementById("cinematicVictoryOverlay");
+        if (overlay) overlay.style.display = "none";
+        updateDashboardStats();
+      });
+
       document.getElementById("quickRefuseButton")?.addEventListener("click", addRefuseNow);
       document.getElementById("quickPushups5Button")?.addEventListener("click", () => addPushupsNow(5, "quickPushups5Button"));
       document.getElementById("quickPushups10Button")?.addEventListener("click", () => addPushupsNow(10, "quickPushups10Button"));
       document.getElementById("quickPushups50Button")?.addEventListener("click", () => addPushupsNow(50, "quickPushups50Button"));
-    </script>
-    <script src="/admin/sveltia-cms.js?v=20260611" onerror="showCmsStatus('Could not load the local Sveltia CMS script. Refresh once and check the browser console.')"></script>
-    <script>
-      (async function initCms() {
-        if (!window.CMS) {
-          showCmsStatus("Sveltia CMS did not finish loading. Try refreshing once.");
-          return;
-        }
-
-        try {
-          await window.CMS.init({
-            config: {
-              load_config_file: false,
-              backend: {
-                name: "github",
-                repo: "farrosfr/noarousal",
-                branch: "main",
-                site_domain: "noa.farros.co",
-                auth_methods: ["token"]
-              },
-              media_folder: "public/uploads",
-              public_folder: "/uploads",
-              collections: [
-                {
-                  name: "blog",
-                  label: "Blog",
-                  folder: "src/content/blog",
-                  create: true,
-                  slug: "{{slug}}",
-                  extension: "md",
-                  format: "frontmatter",
-                  fields: [
-                    { name: "title", label: "Title", widget: "string" },
-                    { name: "description", label: "Description", widget: "text" },
-                    { name: "date", label: "Publish Date", widget: "datetime" },
-                    { name: "readTime", label: "Read Time", widget: "string", default: "6 min read" },
-                    { name: "category", label: "Category", widget: "string" },
-                    {
-                      name: "tags",
-                      label: "Tags",
-                      widget: "list",
-                      field: { name: "tag", label: "Tag", widget: "string" }
-                    },
-                    {
-                      name: "image",
-                      label: "Hero Image",
-                      widget: "object",
-                      fields: [
-                        { name: "url", label: "Image URL", widget: "string" },
-                        { name: "alt", label: "Alt Text", widget: "string" },
-                        { name: "credit", label: "Credit", widget: "string" },
-                        { name: "creditUrl", label: "Credit URL", widget: "string" }
-                      ]
-                    },
-                    { name: "body", label: "Article Body", widget: "markdown" }
-                  ]
-                },
-                {
-                  name: "accountability",
-                  label: "Accountability",
-                  files: [
-                    {
-                      name: "public_log",
-                      label: "Public Accountability Log",
-                      file: "src/data/accountability.json",
-                      format: "json",
-                      fields: [
-                        {
-                          name: "journeyStart",
-                          widget: "hidden",
-                          default: "2026-06-06T12:00:00+07:00"
-                        },
-                        {
-                          name: "timeZone",
-                          widget: "hidden",
-                          default: "Asia/Jakarta"
-                        },
-                        {
-                          name: "entries",
-                          label: "Events",
-                          widget: "list",
-                          summary: "{{fields.timestamp}} - {{fields.type}}",
-                          collapsed: true,
-                          minimize_collapsed: true,
-                          add_to_top: true,
-                          hint: "Newest events stay at the top. Add relapse/refusal timestamps here.",
-                          fields: [
-                            {
-                              name: "type",
-                              label: "Event Type",
-                              widget: "select",
-                              options: [
-                                { label: "Relapse (loss)", value: "relapse" },
-                                { label: "Refuse (win)", value: "refuse" },
-                                { label: "Push-ups (fitness)", value: "pushups" }
-                              ],
-                              hint: "Relapse marks that day as a loss. Refuse records an urge resisted. Push-ups tracks reps."
-                            },
-                            {
-                              name: "timestamp",
-                              label: "Event Timestamp",
-                              widget: "datetime",
-                              hint: "When the event occurred."
-                            },
-                            {
-                              name: "count",
-                              label: "Push-up Count (Push-ups only)",
-                              widget: "number",
-                              value_type: "int",
-                              required: false,
-                              default: 50,
-                              hint: "How many push-ups did you do? Defaults to 50."
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            }
-          });
-          setCmsLoaded();
-        } catch (error) {
-          console.error(error);
-          showCmsStatus("Sveltia CMS failed to initialize. Open the browser console for the exact error.");
-        }
-      })();
     </script>
   </body>
 </html>
