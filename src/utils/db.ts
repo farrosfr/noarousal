@@ -23,8 +23,8 @@ export async function getAccountabilityData(locals?: any): Promise<Accountabilit
 
   try {
     // Dynamically import cloudflare:workers to avoid Vite build/SSR bundling issues in Node.js
-    const workers = await import("cloudflare:workers");
-    db = workers.env.DB;
+    const { env } = await import("cloudflare:workers");
+    db = env.DB;
   } catch (e) {
     // Fall back to static JSON if we are not in the Cloudflare Pages/Worker environment
   }

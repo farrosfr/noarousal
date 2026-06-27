@@ -4,9 +4,9 @@ import { getAccountabilityData } from "../../utils/db";
 export const prerender = false; // Always dynamic API endpoint
 
 // Public GET endpoint to fetch entries (from D1 or fallback JSON)
-export const GET: APIRoute = async () => {
+export const GET: APIRoute = async ({ locals }) => {
   try {
-    const data = await getAccountabilityData();
+    const data = await getAccountabilityData(locals);
     return new Response(JSON.stringify(data), {
       status: 200,
       headers: { "Content-Type": "application/json" }
@@ -19,15 +19,14 @@ export const GET: APIRoute = async () => {
   }
 };
 
-// Secure POST endpoint to log a new entry
 export const POST: APIRoute = async ({ request }) => {
   let db: any = null;
   let adminApiKey: string | null = null;
 
   try {
-    const workers = await import("cloudflare:workers");
-    db = workers.env.DB;
-    adminApiKey = workers.env.ADMIN_API_KEY as string;
+    const { env } = await import("cloudflare:workers");
+    db = env.DB;
+    adminApiKey = env.ADMIN_API_KEY as string;
   } catch (_) {}
 
   if (!db) {
