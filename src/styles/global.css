@@ -2362,21 +2362,38 @@ h1 {
 /* Mobile responsive command buttons */
 @media (max-width: 768px) {
   .battle-bg-arena {
-    padding: 24px 16px;
+    padding: 24px 8px;
     min-height: 200px;
   }
   
+  .ninja-simulator-fullscreen-container .battle-bg-arena {
+    padding: 20px 8px;
+  }
+  
   .ninja-character {
-    width: 120px;
+    width: 110px;
   }
   
   .character-avatar-frame {
-    width: 70px;
-    height: 70px;
+    width: 65px;
+    height: 65px;
   }
   
   .character-sprite {
     font-size: 2.2rem;
+  }
+  
+  .vs-banner {
+    font-size: 1.2rem;
+  }
+  
+  .combat-status-bars {
+    width: 100px;
+    margin: 0 auto;
+  }
+  
+  .ninja-character.enemy .combat-status-bars .bar-lbl {
+    text-align: right;
   }
   
   .combat-commands {
