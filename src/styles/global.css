@@ -2396,6 +2396,33 @@ h1 {
     text-align: right;
   }
   
+  .talisman-slot {
+    width: 28px;
+    height: 28px;
+    font-size: 0.9rem;
+  }
+  .equipped-talismans {
+    gap: 6px;
+    margin: 8px auto 4px auto;
+    padding: 3px 6px;
+  }
+  .equipped-companion {
+    padding: 4px 8px;
+    gap: 4px;
+    margin: 6px auto;
+  }
+  .companion-icon {
+    font-size: 1rem;
+  }
+  .companion-name {
+    font-size: 0.72rem;
+  }
+  .phoenix-buff-badge {
+    padding: 4px 10px;
+    font-size: 0.68rem;
+    margin: 6px auto;
+  }
+  
   .combat-commands {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -2794,7 +2821,7 @@ h1 {
   }
   .ninja-simulator-fullscreen-container .battle-bg-arena {
     min-height: 240px;
-    padding: 20px;
+    padding: 20px 4px;
   }
 }
 
