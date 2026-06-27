@@ -447,16 +447,21 @@
           padding: 8px 24px;
           font-size: 0.78rem;
         }
+        .quick-refuse {
+          bottom: 85px !important; /* Raised to avoid overlapping bottom tab-bar on mobile */
+        }
       }
     </style>
   </head>
   <body>
     <aside class="quick-refuse" aria-label="Quick accountability shortcut">
       <strong>Shortcut</strong>
-      <p>Instantly log a Refusal win or 50 Push-ups to your public log.</p>
-      <div style="display: flex; flex-direction: column; gap: 8px;">
-        <button id="quickRefuseButton" type="button">Refuse to lose (now)</button>
-        <button id="quickPushupsButton" type="button" style="background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%) !important; color: #fff !important; font-weight: 800;">Add 50 push ups (now)</button>
+      <p>Instantly log a Refusal win or Push-ups to your public log.</p>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+        <button id="quickRefuseButton" type="button" style="font-size: 11.5px; padding: 11px 8px;">Refuse (now)</button>
+        <button id="quickPushups5Button" type="button" style="background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%) !important; color: #fff !important; font-weight: 800; font-size: 11.5px; padding: 11px 8px;">+5 Push-ups</button>
+        <button id="quickPushups10Button" type="button" style="background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%) !important; color: #fff !important; font-weight: 800; font-size: 11.5px; padding: 11px 8px;">+10 Push-ups</button>
+        <button id="quickPushups50Button" type="button" style="background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%) !important; color: #fff !important; font-weight: 800; font-size: 11.5px; padding: 11px 8px;">+50 Push-ups</button>
       </div>
       <div class="quick-refuse__status" id="quickRefuseStatus" role="status" aria-live="polite"></div>
     </aside>
@@ -815,8 +820,8 @@
         }
       }
 
-      async function addPushupsNow() {
-        const button = document.getElementById("quickPushupsButton");
+      async function addPushupsNow(count, buttonId) {
+        const button = document.getElementById(buttonId);
         const status = document.getElementById("quickRefuseStatus");
         const setStatus = (message) => {
           if (status) status.textContent = message;
@@ -824,7 +829,7 @@
 
         if (!button) return;
         button.disabled = true;
-        setStatus("Preparing push-ups event...");
+        setStatus(`Preparing ${count} push-ups event...`);
 
         try {
           const token = await getAdminApiKey();
@@ -834,7 +839,7 @@
           }
 
           const timestamp = formatJakartaTimestamp();
-          setStatus("Saving push-ups event...");
+          setStatus(`Saving ${count} push-ups event...`);
           const res = await fetch("/api/entries", {
             method: "POST",
             headers: {
@@ -843,7 +848,7 @@
             },
             body: JSON.stringify({
               type: "pushups",
-              count: 50,
+              count: count,
               timestamp
             })
           });
@@ -854,17 +859,19 @@
             throw new Error(error.error || `Save failed (${res.status})`);
           }
 
-          setStatus(`Saved 50 push-ups at ${timestamp}.`);
+          setStatus(`Saved ${count} push-ups at ${timestamp}.`);
         } catch (error) {
           console.error(error);
-          setStatus(error.message || "Could not save push-ups.");
+          setStatus(error.message || `Could not save ${count} push-ups.`);
         } finally {
           button.disabled = false;
         }
       }
 
       document.getElementById("quickRefuseButton")?.addEventListener("click", addRefuseNow);
-      document.getElementById("quickPushupsButton")?.addEventListener("click", addPushupsNow);
+      document.getElementById("quickPushups5Button")?.addEventListener("click", () => addPushupsNow(5, "quickPushups5Button"));
+      document.getElementById("quickPushups10Button")?.addEventListener("click", () => addPushupsNow(10, "quickPushups10Button"));
+      document.getElementById("quickPushups50Button")?.addEventListener("click", () => addPushupsNow(50, "quickPushups50Button"));
     </script>
     <script src="/admin/sveltia-cms.js?v=20260611" onerror="showCmsStatus('Could not load the local Sveltia CMS script. Refresh once and check the browser console.')"></script>
     <script>
