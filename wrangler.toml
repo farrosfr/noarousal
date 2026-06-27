@@ -1,4 +1,5 @@
 # Wrangler configuration for Cloudflare Pages
+name = "noarousal"
 pages_build_output_dir = "dist"
 compatibility_date = "2026-06-27"
 compatibility_flags = ["nodejs_compat"]
