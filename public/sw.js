@@ -1,4 +1,4 @@
-const CACHE_NAME = 'noa-v2';
+const CACHE_NAME = 'noa-v3';
 const ASSETS = [
   '/',
   '/arena/',
@@ -47,8 +47,13 @@ self.addEventListener('activate', (e) => {
 self.addEventListener('fetch', (e) => {
   const url = new URL(e.request.url);
   
-  // For API or CMS paths, let them bypass service worker cache
-  if (url.pathname.includes('/admin/') || url.hostname.includes('api.github.com')) {
+  // For API, data, admin, or CMS paths, let them bypass service worker cache
+  if (
+    url.pathname.includes('/admin/') ||
+    url.pathname.includes('/api/') ||
+    url.pathname.includes('/data/') ||
+    url.hostname.includes('api.github.com')
+  ) {
     return;
   }
 
