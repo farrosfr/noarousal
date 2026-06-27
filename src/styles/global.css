@@ -2107,6 +2107,7 @@ h1 {
   width: 180px;
   position: relative;
   transition: transform 0.2s ease;
+  margin-top: 24px;
 }
 
 .character-avatar-frame {
@@ -2188,6 +2189,7 @@ h1 {
   font-weight: 950;
   color: var(--muted);
   opacity: 0.25;
+  margin-top: 24px;
 }
 
 /* Combat Ticker */
@@ -2378,6 +2380,7 @@ h1 {
   
   .ninja-character {
     width: 110px;
+    margin-top: 32px;
   }
   
   .character-avatar-frame {
@@ -2391,6 +2394,7 @@ h1 {
   
   .vs-banner {
     font-size: 1.2rem;
+    margin-top: 32px;
   }
   
   .combat-status-bars {
