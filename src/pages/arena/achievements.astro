@@ -1,8 +1,10 @@
 ---
+export const prerender = false;
+
 import "@fontsource-variable/inter";
 import "@fontsource-variable/space-grotesk";
 import "../../styles/global.css";
-import accountabilityData from "../../data/accountability.json";
+import { getAccountabilityData } from "../../utils/db";
 import fitnessSummaryData from "../../../public/data/fitness-summary.json";
 import SiteHeader from "../../components/SiteHeader.astro";
 import Icon from "../../components/Icon.astro";
@@ -11,6 +13,7 @@ import SectionHeader from "../../components/SectionHeader.astro";
 import Tag from "../../components/Tag.astro";
 import { streakBadges, refusalBadges, performanceBadges } from "../../data/badges.js";
 
+const accountabilityData = await getAccountabilityData(Astro.locals);
 const startDateTime = accountabilityData.journeyStart;
 ---
 

@@ -1,8 +1,7 @@
 ---
-import "@fontsource-variable/inter";
 import "@fontsource-variable/space-grotesk";
 import "../styles/global.css";
-import accountabilityData from "../data/accountability.json";
+import { getAccountabilityData } from "../utils/db";
 import SiteHeader from "../components/SiteHeader.astro";
 import Button from "../components/Button.astro";
 import SectionHeader from "../components/SectionHeader.astro";
@@ -11,6 +10,7 @@ import StatChip from "../components/StatChip.astro";
 import Tag from "../components/Tag.astro";
 import Icon from "../components/Icon.astro";
 
+const accountabilityData = await getAccountabilityData(Astro.locals);
 const startDateTime = accountabilityData.journeyStart;
 
 const categories = [

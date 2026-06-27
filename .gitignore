@@ -4,3 +4,7 @@ dist/
 .env
 .env.*
 npm-debug.log*
+
+# Wrangler and migration files
+.wrangler/
+migration_data.sql

@@ -1,9 +1,11 @@
 ---
+export const prerender = true;
+
 import "@fontsource-variable/inter";
 import "@fontsource-variable/space-grotesk";
 import "../../styles/global.css";
 import { getCollection } from "astro:content";
-import accountabilityData from "../../data/accountability.json";
+import { getAccountabilityData } from "../../utils/db";
 import SiteHeader from "../../components/SiteHeader.astro";
 import SectionHeader from "../../components/SectionHeader.astro";
 import Button from "../../components/Button.astro";
@@ -11,6 +13,7 @@ import Tag from "../../components/Tag.astro";
 import Icon from "../../components/Icon.astro";
 
 const sortedPosts = (await getCollection("blog")).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const accountabilityData = await getAccountabilityData();
 const startDateTime = accountabilityData.journeyStart;
 ---
 

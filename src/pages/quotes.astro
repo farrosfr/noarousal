@@ -1,13 +1,17 @@
 ---
+export const prerender = true;
+
 import "@fontsource-variable/inter";
 import "@fontsource-variable/space-grotesk";
 import "../styles/global.css";
-import accountabilityData from "../data/accountability.json";
+import { getAccountabilityData } from "../utils/db";
 import SiteHeader from "../components/SiteHeader.astro";
 import Icon from "../components/Icon.astro";
 import Button from "../components/Button.astro";
 import SectionHeader from "../components/SectionHeader.astro";
 import Tag from "../components/Tag.astro";
+
+const accountabilityData = await getAccountabilityData();
 
 const quotes = [
   { text: "You vs you. Win that fight first.", tag: "identity" },

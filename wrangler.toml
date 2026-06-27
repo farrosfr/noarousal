@@ -1,0 +1,6 @@
+# Wrangler configuration for Cloudflare Pages
+
+[[d1_databases]]
+binding = "DB"
+database_name = "noarousal_db"
+database_id = "e2ffd5d9-bd33-4b49-bff1-4d19ab13a5b8"

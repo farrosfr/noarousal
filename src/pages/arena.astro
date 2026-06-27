@@ -1,9 +1,11 @@
 ---
+export const prerender = false;
+
 import "@fontsource-variable/inter";
 import "@fontsource-variable/space-grotesk";
 import "../styles/global.css";
 import "../styles/game-extras.css";
-import accountabilityData from "../data/accountability.json";
+import { getAccountabilityData } from "../utils/db";
 import fitnessSummaryData from "../../public/data/fitness-summary.json";
 import { streakBadges, refusalBadges, performanceBadges } from "../data/badges.js";
 import SiteHeader from "../components/SiteHeader.astro";
@@ -14,7 +16,13 @@ import AssetFrame from "../components/AssetFrame.astro";
 import StatChip from "../components/StatChip.astro";
 import Tag from "../components/Tag.astro";
 
-const startDateTime = accountabilityData.journeyStart;
+let accountabilityData;
+try {
+  accountabilityData = await getAccountabilityData(Astro.locals);
+} catch (e) {
+  console.error("ERROR IN ARENA.ASTRO:", e);
+}
+const startDateTime = accountabilityData?.journeyStart || "2026-06-06T12:00:00+07:00";
 
 const tabs = [
   { id: "battle", label: "Battle", icon: "swords" },
@@ -24,8 +32,8 @@ const tabs = [
   { id: "achievements", label: "Achievements", icon: "award" }
 ];
 
-const entries = Array.isArray(accountabilityData.entries) ? accountabilityData.entries : [];
-const journeyStart = new Date(accountabilityData.journeyStart);
+const entries = Array.isArray(accountabilityData?.entries) ? accountabilityData.entries : [];
+const journeyStart = new Date(startDateTime);
 const fitnessPushUps = fitnessSummaryData?.summary?.totalPushUps || 0;
 const fitnessRuns = fitnessSummaryData?.summary?.totalRunWalkKm || 0;
 const now = new Date();
@@ -38,7 +46,7 @@ const lossPeriods = new Set(
       const ts = new Date(e?.timestamp || e?.relapseTimestamp || e?.date);
       if (Number.isNaN(ts.getTime())) return null;
       const idx = Math.floor((ts.getTime() - journeyStart.getTime()) / 86400000);
-      return idx >= 0 && idx < trackedDays ? idx : null;
+      return idx >= 0 && !(idx >= trackedDays) ? idx : null;
     })
     .filter((i) => i !== null)
 );
@@ -52,7 +60,7 @@ const refusalCount = entries.reduce((total, entry) => {
 const latestRelapse = entries
   .filter((e) => e?.type === "relapse" || e?.result === "loss")
   .map((e) => new Date(e?.timestamp || e?.relapseTimestamp || e?.date))
-  .filter((date) => !Number.isNaN(date.getTime()) && date.getTime() <= now.getTime())
+  .filter((date) => !Number.isNaN(date.getTime()) && !(date.getTime() > now.getTime()))
   .sort((a, b) => b.getTime() - a.getTime())[0];
 const streakStartDate = latestRelapse || journeyStart;
 const currentStreakMs = now.getTime() - streakStartDate.getTime();

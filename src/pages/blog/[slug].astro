@@ -1,9 +1,11 @@
 ---
+export const prerender = true;
+
 import "@fontsource-variable/inter";
 import "@fontsource-variable/space-grotesk";
 import "../../styles/global.css";
 import { getCollection, render } from "astro:content";
-import accountabilityData from "../../data/accountability.json";
+import { getAccountabilityData } from "../../utils/db";
 import SiteHeader from "../../components/SiteHeader.astro";
 import Icon from "../../components/Icon.astro";
 import Tag from "../../components/Tag.astro";
@@ -22,6 +24,7 @@ const { Content } = await render(post);
 const posts = await getCollection("blog");
 const relatedPosts = posts.filter((item) => item.id !== post.id).slice(0, 3);
 const canonicalUrl = `https://noa.farros.co/blog/${post.id}/`;
+const accountabilityData = await getAccountabilityData();
 ---
 
 <!doctype html>

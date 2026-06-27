@@ -515,31 +515,13 @@
 
       async function updateInitialRefuseCount() {
         try {
-          const token = await getSavedTokenSilently();
-          const headers = {};
-          if (token) {
-            headers["Authorization"] = `Bearer ${token}`;
-          }
-          const apiUrl = "https://api.github.com/repos/farrosfr/noarousal/contents/src/data/accountability.json?ref=main";
-          const res = await fetch(apiUrl, { headers });
+          const res = await fetch("/api/entries");
           if (res.ok) {
-            const currentFile = await res.json();
-            const data = JSON.parse(decodeBase64Utf8(currentFile.content));
+            const data = await res.json();
             if (data && Array.isArray(data.entries)) {
               currentRefuseCount = data.entries.filter(e => e.type === "refuse").length;
               isRefuseCountInitialized = true;
-              console.log("Initial refuse count initialized:", currentRefuseCount);
-            }
-          } else {
-            // Fallback to raw github content
-            const rawRes = await fetch("https://raw.githubusercontent.com/farrosfr/noarousal/main/src/data/accountability.json?t=" + Date.now());
-            if (rawRes.ok) {
-              const data = await rawRes.json();
-              if (data && Array.isArray(data.entries)) {
-                currentRefuseCount = data.entries.filter(e => e.type === "refuse").length;
-                isRefuseCountInitialized = true;
-                console.log("Initial refuse count (fallback raw):", currentRefuseCount);
-              }
+              console.log("Initial refuse count initialized from D1 API:", currentRefuseCount);
             }
           }
         } catch (e) {
@@ -771,18 +753,13 @@
         return btoa(binary);
       }
 
-      async function getQuickRefuseToken() {
-        try {
-          const sveltiaUser = JSON.parse(localStorage.getItem("sveltia-cms.user") || "{}");
-          if (sveltiaUser.token) return sveltiaUser.token;
-        } catch (e) {}
-
-        const savedToken = localStorage.getItem("noa-github-token");
+      async function getAdminApiKey() {
+        const savedToken = localStorage.getItem("noa-admin-api-key");
         if (savedToken) return savedToken;
 
-        const token = window.prompt("Paste a GitHub token with repository contents write access.");
+        const token = window.prompt("Paste your ADMIN_API_KEY.");
         if (!token) return "";
-        localStorage.setItem("noa-github-token", token.trim());
+        localStorage.setItem("noa-admin-api-key", token.trim());
         return token.trim();
       }
 
@@ -798,45 +775,36 @@
         setStatus("Preparing refuse event...");
 
         try {
-          const token = await getQuickRefuseToken();
+          const token = await getAdminApiKey();
           if (!token) {
-            setStatus("No token provided.");
+            setStatus("No API key provided.");
             return;
           }
 
-          const apiUrl = "https://api.github.com/repos/farrosfr/noarousal/contents/src/data/accountability.json?ref=main";
-          const headers = {
-            "Accept": "application/vnd.github+json",
-            "Authorization": `Bearer ${token}`,
-            "X-GitHub-Api-Version": "2022-11-28"
-          };
-
-          setStatus("Loading accountability log...");
-          const currentResponse = await fetch(apiUrl, { headers });
-          if (!currentResponse.ok) throw new Error(`GitHub read failed (${currentResponse.status})`);
-          const currentFile = await currentResponse.json();
-          const data = JSON.parse(decodeBase64Utf8(currentFile.content));
-          const entries = Array.isArray(data.entries) ? data.entries : [];
           const timestamp = formatJakartaTimestamp();
-          data.entries = [{ type: "refuse", timestamp }, ...entries];
-
           setStatus("Saving refuse event...");
-          const updateResponse = await fetch(apiUrl, {
-            method: "PUT",
-            headers,
+          const res = await fetch("/api/entries", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-admin-api-key": token
+            },
             body: JSON.stringify({
-              message: "Update Accountability “public_log”",
-              content: encodeBase64Utf8(`${JSON.stringify(data, null, 2)}\n`),
-              sha: currentFile.sha,
-              branch: "main"
+              type: "refuse",
+              timestamp
             })
           });
 
-          if (!updateResponse.ok) {
-            if (updateResponse.status === 401 || updateResponse.status === 403) localStorage.removeItem("noa-github-token");
-            const error = await updateResponse.json().catch(() => ({}));
-            throw new Error(error.message || `GitHub save failed (${updateResponse.status})`);
+          if (!res.ok) {
+            const error = await res.json().catch(() => ({}));
+            if (res.status === 401) localStorage.removeItem("noa-admin-api-key");
+            throw new Error(error.error || `Save failed (${res.status})`);
           }
+
+          currentRefuseCount++;
+          setTimeout(() => {
+            startCinematicVictory();
+          }, 800);
 
           setStatus(`Saved refuse win at ${timestamp}.`);
         } catch (error) {
@@ -859,45 +827,31 @@
         setStatus("Preparing push-ups event...");
 
         try {
-          const token = await getQuickRefuseToken();
+          const token = await getAdminApiKey();
           if (!token) {
-            setStatus("No token provided.");
+            setStatus("No API key provided.");
             return;
           }
 
-          const apiUrl = "https://api.github.com/repos/farrosfr/noarousal/contents/src/data/accountability.json?ref=main";
-          const headers = {
-            "Accept": "application/vnd.github+json",
-            "Authorization": `Bearer ${token}`,
-            "X-GitHub-Api-Version": "2022-11-28"
-          };
-
-          setStatus("Loading accountability log...");
-          const currentResponse = await fetch(apiUrl, { headers });
-          if (!currentResponse.ok) throw new Error(`GitHub read failed (${currentResponse.status})`);
-          const currentFile = await currentResponse.json();
-          const data = JSON.parse(decodeBase64Utf8(currentFile.content));
-          const entries = Array.isArray(data.entries) ? data.entries : [];
           const timestamp = formatJakartaTimestamp();
-          
-          data.entries = [{ type: "pushups", count: 50, timestamp }, ...entries];
-
           setStatus("Saving push-ups event...");
-          const updateResponse = await fetch(apiUrl, {
-            method: "PUT",
-            headers,
+          const res = await fetch("/api/entries", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-admin-api-key": token
+            },
             body: JSON.stringify({
-              message: "Update Accountability “public_log” (Logged 50 Push-ups)",
-              content: encodeBase64Utf8(`${JSON.stringify(data, null, 2)}\n`),
-              sha: currentFile.sha,
-              branch: "main"
+              type: "pushups",
+              count: 50,
+              timestamp
             })
           });
 
-          if (!updateResponse.ok) {
-            if (updateResponse.status === 401 || updateResponse.status === 403) localStorage.removeItem("noa-github-token");
-            const error = await updateResponse.json().catch(() => ({}));
-            throw new Error(error.message || `GitHub save failed (${updateResponse.status})`);
+          if (!res.ok) {
+            const error = await res.json().catch(() => ({}));
+            if (res.status === 401) localStorage.removeItem("noa-admin-api-key");
+            throw new Error(error.error || `Save failed (${res.status})`);
           }
 
           setStatus(`Saved 50 push-ups at ${timestamp}.`);
