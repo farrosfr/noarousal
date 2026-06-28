@@ -372,6 +372,29 @@ const heroRefusals = String(refusalCount);
           </div>
 
           <div class="fitness-progress-container">
+            <!-- Daily Cardio Goal -->
+            <div class="fitness-progress-bar-group">
+              <div class="bar-label">
+                <span>Daily Cardio Goal Progress</span>
+                <span id="fitDailyCardioGoalText">0.00 / 2.00 Km</span>
+              </div>
+              <div class="bar-outer">
+                <div class="bar-inner fitness-cardio-bar" id="fitDailyCardioBar" style="width: 0%"></div>
+              </div>
+            </div>
+
+            <!-- Daily Push-ups Goal -->
+            <div class="fitness-progress-bar-group">
+              <div class="bar-label">
+                <span>Daily Push-ups Goal Progress</span>
+                <span id="fitDailyPushGoalText">0 / 50 Reps</span>
+              </div>
+              <div class="bar-outer">
+                <div class="bar-inner fitness-push-bar" id="fitDailyPushBar" style="width: 0%"></div>
+              </div>
+            </div>
+
+            <!-- Weekly Cardio Goal -->
             <div class="fitness-progress-bar-group">
               <div class="bar-label">
                 <span>Weekly Cardio Goal Progress</span>
@@ -382,6 +405,7 @@ const heroRefusals = String(refusalCount);
               </div>
             </div>
 
+            <!-- Weekly Push-ups Goal -->
             <div class="fitness-progress-bar-group">
               <div class="bar-label">
                 <span>Weekly Push-ups Goal Progress</span>

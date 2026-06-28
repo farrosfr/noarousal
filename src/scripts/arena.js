@@ -754,6 +754,33 @@ function renderFitnessSummary() {
     }
   });
 
+  // Daily Targets
+  const todayRuns = Number(summary.todayRunWalkKm || 0);
+  const todayPushUps = Number(summary.todayPushUps || 0);
+  const dailyCardioGoal = 2.0; // 2 Km daily
+  const dailyPushGoal = 50; // 50 Reps daily
+
+  const dailyCardioBar = document.querySelector("#fitDailyCardioBar");
+  const dailyCardioText = document.querySelector("#fitDailyCardioGoalText");
+  if (dailyCardioText) {
+    dailyCardioText.textContent = `${todayRuns.toFixed(2)} / ${dailyCardioGoal.toFixed(2)} Km`;
+  }
+  if (dailyCardioBar) {
+    const pct = Math.min(100, (todayRuns / dailyCardioGoal) * 100);
+    dailyCardioBar.style.width = `${pct}%`;
+  }
+
+  const dailyPushBar = document.querySelector("#fitDailyPushBar");
+  const dailyPushText = document.querySelector("#fitDailyPushGoalText");
+  if (dailyPushText) {
+    dailyPushText.textContent = `${todayPushUps} / ${dailyPushGoal} Reps`;
+  }
+  if (dailyPushBar) {
+    const pct = Math.min(100, (todayPushUps / dailyPushGoal) * 100);
+    dailyPushBar.style.width = `${pct}%`;
+  }
+
+  // Weekly Targets
   const cardioGoal = 10; // 10 Km weekly
   const pushGoal = 250; // 250 Reps weekly
   
