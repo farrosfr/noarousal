@@ -18,3 +18,10 @@ CREATE TABLE IF NOT EXISTS entries (
 
 -- Index for fast sorting of battle history logs
 CREATE INDEX IF NOT EXISTS idx_entries_timestamp ON entries(timestamp);
+
+-- Cache table for external APIs (like Strava)
+CREATE TABLE IF NOT EXISTS fitness_cache (
+  key TEXT PRIMARY KEY,
+  value TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+);
