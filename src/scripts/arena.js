@@ -734,27 +734,26 @@ function renderCalendar() {
 
 function renderFitnessSummary() {
   if (!fitnessData) return;
-  const summary = fitnessData.summary || { totalRunWalkKm: 0, totalPushUps: 0 };
+  const summary = fitnessData.summary || { totalRunWalkKm: 0, totalPushUps: 0, totalArticles: 0, monthlyArticles: 0 };
   
   const runDistanceEl = document.querySelector("#fitRunWalkDistance");
   const pushUpsEl = document.querySelector("#fitPushUpsCount");
+  const writingCountEl = document.querySelector("#fitWritingCount");
   
-  if (runDistanceEl) runDistanceEl.textContent = summary.totalRunWalkKm.toFixed(2);
-  if (pushUpsEl) pushUpsEl.textContent = String(summary.totalPushUps);
+  if (runDistanceEl) runDistanceEl.textContent = (summary.totalRunWalkKm || 0).toFixed(2);
+  if (pushUpsEl) pushUpsEl.textContent = String(summary.totalPushUps || 0);
+  if (writingCountEl) writingCountEl.textContent = String(summary.totalArticles || 0);
   
   const daily = Array.isArray(fitnessData.daily) ? fitnessData.daily : [];
-  const oneWeekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
   const oneMonthAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
   
   let monthlyRuns = 0;
-  let weeklyPushUps = 0;
+  let monthlyPushUps = 0;
   daily.forEach((day) => {
     const dayTime = new Date(day.date).getTime();
     if (dayTime >= oneMonthAgo) {
       monthlyRuns += Number(day.runWalkKm || 0);
-    }
-    if (dayTime >= oneWeekAgo) {
-      weeklyPushUps += Number(day.pushUps || 0);
+      monthlyPushUps += Number(day.pushUps || 0);
     }
   });
 
@@ -784,9 +783,10 @@ function renderFitnessSummary() {
     dailyPushBar.style.width = `${pct}%`;
   }
 
-  // Monthly & Weekly Targets
+  // Monthly Targets
   const monthlyCardioGoal = 100.0; // 100 Km monthly
-  const pushGoal = 250; // 250 Reps weekly
+  const monthlyPushGoal = 6000; // 6000 Reps monthly
+  const monthlyWritingGoal = 10; // 10 Articles monthly
   
   const cardioBar = document.querySelector("#fitMonthlyCardioBar");
   const cardioText = document.querySelector("#fitMonthlyCardioGoalText");
@@ -798,14 +798,26 @@ function renderFitnessSummary() {
     cardioBar.style.width = `${pct}%`;
   }
   
-  const pushBar = document.querySelector("#fitWeeklyPushBar");
-  const pushText = document.querySelector("#fitWeeklyPushGoalText");
+  const pushBar = document.querySelector("#fitMonthlyPushBar");
+  const pushText = document.querySelector("#fitMonthlyPushGoalText");
   if (pushText) {
-    pushText.textContent = `${weeklyPushUps} / ${pushGoal} Reps`;
+    pushText.textContent = `${monthlyPushUps} / ${monthlyPushGoal} Reps`;
   }
   if (pushBar) {
-    const pct = Math.min(100, (weeklyPushUps / pushGoal) * 100);
+    const pct = Math.min(100, (monthlyPushUps / monthlyPushGoal) * 100);
     pushBar.style.width = `${pct}%`;
+  }
+
+  const writingBar = document.querySelector("#fitMonthlyWritingBar");
+  const writingText = document.querySelector("#fitMonthlyWritingGoalText");
+  if (writingText) {
+    const currentWriting = Number(summary.monthlyArticles || 0);
+    writingText.textContent = `${currentWriting} / ${monthlyWritingGoal} Articles`;
+  }
+  if (writingBar) {
+    const currentWriting = Number(summary.monthlyArticles || 0);
+    const pct = Math.min(100, (currentWriting / monthlyWritingGoal) * 100);
+    writingBar.style.width = `${pct}%`;
   }
 }
 

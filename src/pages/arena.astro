@@ -369,6 +369,15 @@ const heroRefusals = String(refusalCount);
                 <div class="attr-value"><span id="fitPushUpsCount">0</span> Reps</div>
               </div>
             </article>
+
+            <article class="attr-card fitness-card">
+              <div class="attr-icon"><Icon name="book-open" /></div>
+              <div class="attr-details">
+                <h4>Total Written Articles</h4>
+                <p>Builds intellectual focus & wisdom. Synced with your Substack blog.</p>
+                <div class="attr-value"><span id="fitWritingCount">0</span> Articles</div>
+              </div>
+            </article>
           </div>
 
           <div class="fitness-progress-container">
@@ -405,14 +414,25 @@ const heroRefusals = String(refusalCount);
               </div>
             </div>
 
-            <!-- Weekly Push-ups Goal -->
+            <!-- Monthly Push-ups Goal -->
             <div class="fitness-progress-bar-group">
               <div class="bar-label">
-                <span>Weekly Push-ups Goal Progress</span>
-                <span id="fitWeeklyPushGoalText">0 / 250 Reps</span>
+                <span>Monthly Push-ups Goal Progress</span>
+                <span id="fitMonthlyPushGoalText">0 / 6000 Reps</span>
               </div>
               <div class="bar-outer">
-                <div class="bar-inner fitness-push-bar" id="fitWeeklyPushBar" style="width: 0%"></div>
+                <div class="bar-inner fitness-push-bar" id="fitMonthlyPushBar" style="width: 0%"></div>
+              </div>
+            </div>
+
+            <!-- Monthly Writing Goal -->
+            <div class="fitness-progress-bar-group">
+              <div class="bar-label">
+                <span>Monthly Writing Goal Progress</span>
+                <span id="fitMonthlyWritingGoalText">0 / 10 Articles</span>
+              </div>
+              <div class="bar-outer">
+                <div class="bar-inner fitness-writing-bar" id="fitMonthlyWritingBar" style="width: 0%"></div>
               </div>
             </div>
           </div>

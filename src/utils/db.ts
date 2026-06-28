@@ -91,6 +91,57 @@ function dateInTimezone(date: Date = new Date(), timezone: string = "Asia/Jakart
   return `${lookup.year}-${lookup.month}-${lookup.day}`;
 }
 
+async function syncWritingData(db: any): Promise<any> {
+  const response = await fetch("https://farrosfr.com/sitemap.xml");
+  if (!response.ok) {
+    throw new Error(`Failed to fetch sitemap: ${response.status}`);
+  }
+  const xml = await response.text();
+
+  const urlRegex = /<url>(.*?)<\/url>/gs;
+  const locRegex = /<loc>(.*?)<\/loc>/;
+  const lastmodRegex = /<lastmod>(.*?)<\/lastmod>/;
+
+  const startDate = "2026-06-06";
+  const articles: { url: string; date: string }[] = [];
+
+  let match;
+  while ((match = urlRegex.exec(xml)) !== null) {
+    const urlContent = match[1];
+    const locMatch = locRegex.exec(urlContent);
+    const lastmodMatch = lastmodRegex.exec(urlContent);
+
+    if (locMatch && lastmodMatch) {
+      const loc = locMatch[1];
+      const lastmod = lastmodMatch[1];
+
+      // Substack articles usually contain /p/
+      if (loc.includes("/p/") && lastmod >= startDate) {
+        articles.push({ url: loc, date: lastmod });
+      }
+    }
+  }
+
+  // Calculate totals
+  const totalArticles = articles.length;
+  const oneMonthAgoStr = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().substring(0, 10);
+  const monthlyArticles = articles.filter(a => a.date >= oneMonthAgoStr).length;
+
+  const payload = {
+    totalArticles,
+    monthlyArticles,
+    articles
+  };
+
+  // Save to D1 cache
+  const serialized = JSON.stringify(payload);
+  await db.prepare(
+    "INSERT OR REPLACE INTO fitness_cache (key, value, updated_at) VALUES ('writing_data', ?, ?)"
+  ).bind(serialized, new Date().toISOString()).run();
+
+  return payload;
+}
+
 async function syncStravaData(db: any, env: any): Promise<any> {
   const clientID = env.STRAVA_CLIENT_ID;
   const clientSecret = env.STRAVA_CLIENT_SECRET;
@@ -214,9 +265,11 @@ export async function getDynamicFitnessSummary(locals?: any): Promise<any> {
     activities: fitnessSummaryBaseline.activities 
   };
 
+  let writingData = { totalArticles: 0, monthlyArticles: 0, articles: [] };
+
   if (db) {
     try {
-      // Check cache first
+      // Check cache first for Strava
       const cached = await db.prepare("SELECT * FROM fitness_cache WHERE key = 'strava_data'").first<{
         value: string;
         updated_at: string;
@@ -249,6 +302,38 @@ export async function getDynamicFitnessSummary(locals?: any): Promise<any> {
           }
         }
       }
+
+      // Check cache first for Substack writing
+      const cachedWriting = await db.prepare("SELECT * FROM fitness_cache WHERE key = 'writing_data'").first<{
+        value: string;
+        updated_at: string;
+      }>();
+
+      let isWritingExpired = true;
+      if (cachedWriting) {
+        const ageMs = Date.now() - new Date(cachedWriting.updated_at).getTime();
+        const thirtyMinutes = 30 * 60 * 1000;
+        if (ageMs < thirtyMinutes) {
+          isWritingExpired = false;
+        }
+        try {
+          writingData = JSON.parse(cachedWriting.value);
+        } catch (_) {}
+      }
+
+      if (isWritingExpired) {
+        try {
+          const freshWriting = await syncWritingData(db);
+          writingData = freshWriting;
+        } catch (syncErr) {
+          console.error("Failed to fetch fresh writing data, using cache if available:", syncErr);
+          if (cachedWriting) {
+            try {
+              writingData = JSON.parse(cachedWriting.value);
+            } catch (_) {}
+          }
+        }
+      }
     } catch (dbErr) {
       console.error("Database cache query failed, using static baseline:", dbErr);
     }
@@ -263,14 +348,17 @@ export async function getDynamicFitnessSummary(locals?: any): Promise<any> {
       todayRunWalkKm: stravaData.todayKm,
       totalRunWalkKm: stravaData.totalKm,
       todayPushUps: 0,
-      totalPushUps: 0
+      totalPushUps: 0,
+      totalArticles: writingData.totalArticles,
+      monthlyArticles: writingData.monthlyArticles
     },
     daily: stravaData.daily.map((d: any) => ({
       date: d.date,
       runWalkKm: d.runWalkKm || 0,
       pushUps: 0
     })),
-    activities: stravaData.activities || []
+    activities: stravaData.activities || [],
+    writingArticles: writingData.articles
   };
 
   const pushUpsByDate = new Map<string, number>();
