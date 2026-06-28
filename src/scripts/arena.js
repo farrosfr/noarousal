@@ -697,6 +697,18 @@ function renderCalendar() {
   const entries = Array.isArray(accountabilityData.entries) ? accountabilityData.entries : [];
   const journeyStart = new Date(accountabilityData.journeyStart);
 
+  // Group writing articles by date (YYYY-MM-DD)
+  const writingArticles = (fitnessData && Array.isArray(fitnessData.writingArticles)) ? fitnessData.writingArticles : [];
+  const articlesByDate = new Map();
+  writingArticles.forEach(art => {
+    if (art.date) {
+      if (!articlesByDate.has(art.date)) {
+        articlesByDate.set(art.date, []);
+      }
+      articlesByDate.get(art.date).push(art);
+    }
+  });
+
   for (let day = 1; day <= totalDays; day++) {
     const checkDate = new Date(year, month, day);
     
@@ -717,6 +729,14 @@ function renderCalendar() {
       state = hasRelapse ? "loss" : "win";
     }
 
+    // Format current date as YYYY-MM-DD to query writing articles
+    const yyyy = year;
+    const mm = String(month + 1).padStart(2, '0');
+    const dd = String(day).padStart(2, '0');
+    const dateKey = `${yyyy}-${mm}-${dd}`;
+    const dayArticles = articlesByDate.get(dateKey) || [];
+    const articlesCount = dayArticles.length;
+
     let dayClass = `calendar-day ${state}`;
     let dayContent = `<span class="day-number">${day}</span>`;
     
@@ -726,7 +746,18 @@ function renderCalendar() {
       dayContent += `<span class="day-status-icon">💥</span>`;
     }
 
-    html += `<div class="${dayClass}" title="${state.toUpperCase()}">${dayContent}</div>`;
+    if (articlesCount > 0) {
+      const titles = dayArticles.map(a => a.title).join(", ");
+      dayContent += `<span class="day-writing-indicator" title="Published: ${titles}">📝 ${articlesCount}</span>`;
+    }
+
+    let tooltip = state.toUpperCase();
+    if (articlesCount > 0) {
+      const titles = dayArticles.map(a => `"${a.title}"`).join(", ");
+      tooltip += ` (Published: ${titles})`;
+    }
+
+    html += `<div class="${dayClass}" title="${tooltip}">${dayContent}</div>`;
   }
 
   grid.innerHTML = html;
