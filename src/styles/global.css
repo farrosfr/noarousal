@@ -3811,6 +3811,29 @@ h1 {
   box-shadow: 0 0 10px rgba(168, 85, 247, 0.4);
 }
 
+.publication-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  background: rgba(255, 255, 255, 0.015);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.publication-item:hover {
+  background: rgba(168, 85, 247, 0.05) !important;
+  border-color: rgba(168, 85, 247, 0.4) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(168, 85, 247, 0.1);
+}
+
+.publication-item:hover .pub-link-indicator {
+  color: #a855f7 !important;
+}
+
 
 
 /* ============================================================

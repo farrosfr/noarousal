@@ -29,6 +29,7 @@ const tabs = [
   { id: "battle", label: "Battle", icon: "swords" },
   { id: "attributes", label: "Attributes", icon: "trending-up" },
   { id: "fitness", label: "Fitness", icon: "dumbbell" },
+  { id: "writing", label: "Writing", icon: "book-open" },
   { id: "calendar", label: "Calendar", icon: "calendar" },
   { id: "achievements", label: "Achievements", icon: "award" }
 ];
@@ -369,15 +370,6 @@ const heroRefusals = String(refusalCount);
                 <div class="attr-value"><span id="fitPushUpsCount">0</span> Reps</div>
               </div>
             </article>
-
-            <article class="attr-card fitness-card">
-              <div class="attr-icon"><Icon name="book-open" /></div>
-              <div class="attr-details">
-                <h4>Total Written Articles</h4>
-                <p>Builds intellectual focus & wisdom. Synced with your Substack blog.</p>
-                <div class="attr-value"><span id="fitWritingCount">0</span> Articles</div>
-              </div>
-            </article>
           </div>
 
           <div class="fitness-progress-container">
@@ -424,7 +416,44 @@ const heroRefusals = String(refusalCount);
                 <div class="bar-inner fitness-push-bar" id="fitMonthlyPushBar" style="width: 0%"></div>
               </div>
             </div>
+          </div>
+        </section>
 
+        <!-- WRITING TAB -->
+        <section
+          class="tab-panel"
+          data-tab-panel="writing"
+          id="tab-panel-writing"
+          role="tabpanel"
+          aria-labelledby="tab-writing"
+          hidden
+        >
+          <SectionHeader
+            eyebrow="Intellect"
+            title="Intellectual Focus & Writing"
+            lede="Writing structures your thoughts and builds mental clarity. Synced with your Substack blog publications since June 6, 2026."
+          />
+          <div class="fitness-grid">
+            <article class="attr-card fitness-card">
+              <div class="attr-icon"><Icon name="book-open" /></div>
+              <div class="attr-details">
+                <h4>Total Written Articles</h4>
+                <p>Builds intellectual focus & wisdom. Synced with your Substack blog.</p>
+                <div class="attr-value"><span id="fitWritingCount">0</span> Articles</div>
+              </div>
+            </article>
+
+            <article class="attr-card fitness-card">
+              <div class="attr-icon"><Icon name="timer" /></div>
+              <div class="attr-details">
+                <h4>Monthly Articles Progress</h4>
+                <p>Your target is to publish at least 10 articles per month.</p>
+                <div class="attr-value"><span id="fitWritingMonthlyCount">0</span> / 10</div>
+              </div>
+            </article>
+          </div>
+
+          <div class="fitness-progress-container">
             <!-- Monthly Writing Goal -->
             <div class="fitness-progress-bar-group">
               <div class="bar-label">
@@ -434,6 +463,14 @@ const heroRefusals = String(refusalCount);
               <div class="bar-outer">
                 <div class="bar-inner fitness-writing-bar" id="fitMonthlyWritingBar" style="width: 0%"></div>
               </div>
+            </div>
+          </div>
+
+          <!-- RECENT ARTICLES LIST -->
+          <div class="recent-publications-container">
+            <h3 class="publications-title" style="margin-top: 36px; margin-bottom: 16px; border-bottom: 1px dashed var(--line); padding-bottom: 8px; font-family: 'Space Grotesk Variable', sans-serif; font-weight: 700; font-size: 1.1rem; color: var(--text);">📝 Recent Publications</h3>
+            <div class="publications-list-wrapper" id="writingPublicationsList" style="display: flex; flex-direction: column; gap: 12px; max-height: 480px; overflow-y: auto; padding-right: 4px;">
+              <div class="publication-item loading" style="text-align: center; color: var(--text-muted); padding: 32px; border: 1px dashed var(--line); border-radius: 12px; background: rgba(255,255,255,0.015);">Loading publications feed...</div>
             </div>
           </div>
         </section>

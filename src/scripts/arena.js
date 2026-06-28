@@ -850,6 +850,29 @@ function renderFitnessSummary() {
     const pct = Math.min(100, (currentWriting / monthlyWritingGoal) * 100);
     writingBar.style.width = `${pct}%`;
   }
+
+  const writingMonthlyCountEl = document.querySelector("#fitWritingMonthlyCount");
+  if (writingMonthlyCountEl) {
+    writingMonthlyCountEl.textContent = `${summary.monthlyArticles || 0}`;
+  }
+
+  const publicationsListEl = document.querySelector("#writingPublicationsList");
+  if (publicationsListEl) {
+    const articles = Array.isArray(fitnessData.writingArticles) ? fitnessData.writingArticles : [];
+    if (articles.length === 0) {
+      publicationsListEl.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 24px;">No articles found since June 6, 2026.</div>`;
+    } else {
+      publicationsListEl.innerHTML = articles.map(art => `
+        <a href="${art.url}" target="_blank" class="publication-item">
+          <div style="display: flex; flex-direction: column; gap: 4px; text-align: left;">
+            <span class="pub-title" style="font-weight: 600; color: var(--text); font-size: 0.95rem;">${art.title}</span>
+            <span class="pub-date" style="font-size: 0.8rem; color: var(--text-muted);">${art.date}</span>
+          </div>
+          <span class="pub-link-indicator" style="color: #c084fc; font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 4px; white-space: nowrap;">Read ↗</span>
+        </a>
+      `).join("");
+    }
+  }
 }
 
 // Willpower Combat Simulator Logic
