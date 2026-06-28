@@ -20,6 +20,7 @@ const accountabilityData = parseAccountabilityData(accountabilityDataElement?.te
 const fitnessSummaryDataElement = document.querySelector("#fitnessSummaryData");
 const fitnessData = parseAccountabilityData(fitnessSummaryDataElement?.textContent);
 const streakStartDate = getCurrentStreakStartDate(accountabilityData, startDate);
+let myHistoryChart = null;
 
 function parseAccountabilityData(rawData) {
   if (!rawData) return null;
@@ -878,7 +879,6 @@ function renderFitnessSummary() {
   renderHistoryChart();
 }
 
-let myHistoryChart = null;
 function renderHistoryChart() {
   const ctx = document.getElementById("fitnessHistoryChart");
   if (!ctx) return;
