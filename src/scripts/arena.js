@@ -882,7 +882,7 @@ let myHistoryChart = null;
 function renderHistoryChart() {
   const ctx = document.getElementById("fitnessHistoryChart");
   if (!ctx) return;
-  if (!window.Chart) {
+  if (typeof window.Chart !== "function") {
     // If Chart.js library isn't fully loaded yet, defer render briefly
     setTimeout(renderHistoryChart, 100);
     return;
@@ -895,142 +895,150 @@ function renderHistoryChart() {
     .reverse();
 
   const labels = last14Days.map(d => {
-    const [_, m, dPart] = d.date.split("-");
-    return `${m}/${dPart}`;
+    if (!d || typeof d.date !== "string") return "";
+    const parts = d.date.split("-");
+    if (parts.length < 3) return d.date;
+    return `${parts[1]}/${parts[2]}`;
   });
   const cardioData = last14Days.map(d => d.runWalkKm || 0);
   const pushUpsData = last14Days.map(d => d.pushUps || 0);
 
   if (myHistoryChart) {
-    myHistoryChart.destroy();
+    try {
+      myHistoryChart.destroy();
+    } catch (_) {}
   }
 
   const gridColor = "rgba(255, 255, 255, 0.05)";
   const textColor = "#8892b0";
 
-  myHistoryChart = new window.Chart(ctx, {
-    type: "bar",
-    data: {
-      labels: labels,
-      datasets: [
-        {
-          label: "Push-ups (Reps)",
-          data: pushUpsData,
-          backgroundColor: "rgba(245, 158, 11, 0.15)",
-          borderColor: "#f59e0b",
-          borderWidth: 2,
-          borderRadius: 4,
-          yAxisID: "yPush",
-          type: "bar",
-          order: 2
-        },
-        {
-          label: "Cardio (Km)",
-          data: cardioData,
-          borderColor: "#2dd4bf",
-          backgroundColor: "rgba(45, 212, 191, 0.05)",
-          fill: true,
-          tension: 0.3,
-          borderWidth: 3,
-          pointBackgroundColor: "#2dd4bf",
-          pointBorderColor: "#0f1318",
-          pointHoverBackgroundColor: "#0f1318",
-          pointHoverBorderColor: "#2dd4bf",
-          yAxisID: "yCardio",
-          type: "line",
-          order: 1
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          labels: {
-            color: textColor,
-            font: {
-              family: "'Space Grotesk Variable', sans-serif",
-              weight: "600",
-              size: 11
-            }
-          }
-        },
-        tooltip: {
-          mode: "index",
-          intersect: false,
-          backgroundColor: "rgba(15, 19, 24, 0.9)",
-          borderColor: "rgba(255, 255, 255, 0.1)",
-          borderWidth: 1,
-          titleColor: "#fff",
-          bodyColor: textColor,
-          titleFont: {
-            family: "'Space Grotesk Variable', sans-serif"
+  try {
+    myHistoryChart = new window.Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: "Push-ups (Reps)",
+            data: pushUpsData,
+            backgroundColor: "rgba(245, 158, 11, 0.15)",
+            borderColor: "#f59e0b",
+            borderWidth: 2,
+            borderRadius: 4,
+            yAxisID: "yPush",
+            type: "bar",
+            order: 2
           },
-          bodyFont: {
-            family: "'Space Grotesk Variable', sans-serif"
+          {
+            label: "Cardio (Km)",
+            data: cardioData,
+            borderColor: "#2dd4bf",
+            backgroundColor: "rgba(45, 212, 191, 0.05)",
+            fill: true,
+            tension: 0.3,
+            borderWidth: 3,
+            pointBackgroundColor: "#2dd4bf",
+            pointBorderColor: "#0f1318",
+            pointHoverBackgroundColor: "#0f1318",
+            pointHoverBorderColor: "#2dd4bf",
+            yAxisID: "yCardio",
+            type: "line",
+            order: 1
           }
-        }
+        ]
       },
-      scales: {
-        x: {
-          grid: {
-            color: gridColor
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            labels: {
+              color: textColor,
+              font: {
+                family: "'Space Grotesk Variable', sans-serif",
+                weight: "600",
+                size: 11
+              }
+            }
           },
-          ticks: {
-            color: textColor,
-            font: {
+          tooltip: {
+            mode: "index",
+            intersect: false,
+            backgroundColor: "rgba(15, 19, 24, 0.9)",
+            borderColor: "rgba(255, 255, 255, 0.1)",
+            borderWidth: 1,
+            titleColor: "#fff",
+            bodyColor: textColor,
+            titleFont: {
+              family: "'Space Grotesk Variable', sans-serif"
+            },
+            bodyFont: {
               family: "'Space Grotesk Variable', sans-serif"
             }
           }
         },
-        yPush: {
-          type: "linear",
-          position: "left",
-          grid: {
-            color: gridColor
-          },
-          ticks: {
-            color: "#f59e0b",
-            font: {
-              family: "'Space Grotesk Variable', sans-serif"
+        scales: {
+          x: {
+            grid: {
+              color: gridColor
+            },
+            ticks: {
+              color: textColor,
+              font: {
+                family: "'Space Grotesk Variable', sans-serif"
+              }
             }
           },
-          title: {
-            display: true,
-            text: "Push-ups (Reps)",
-            color: "#f59e0b",
-            font: {
-              family: "'Space Grotesk Variable', sans-serif",
-              weight: "600"
+          yPush: {
+            type: "linear",
+            position: "left",
+            grid: {
+              color: gridColor
+            },
+            ticks: {
+              color: "#f59e0b",
+              font: {
+                family: "'Space Grotesk Variable', sans-serif"
+              }
+            },
+            title: {
+              display: true,
+              text: "Push-ups (Reps)",
+              color: "#f59e0b",
+              font: {
+                family: "'Space Grotesk Variable', sans-serif",
+                weight: "600"
+              }
             }
-          }
-        },
-        yCardio: {
-          type: "linear",
-          position: "right",
-          grid: {
-            drawOnChartArea: false
           },
-          ticks: {
-            color: "#2dd4bf",
-            font: {
-              family: "'Space Grotesk Variable', sans-serif"
-            }
-          },
-          title: {
-            display: true,
-            text: "Cardio (Km)",
-            color: "#2dd4bf",
-            font: {
-              family: "'Space Grotesk Variable', sans-serif",
-              weight: "600"
+          yCardio: {
+            type: "linear",
+            position: "right",
+            grid: {
+              drawOnChartArea: false
+            },
+            ticks: {
+              color: "#2dd4bf",
+              font: {
+                family: "'Space Grotesk Variable', sans-serif"
+              }
+            },
+            title: {
+              display: true,
+              text: "Cardio (Km)",
+              color: "#2dd4bf",
+              font: {
+                family: "'Space Grotesk Variable', sans-serif",
+                weight: "600"
+              }
             }
           }
         }
       }
-    }
-  });
+    });
+  } catch (err) {
+    console.error("Failed to initialize Chart.js history chart:", err);
+  }
 }
 
 // Willpower Combat Simulator Logic
