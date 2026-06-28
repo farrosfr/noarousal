@@ -154,6 +154,8 @@ const heroRefusals = String(refusalCount);
     <meta property="og:url" content="https://noa.farros.co/arena/" />
     <meta name="twitter:card" content="summary" />
     <title>Battle Arena | NoArousal</title>
+    <!-- Chart.js for premium fitness tracking visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
   </head>
   <body data-start={startDateTime}>
     <SiteHeader />
@@ -415,6 +417,14 @@ const heroRefusals = String(refusalCount);
               <div class="bar-outer">
                 <div class="bar-inner fitness-push-bar" id="fitMonthlyPushBar" style="width: 0%"></div>
               </div>
+            </div>
+          </div>
+
+          <!-- Activity History Chart Card -->
+          <div class="fitness-chart-card attr-card" style="margin-top: 28px; padding: 24px; display: flex; flex-direction: column; gap: 16px; width: 100%;">
+            <h3 style="font-family: 'Space Grotesk Variable', sans-serif; font-weight: 700; font-size: 1.1rem; color: var(--text); border-bottom: 1px dashed var(--line); padding-bottom: 8px; margin: 0;">📊 Activity History (Last 14 Days)</h3>
+            <div style="position: relative; height: 320px; width: 100%;">
+              <canvas id="fitnessHistoryChart"></canvas>
             </div>
           </div>
         </section>
