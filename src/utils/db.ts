@@ -92,35 +92,22 @@ function dateInTimezone(date: Date = new Date(), timezone: string = "Asia/Jakart
 }
 
 async function syncWritingData(db: any): Promise<any> {
-  const response = await fetch("https://farrosfr.com/sitemap.xml");
+  const response = await fetch("https://farrosfr.com/api/v1/archive?limit=50");
   if (!response.ok) {
-    throw new Error(`Failed to fetch sitemap: ${response.status}`);
+    throw new Error(`Failed to fetch archive API: ${response.status}`);
   }
-  const xml = await response.text();
+  const data = await response.json() as any[];
 
-  const urlRegex = /<url>(.*?)<\/url>/gs;
-  const locRegex = /<loc>(.*?)<\/loc>/;
-  const lastmodRegex = /<lastmod>(.*?)<\/lastmod>/;
-
-  const startDate = "2026-06-06";
-  const articles: { url: string; date: string }[] = [];
-
-  let match;
-  while ((match = urlRegex.exec(xml)) !== null) {
-    const urlContent = match[1];
-    const locMatch = locRegex.exec(urlContent);
-    const lastmodMatch = lastmodRegex.exec(urlContent);
-
-    if (locMatch && lastmodMatch) {
-      const loc = locMatch[1];
-      const lastmod = lastmodMatch[1];
-
-      // Substack articles usually contain /p/
-      if (loc.includes("/p/") && lastmod >= startDate) {
-        articles.push({ url: loc, date: lastmod });
-      }
-    }
-  }
+  const startDate = new Date("2026-06-06T00:00:00Z");
+  
+  // Filter posts published on or after June 6, 2026
+  const articles = data
+    .filter((p: any) => p.post_date && new Date(p.post_date) >= startDate)
+    .map((p: any) => ({
+      title: p.title,
+      url: p.canonical_url || `https://www.farrosfr.com/p/${p.slug}`,
+      date: p.post_date.substring(0, 10) // YYYY-MM-DD
+    }));
 
   // Calculate totals
   const totalArticles = articles.length;
