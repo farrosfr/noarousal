@@ -422,7 +422,14 @@ const heroRefusals = String(refusalCount);
 
           <!-- Activity History Chart Card -->
           <div class="fitness-chart-card attr-card" style="margin-top: 28px; padding: 24px; display: flex; flex-direction: column; gap: 16px; width: 100%;">
-            <h3 style="font-family: 'Space Grotesk Variable', sans-serif; font-weight: 700; font-size: 1.1rem; color: var(--text); border-bottom: 1px dashed var(--line); padding-bottom: 8px; margin: 0;">📊 Activity History (Last 14 Days)</h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--line); padding-bottom: 8px; flex-wrap: wrap; gap: 12px; margin: 0;">
+              <h3 style="font-family: 'Space Grotesk Variable', sans-serif; font-weight: 700; font-size: 1.1rem; color: var(--text); margin: 0;">📊 Activity History</h3>
+              <div class="chart-filters" style="display: flex; gap: 6px;">
+                <button type="button" class="chart-filter-btn" data-range="7">7D</button>
+                <button type="button" class="chart-filter-btn is-active" data-range="14">14D</button>
+                <button type="button" class="chart-filter-btn" data-range="30">30D</button>
+              </div>
+            </div>
             <div style="position: relative; height: 320px; width: 100%;">
               <canvas id="fitnessHistoryChart"></canvas>
             </div>

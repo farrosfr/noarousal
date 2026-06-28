@@ -21,6 +21,7 @@ const fitnessSummaryDataElement = document.querySelector("#fitnessSummaryData");
 const fitnessData = parseAccountabilityData(fitnessSummaryDataElement?.textContent);
 const streakStartDate = getCurrentStreakStartDate(accountabilityData, startDate);
 let myHistoryChart = null;
+let currentChartRange = 14;
 
 function parseAccountabilityData(rawData) {
   if (!rawData) return null;
@@ -361,12 +362,28 @@ const observer = new IntersectionObserver((entries) => {
 
 document.querySelectorAll(".reveal-on-scroll").forEach((element) => observer.observe(element));
 
+function initChartFilters() {
+  document.querySelectorAll(".chart-filter-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const range = parseInt(btn.getAttribute("data-range"), 10);
+      if (!isNaN(range)) {
+        currentChartRange = range;
+        document.querySelectorAll(".chart-filter-btn").forEach(b => {
+          b.classList.toggle("is-active", b === btn);
+        });
+        renderHistoryChart();
+      }
+    });
+  });
+}
+
 // Initial render
 // Initial render and calendar generation
 if (!Number.isNaN(startDate.getTime())) {
   setInterval(renderArena, 1000);
   renderArena();
   renderCalendar();
+  initChartFilters();
 }
 
 // Web Audio API Sound Synthesizer
@@ -889,19 +906,19 @@ function renderHistoryChart() {
   }
   if (!fitnessData || !Array.isArray(fitnessData.daily)) return;
 
-  // Take the last 14 days and sort chronologically (oldest to newest)
-  const last14Days = [...fitnessData.daily]
-    .slice(0, 14)
+  // Take the last N days and sort chronologically (oldest to newest)
+  const lastNDays = [...fitnessData.daily]
+    .slice(0, currentChartRange)
     .reverse();
 
-  const labels = last14Days.map(d => {
+  const labels = lastNDays.map(d => {
     if (!d || typeof d.date !== "string") return "";
     const parts = d.date.split("-");
     if (parts.length < 3) return d.date;
     return `${parts[1]}/${parts[2]}`;
   });
-  const cardioData = last14Days.map(d => d.runWalkKm || 0);
-  const pushUpsData = last14Days.map(d => d.pushUps || 0);
+  const cardioData = lastNDays.map(d => d.runWalkKm || 0);
+  const pushUpsData = lastNDays.map(d => d.pushUps || 0);
 
   if (myHistoryChart) {
     try {

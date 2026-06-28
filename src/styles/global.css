@@ -3834,6 +3834,31 @@ h1 {
   color: #a855f7 !important;
 }
 
+.chart-filter-btn {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.chart-filter-btn:hover {
+  border-color: var(--muted);
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.chart-filter-btn.is-active {
+  background: rgba(45, 212, 191, 0.1) !important;
+  border-color: #2dd4bf !important;
+  color: #2dd4bf !important;
+}
+
 
 
 /* ============================================================
