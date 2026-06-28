@@ -744,12 +744,16 @@ function renderFitnessSummary() {
   
   const daily = Array.isArray(fitnessData.daily) ? fitnessData.daily : [];
   const oneWeekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+  const oneMonthAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
   
-  let weeklyRuns = 0;
+  let monthlyRuns = 0;
   let weeklyPushUps = 0;
   daily.forEach((day) => {
-    if (new Date(day.date).getTime() >= oneWeekAgo) {
-      weeklyRuns += Number(day.runWalkKm || 0);
+    const dayTime = new Date(day.date).getTime();
+    if (dayTime >= oneMonthAgo) {
+      monthlyRuns += Number(day.runWalkKm || 0);
+    }
+    if (dayTime >= oneWeekAgo) {
       weeklyPushUps += Number(day.pushUps || 0);
     }
   });
@@ -758,7 +762,7 @@ function renderFitnessSummary() {
   const todayRuns = Number(summary.todayRunWalkKm || 0);
   const todayPushUps = Number(summary.todayPushUps || 0);
   const dailyCardioGoal = 2.0; // 2 Km daily
-  const dailyPushGoal = 50; // 50 Reps daily
+  const dailyPushGoal = 200; // 200 Reps daily
 
   const dailyCardioBar = document.querySelector("#fitDailyCardioBar");
   const dailyCardioText = document.querySelector("#fitDailyCardioGoalText");
@@ -780,17 +784,17 @@ function renderFitnessSummary() {
     dailyPushBar.style.width = `${pct}%`;
   }
 
-  // Weekly Targets
-  const cardioGoal = 10; // 10 Km weekly
+  // Monthly & Weekly Targets
+  const monthlyCardioGoal = 100.0; // 100 Km monthly
   const pushGoal = 250; // 250 Reps weekly
   
-  const cardioBar = document.querySelector("#fitWeeklyCardioBar");
-  const cardioText = document.querySelector("#fitWeeklyCardioGoalText");
+  const cardioBar = document.querySelector("#fitMonthlyCardioBar");
+  const cardioText = document.querySelector("#fitMonthlyCardioGoalText");
   if (cardioText) {
-    cardioText.textContent = `${weeklyRuns.toFixed(2)} / ${cardioGoal} Km`;
+    cardioText.textContent = `${monthlyRuns.toFixed(2)} / ${monthlyCardioGoal.toFixed(2)} Km`;
   }
   if (cardioBar) {
-    const pct = Math.min(100, (weeklyRuns / cardioGoal) * 100);
+    const pct = Math.min(100, (monthlyRuns / monthlyCardioGoal) * 100);
     cardioBar.style.width = `${pct}%`;
   }
   
