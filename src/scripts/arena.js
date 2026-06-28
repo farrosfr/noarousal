@@ -905,8 +905,18 @@ function renderHistoryChart() {
 
   if (myHistoryChart) {
     try {
-      myHistoryChart.destroy();
-    } catch (_) {}
+      myHistoryChart.data.labels = labels;
+      myHistoryChart.data.datasets[0].data = pushUpsData;
+      myHistoryChart.data.datasets[1].data = cardioData;
+      myHistoryChart.update("none");
+      return;
+    } catch (err) {
+      console.warn("Failed to update chart in-place, rebuilding:", err);
+      try {
+        myHistoryChart.destroy();
+      } catch (_) {}
+      myHistoryChart = null;
+    }
   }
 
   const gridColor = "rgba(255, 255, 255, 0.05)";
