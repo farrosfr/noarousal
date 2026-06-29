@@ -906,19 +906,37 @@ function renderHistoryChart() {
   }
   if (!fitnessData || !Array.isArray(fitnessData.daily)) return;
 
-  // Take the last N days and sort chronologically (oldest to newest)
-  const lastNDays = [...fitnessData.daily]
-    .slice(0, currentChartRange)
-    .reverse();
+  // Group existing daily entries by date for easy lookup
+  const dailyMap = new Map();
+  if (fitnessData && Array.isArray(fitnessData.daily)) {
+    fitnessData.daily.forEach(d => {
+      if (d && d.date) {
+        dailyMap.set(d.date, d);
+      }
+    });
+  }
 
-  const labels = lastNDays.map(d => {
-    if (!d || typeof d.date !== "string") return "";
-    const parts = d.date.split("-");
-    if (parts.length < 3) return d.date;
-    return `${parts[1]}/${parts[2]}`;
-  });
-  const cardioData = lastNDays.map(d => d.runWalkKm || 0);
-  const pushUpsData = lastNDays.map(d => d.pushUps || 0);
+  // Generate consecutive days ending today (oldest to newest)
+  const labels = [];
+  const cardioData = [];
+  const pushUpsData = [];
+
+  const now = new Date();
+  for (let i = currentChartRange - 1; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(now.getDate() - i);
+    
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    const dateKey = `${yyyy}-${mm}-${dd}`;
+    
+    labels.push(`${mm}/${dd}`);
+    
+    const dayEntry = dailyMap.get(dateKey);
+    cardioData.push(dayEntry ? (dayEntry.runWalkKm || 0) : 0);
+    pushUpsData.push(dayEntry ? (dayEntry.pushUps || 0) : 0);
+  }
 
   if (myHistoryChart) {
     try {
