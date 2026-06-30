@@ -3057,17 +3057,17 @@ h1 {
 
 .calendar-day .day-number {
   position: absolute;
-  top: 5px;
+  top: 6px;
   left: 6px;
   font-family: "Space Grotesk Variable", sans-serif;
   font-weight: 700;
-  font-size: 0.72rem;
+  font-size: 0.76rem;
   color: var(--text-muted);
   line-height: 1;
 }
 
 .calendar-day .day-status-icon {
-  font-size: 1.05rem;
+  font-size: 1.1rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3075,20 +3075,40 @@ h1 {
 
 .calendar-day .day-writing-indicator {
   position: absolute;
-  top: 4px;
-  right: 4px;
+  bottom: 5px;
+  right: 5px;
   background: rgba(168, 85, 247, 0.18);
   border: 1px solid rgba(168, 85, 247, 0.4);
   color: #c084fc;
-  font-size: 0.6rem;
-  padding: 1px 3.5px;
+  font-size: 0.58rem;
+  padding: 1px 3px;
   border-radius: 4px;
   font-weight: 700;
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 1.5px;
   pointer-events: none;
   line-height: 1;
+}
+
+/* Mobile optimizations to prevent overlaps on smaller screens */
+@media (max-width: 760px) {
+  .calendar-day .day-number {
+    top: 4px;
+    left: 4px;
+    font-size: 0.62rem;
+  }
+
+  .calendar-day .day-status-icon {
+    font-size: 0.95rem;
+  }
+
+  .calendar-day .day-writing-indicator {
+    bottom: 3px;
+    right: 3px;
+    font-size: 0.52rem;
+    padding: 0.5px 2px;
+  }
 }
 
 .calendar-day.win {
