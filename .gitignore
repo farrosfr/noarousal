@@ -8,3 +8,6 @@ npm-debug.log*
 # Wrangler and migration files
 .wrangler/
 migration_data.sql
+
+# Local scratch directory
+scratch/
