@@ -4282,16 +4282,17 @@ h1 {
 @media (max-width: 760px) {
   .tab-bar {
     top: 70px;
-    flex-wrap: wrap;
-    overflow-x: visible;
-    justify-content: center;
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
     max-width: 100%;
   }
   .tab {
-    flex: 1 1 calc(33.333% - 4px);
+    display: flex;
     justify-content: center;
-    padding: 8px 12px;
-    font-size: 0.78rem;
+    padding: 8px 4px;
+    font-size: 0.7rem;
+    letter-spacing: 0.02em;
   }
   .panel { padding: 16px; }
 }
