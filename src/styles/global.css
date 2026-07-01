@@ -4121,7 +4121,9 @@ h1 {
   background: var(--panel-strong);
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
-  margin: 24px 0 16px;
+  margin: 24px auto 16px;
+  width: 100%;
+  max-width: 900px;
   overflow-x: auto;
   scrollbar-width: thin;
   backdrop-filter: blur(12px);
@@ -4134,6 +4136,8 @@ h1 {
 .tab {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  flex: 1 1 0%;
   gap: 6px;
   padding: 9px 16px;
   border: 1px solid transparent;
@@ -4281,9 +4285,10 @@ h1 {
     flex-wrap: wrap;
     overflow-x: visible;
     justify-content: center;
+    max-width: 100%;
   }
   .tab {
-    flex: 1 1 auto;
+    flex: 1 1 calc(33.333% - 4px);
     justify-content: center;
     padding: 8px 12px;
     font-size: 0.78rem;
@@ -4291,10 +4296,11 @@ h1 {
   .panel { padding: 16px; }
 }
 
-/* Desktop: center tab bar, shrink to content */
+/* Desktop: center tab bar, equal sizes */
 @media (min-width: 761px) {
   .tab-bar {
-    width: fit-content;
+    width: 100%;
+    max-width: 900px;
     margin: 24px auto 16px;
   }
 }
