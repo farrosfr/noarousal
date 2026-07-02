@@ -175,13 +175,13 @@ const heroRefusals = String(refusalCount);
       </section>
 
       <nav class="tab-bar" data-tab-bar role="tablist" aria-label="Arena sections">
-        {tabs.map((tab, i) => (
+        {tabs.map((tab) => (
           <button
             type="button"
-            class:list={["tab", { "is-active": i === 0 }]}
+            class:list={["tab", { "is-active": tab.id === "attributes" }]}
             data-tab-trigger={tab.id}
             role="tab"
-            aria-selected={i === 0 ? "true" : "false"}
+            aria-selected={tab.id === "attributes" ? "true" : "false"}
             aria-controls={`tab-panel-${tab.id}`}
             id={`tab-${tab.id}`}
           >
@@ -194,107 +194,41 @@ const heroRefusals = String(refusalCount);
       <div class="arena-grid">
         <!-- BATTLE TAB -->
         <section
-          class="tab-panel is-active"
+          class="tab-panel"
           data-tab-panel="battle"
           id="tab-panel-battle"
           role="tabpanel"
           aria-labelledby="tab-battle"
+          hidden
         >
-          <section class="combat-screen reveal-on-scroll" aria-label="Active combat arena">
-            <div class="character-card">
-              <div class="character-avatar-wrapper">
-                <img src="/inner_strength_emblem.jpg" alt="Inner Strength Emblem" class="character-avatar" />
-                <div class="character-badge-overlay">LVL <span id="charLevel">1</span></div>
-              </div>
-              <div class="character-info">
-                <h3>Sovereign Self</h3>
-                <p class="character-class">Sentinel of Will</p>
-
-                <div class="stats-bar-group">
-                  <div class="bar-label">
-                    <span>XP (Experience)</span>
-                    <span id="charXpText">0 / 100 XP</span>
-                  </div>
-                  <div class="bar-outer">
-                    <div class="bar-inner xp-bar" id="charXpBar" style="width: 0%"></div>
-                  </div>
-                </div>
-
-                <div class="stats-bar-group">
-                  <div class="bar-label">
-                    <span>Shield Integrity</span>
-                    <span id="charShieldText">0%</span>
-                  </div>
-                  <div class="bar-outer">
-                    <div class="bar-inner shield-bar" id="charShieldBar" style="width: 0%"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="vs-divider">
-              <div class="vs-text">VS</div>
-              <div class="vs-glow"></div>
-            </div>
-
-            <div class="boss-card">
-              <div class="character-avatar-wrapper shadow-avatar-border">
-                <img src="/shadow_boss.jpg" alt="Shadow Urge Boss" class="character-avatar" />
-                <div class="character-badge-overlay shadow-badge-bg">RANK <span id="bossRank">1</span></div>
-              </div>
-              <div class="character-info">
-                <h3 class="boss-name">The Shadow Urge</h3>
-                <p class="boss-class">Compulsive Temptation</p>
-
-                <div class="stats-bar-group">
-                  <div class="bar-label">
-                    <span>Shadow HP</span>
-                    <span id="bossHpText">100 / 100 HP</span>
-                  </div>
-                  <div class="bar-outer">
-                    <div class="bar-inner boss-hp-bar" id="bossHpBar" style="width: 100%"></div>
-                  </div>
-                </div>
-
-                <div class="stats-bar-group">
-                  <div class="bar-label">
-                    <span>Boss Status</span>
-                    <span id="bossStatusText" class="status-indicator alive">ACTIVE</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <section class="ninja-simulator-launcher reveal-on-scroll" id="ninja-simulator-launcher" aria-label="Willpower Combat Simulator Launcher">
+          <section class="ninja-simulator-launcher reveal-on-scroll" style="margin: 40px auto; max-width: 600px; text-align: center;" aria-label="Battle Control Center Redirect">
             <div class="simulator-header">
-              <Tag tone="gold"><Icon name="swords" class="icon" />Interactive Minigame</Tag>
-              <h2>Willpower Combat <span class="text-gradient">Simulator</span></h2>
-              <p class="simulator-intro">A turn-based mini-game simulating the mental fight against urges. Pick your boss, choose a companion, and break the loop in real time.</p>
+              <Tag tone="gold"><Icon name="swords" class="icon" />Sovereign Console</Tag>
+              <h2>Enter the Control <span class="text-gradient">Center</span></h2>
+              <p class="simulator-intro">Log your resolution, track push-ups, run distance, and manage focus pomodoro timers directly from the secure admin dashboard.</p>
             </div>
-            <div class="launcher-action-container">
-              <button type="button" class="btn-launch-simulator" id="btnLaunchSimulator" aria-haspopup="dialog">
-                <span class="launch-icon-frame" aria-hidden="true">
+            <div class="launcher-action-container" style="margin-top: 24px;">
+              <a href="/admin/" class="btn-launch-simulator" style="text-decoration: none; display: inline-flex; justify-content: center; align-items: center; width: 100%;">
+                <span class="launch-icon-frame" aria-hidden="true" style="margin-right: 12px;">
                   <Icon name="swords" class="icon" />
                 </span>
-                <span class="launch-content">
-                  <span class="launch-text">Enter Willpower Battle Arena</span>
-                  <span class="launch-sub">Choose your boss · Full-screen combat</span>
+                <span class="launch-content" style="text-align: left;">
+                  <span class="launch-text">Access Battle Controls</span>
+                  <span class="launch-sub">Record victory · Start Pomodoro timer</span>
                 </span>
-                <span class="launch-arrow" aria-hidden="true">→</span>
-              </button>
+                <span class="launch-arrow" aria-hidden="true" style="margin-left: auto;">&rarr;</span>
+              </a>
             </div>
           </section>
         </section>
 
         <!-- ATTRIBUTES TAB -->
         <section
-          class="tab-panel"
+          class="tab-panel is-active"
           data-tab-panel="attributes"
           id="tab-panel-attributes"
           role="tabpanel"
           aria-labelledby="tab-attributes"
-          hidden
         >
           <SectionHeader
             eyebrow="Stats"
@@ -576,315 +510,6 @@ const heroRefusals = String(refusalCount);
             </div>
           </div>
         </section>
-
-        <!-- Immersive Fullscreen Simulator (outside tab system) -->
-        <div class="ninja-simulator-fullscreen-container" id="ninjaSimulatorFullscreenContainer" style="display: none;">
-
-          <!-- BOSS SELECT SCREEN (shown first) -->
-          <div class="boss-select-screen" id="bossSelectScreen" role="dialog" aria-label="Choose your opponent">
-            <header class="boss-select-header">
-              <Tag tone="gold"><Icon name="swords" class="icon" />SELECT YOUR FIGHT</Tag>
-              <h2 class="boss-select-title">Choose your opponent.</h2>
-              <p class="boss-select-lede">Five urges. Five levels. Pick the one you're fighting today, or pick the one that scares you most.</p>
-            </header>
-
-            <section class="boss-select-section" aria-labelledby="boss-select-bosses-label">
-              <h3 class="boss-select-section-title" id="boss-select-bosses-label">
-                <Icon name="skull" class="icon" /> Urge Opponent
-              </h3>
-              <div class="boss-portrait-grid" role="radiogroup" aria-labelledby="boss-select-bosses-label">
-                <button type="button" class="boss-portrait-card" data-boss-card="siren" role="radio" aria-checked="false">
-                  <div class="boss-portrait-img" data-boss-portrait="siren"></div>
-                  <div class="boss-portrait-info">
-                    <strong>Boredom Siren</strong>
-                    <span class="boss-portrait-meta">Lvl 1 · Chakra Drain</span>
-                  </div>
-                </button>
-                <button type="button" class="boss-portrait-card" data-boss-card="goliath" role="radio" aria-checked="false">
-                  <div class="boss-portrait-img" data-boss-portrait="goliath"></div>
-                  <div class="boss-portrait-info">
-                    <strong>Stress Goliath</strong>
-                    <span class="boss-portrait-meta">Lvl 5 · Heavy Hitter</span>
-                  </div>
-                </button>
-                <button type="button" class="boss-portrait-card is-selected" data-boss-card="leviathan" role="radio" aria-checked="true">
-                  <div class="boss-portrait-img" data-boss-portrait="leviathan"></div>
-                  <div class="boss-portrait-info">
-                    <strong>Shadow Leviathan</strong>
-                    <span class="boss-portrait-meta">Lvl 10 · Shield Piercer</span>
-                  </div>
-                </button>
-                <button type="button" class="boss-portrait-card" data-boss-card="temptress" role="radio" aria-checked="false">
-                  <div class="boss-portrait-img" data-boss-portrait="temptress"></div>
-                  <div class="boss-portrait-info">
-                    <strong>Malphas, Shadow Temptress</strong>
-                    <span class="boss-portrait-meta">Lvl 15 · Will Sapper</span>
-                  </div>
-                </button>
-                <button type="button" class="boss-portrait-card" data-boss-card="archdemon" role="radio" aria-checked="false">
-                  <div class="boss-portrait-img" data-boss-portrait="archdemon"></div>
-                  <div class="boss-portrait-info">
-                    <strong>Dopamine Archdemon</strong>
-                    <span class="boss-portrait-meta">Lvl 20 · Desire Overlord</span>
-                  </div>
-                </button>
-              </div>
-            </section>
-
-            <section class="boss-select-section" aria-labelledby="boss-select-companions-label">
-              <h3 class="boss-select-section-title" id="boss-select-companions-label">
-                <Icon name="heart" class="icon" /> Spirit Companion <span class="boss-select-optional">(optional)</span>
-              </h3>
-              <div class="companion-portrait-grid" role="radiogroup" aria-labelledby="boss-select-companions-label">
-                <button type="button" class="companion-portrait-card is-selected" data-companion-card="none" role="radio" aria-checked="true">
-                  <span class="companion-portrait-emoji" aria-hidden="true">⛔</span>
-                  <strong>None</strong>
-                  <span>Solo run</span>
-                </button>
-                <button type="button" class="companion-portrait-card" data-companion-card="fox" role="radio" aria-checked="false">
-                  <span class="companion-portrait-emoji" aria-hidden="true">🦊</span>
-                  <strong>Zen Fox</strong>
-                  <span>Chakra Restorer</span>
-                </button>
-                <button type="button" class="companion-portrait-card" data-companion-card="crane" role="radio" aria-checked="false">
-                  <span class="companion-portrait-emoji" aria-hidden="true">🦅</span>
-                  <strong>Discipline Crane</strong>
-                  <span>Debuff Cleanser</span>
-                </button>
-                <button type="button" class="companion-portrait-card" data-companion-card="wolf" role="radio" aria-checked="false">
-                  <span class="companion-portrait-emoji" aria-hidden="true">🐺</span>
-                  <strong>Resolve Wolf</strong>
-                  <span>Extra Striker</span>
-                </button>
-                <button type="button" class="companion-portrait-card" data-companion-card="turtle" role="radio" aria-checked="false">
-                  <span class="companion-portrait-emoji" aria-hidden="true">🐢</span>
-                  <strong>Patience Turtle</strong>
-                  <span>Shield Absorber</span>
-                </button>
-              </div>
-            </section>
-
-            <footer class="boss-select-footer">
-              <Button href="#" variant="ghost" id="btnBackFromBossSelect" arrow={false}><Icon name="arrow-right" class="icon" style="transform: rotate(180deg);" />Back to arena</Button>
-              <Button variant="primary" id="btnBeginBattle" arrow={false}>Begin the fight</Button>
-            </footer>
-          </div>
-
-          <!-- COMBAT SCREEN (hidden until "Begin") -->
-          <div class="combat-screen-wrap" id="combatScreenWrap" style="display: none;">
-            <div class="simulator-top-bar">
-              <button type="button" class="btn-close-simulator" id="btnCloseSimulator" aria-label="Exit Simulator">
-                <span class="close-icon">&times;</span>
-                <span class="close-label">Exit Arena</span>
-              </button>
-            </div>
-
-          <div class="game-board fullscreen-board" id="fullscreenGameBoard">
-            <div class="battle-bg-arena">
-              <!-- Cinematic Top Boss HP Bar -->
-              <div class="boss-top-hp-container" id="bossTopHpContainer">
-                <div class="boss-top-info">
-                  <span class="boss-top-name boss-name" id="bossTopName">Shadow Demon</span>
-                  <span class="boss-top-hp-text" id="gameEnemyHpText">120/120</span>
-                </div>
-                <div class="boss-top-bar-outer">
-                  <div class="boss-top-bar-inner" id="gameEnemyHpBar" style="width: 100%"></div>
-                </div>
-              </div>
-
-              <div class="rage-vignette" id="rageVignette"></div>
-
-              <div class="focus-ring-overlay" id="focusRingOverlay" style="display: none;">
-                <div class="focus-circle-target"></div>
-                <div class="focus-circle-outer" id="focusCircleOuter"></div>
-                <div class="focus-content">
-                  <div class="focus-label">FOCUS BREATH</div>
-                  <button type="button" class="btn-focus-action" id="btnFocus">TAP FOCUS!</button>
-                </div>
-              </div>
-
-              <div class="ninja-character player" id="ninja-player">
-                <div class="character-avatar-frame">
-                  <img src="/ninja_avatar.jpg" alt="Sovereign Ninja" class="ninja-avatar-img" />
-                  <div class="refusal-shield-overlay" id="refusalShieldOverlay"></div>
-                  <div class="charge-chakra-overlay" id="chargeChakraOverlay"></div>
-                  <div class="enemy-strike-overlay" id="enemyStrikeOverlay"></div>
-                </div>
-                <div class="character-name">Sovereign Ninja</div>
-                <div class="equipped-talismans" id="equippedTalismans">
-                  <span class="talisman-slot locked" id="talismanFortress" title="Fortress Amulet (Locked: Requires 3-day streak) - Adds +10% shield absorption">🛡️</span>
-                  <span class="talisman-slot locked" id="talismanLotus" title="Lotus Incense (Locked: Requires 7-day streak) - Adds a 2nd Meditation Incense">🕯️</span>
-                  <span class="talisman-slot locked" id="talismanWillfire" title="Willfire Blade (Locked: Requires 10 Refusals) - Adds +15% Jutsu Critical hit chance">⚔️</span>
-                </div>
-                <div class="equipped-companion" id="equippedCompanion" style="display: none;" title="Active Spirit Companion">
-                  <span id="companionIcon" class="companion-icon"></span>
-                  <span id="companionName" class="companion-name"></span>
-                </div>
-                <div class="phoenix-buff-badge" id="phoenixBuffBadge" style="display: none;" title="Phoenix Resolve Active: +30% ATK & Starting Shield (Activated within 24h of a relapse)">
-                  🔥 Phoenix Resolve
-                </div>
-                <div class="debuffs-container" id="playerDebuffs"></div>
-                <div class="combat-status-bars">
-                  <div class="bar-container">
-                    <span class="bar-lbl">HP: <span id="gamePlayerHpText">100/100</span></span>
-                    <div class="bar-bg"><div class="bar-fill game-hp" id="gamePlayerHpBar" style="width: 100%"></div></div>
-                  </div>
-                  <div class="bar-container">
-                    <span class="bar-lbl">Chakra: <span id="gamePlayerChakraText">50/100</span></span>
-                    <div class="bar-bg"><div class="bar-fill game-chakra" id="gamePlayerChakraBar" style="width: 50%"></div></div>
-                  </div>
-                </div>
-                <div class="floating-effect" id="playerDamageFloat"></div>
-              </div>
-
-              <div class="vs-banner">VS</div>
-
-              <div class="ninja-character enemy" id="ninja-enemy">
-                <div class="character-avatar-frame shadow-avatar-border">
-                  <img src="/shadow_avatar.jpg" alt="Shadow Demon" class="ninja-avatar-img shadow-avatar-img" />
-                  <div class="strike-overlay" id="strikeOverlay"></div>
-                  <div class="will-flame-overlay" id="willFlameOverlay"></div>
-                </div>
-                <div class="character-name boss-name">Shadow Demon</div>
-                <div class="floating-effect" id="enemyDamageFloat"></div>
-              </div>
-            </div>
-
-            <div class="combat-ticker" id="combatTicker">
-              Battle initialized. Choose your action to begin the strike!
-            </div>
-
-            <div class="combat-commands" id="combatCommands">
-              <button type="button" class="btn-command strike" id="btnStrike" data-cost="0">
-                <span class="cmd-icon-frame" aria-hidden="true"><Icon name="sword" class="icon" /></span>
-                <span class="cmd-content">
-                  <span class="cmd-label">Strike</span>
-                  <span class="cmd-desc">Basic physical attack</span>
-                </span>
-                <span class="cmd-cost"><span class="cmd-cost-key">CHAKRA</span><span class="cmd-cost-val">0</span></span>
-              </button>
-
-              <button type="button" class="btn-command jutsu-fire" id="btnFireJutsu" data-cost="20">
-                <span class="cmd-icon-frame" aria-hidden="true"><Icon name="flame" class="icon" /></span>
-                <span class="cmd-content">
-                  <span class="cmd-label">Will Flame</span>
-                  <span class="cmd-desc">Deals high damage</span>
-                </span>
-                <span class="cmd-cost"><span class="cmd-cost-key">CHAKRA</span><span class="cmd-cost-val">20</span></span>
-              </button>
-
-              <button type="button" class="btn-command jutsu-heal" id="btnHealJutsu" data-cost="15">
-                <span class="cmd-icon-frame" aria-hidden="true"><Icon name="shield" class="icon" /></span>
-                <span class="cmd-content">
-                  <span class="cmd-label">Refusal Shield</span>
-                  <span class="cmd-desc">Heals HP & blocks</span>
-                </span>
-                <span class="cmd-cost"><span class="cmd-cost-key">CHAKRA</span><span class="cmd-cost-val">15</span></span>
-              </button>
-
-              <button type="button" class="btn-command charge" id="btnCharge" data-cost="0">
-                <span class="cmd-icon-frame" aria-hidden="true"><Icon name="zap" class="icon" /></span>
-                <span class="cmd-content">
-                  <span class="cmd-label">Charge Chakra</span>
-                  <span class="cmd-desc">Restore 40 Chakra</span>
-                </span>
-                <span class="cmd-cost"><span class="cmd-cost-key">CHAKRA</span><span class="cmd-cost-val">0</span></span>
-              </button>
-            </div>
-
-            <div class="combat-items-panel" id="combatItemsPanel">
-              <div class="items-panel-title"><Icon name="briefcase" class="icon" />Grounding Inventory <span class="items-panel-sub">Single-use per match</span></div>
-              <div class="items-grid">
-                <button type="button" class="btn-item-use" id="btnUseColdShower" data-item="coldShower">
-                  <span class="item-icon-frame" aria-hidden="true"><Icon name="droplets" class="icon" /></span>
-                  <div class="item-details">
-                    <span class="item-name">Cold Shower Elixir</span>
-                    <span class="item-desc">Heals 50% HP · Disrupts cue loop</span>
-                  </div>
-                  <span class="item-qty-badge" id="qtyColdShower">1</span>
-                </button>
-
-                <button type="button" class="btn-item-use" id="btnUsePushUp" data-item="pushUp">
-                  <span class="item-icon-frame" aria-hidden="true"><Icon name="dumbbell" class="icon" /></span>
-                  <div class="item-details">
-                    <span class="item-name">Push-Up Scroll</span>
-                    <span class="item-desc">+40 Chakra · Diverts blood flow</span>
-                  </div>
-                  <span class="item-qty-badge" id="qtyPushUp">1</span>
-                </button>
-
-                <button type="button" class="btn-item-use" id="btnUseMeditation" data-item="meditation">
-                  <span class="item-icon-frame" aria-hidden="true"><Icon name="moon" class="icon" /></span>
-                  <div class="item-details">
-                    <span class="item-name">Meditation Incense</span>
-                    <span class="item-desc">Stuns boss 1 turn · Mindfulness</span>
-                  </div>
-                  <span class="item-qty-badge" id="qtyMeditation">1</span>
-                </button>
-              </div>
-            </div>
-
-            <div class="game-overlay" id="gameOverOverlay" style="display: none;">
-              <div class="overlay-box">
-                <h3 id="overlayResultTitle">Victory!</h3>
-                <p id="overlayResultDesc">The urge has been successfully dispelled.</p>
-                <button type="button" class="read-link" id="btnRestartGame">Battle Again</button>
-              </div>
-            </div>
-
-            <div class="cinematic-victory-overlay" id="cinematicVictoryOverlay" style="display: none;">
-              <div class="cinematic-bar top"></div>
-              <div class="cinematic-bar bottom"></div>
-              <div class="cinematic-art-wrapper">
-                <img src="/ninja_victory.jpg" alt="Victory Cutscene Art" class="cinematic-art-img" />
-              </div>
-              <div class="cinematic-subtitle" id="cinematicSubtitle">
-                "At last... the shadow urge dissipates into the light of resolve."
-              </div>
-              <div class="cinematic-victory-banner" id="cinematicVictoryBanner">
-                <div class="banner-tagline">SOVEREIGN RESISTANCE</div>
-                <h1 class="victory-title-epic">VICTORY</h1>
-              </div>
-              <button type="button" class="btn-cinematic-continue" id="btnCinematicContinue">
-                Continue to Rewards &rarr;
-              </button>
-            </div>
-          </div><!-- /game-board -->
-          </div><!-- /combat-screen-wrap -->
-
-          <!-- RESULTS CARD (shown after cinematic) -->
-          <div class="results-card-screen" id="resultsCardScreen" style="display: none;" role="dialog" aria-label="Battle results">
-            <div class="results-card">
-              <header class="results-card-header">
-                <Tag tone="gold"><Icon name="trophy" class="icon" />BATTLE COMPLETE</Tag>
-                <h2 class="results-card-title">The urge has fallen.</h2>
-                <p class="results-card-sub" id="resultsCardSub">You broke the loop this round.</p>
-              </header>
-              <div class="results-card-stats">
-                <div class="results-stat">
-                  <span class="results-stat-key">XP Gained</span>
-                  <span class="results-stat-val" id="resultsXpGained">+0</span>
-                </div>
-                <div class="results-stat">
-                  <span class="results-stat-key">Refusals</span>
-                  <span class="results-stat-val" id="resultsRefusals">0</span>
-                </div>
-                <div class="results-stat">
-                  <span class="results-stat-key">Outcome</span>
-                  <span class="results-stat-val" id="resultsBossName">—</span>
-                </div>
-                <div class="results-stat">
-                  <span class="results-stat-key">Turns</span>
-                  <span class="results-stat-val" id="resultsTurns">0</span>
-                </div>
-              </div>
-              <footer class="results-card-footer">
-                <Button variant="secondary" id="btnResultsAgain" arrow={false}><Icon name="refresh" class="icon" />Boss select</Button>
-                <Button variant="primary" id="btnResultsExit" arrow={false}>Exit arena</Button>
-              </footer>
-            </div>
-          </div>
-        </div>
       </div>
     </main>
 
