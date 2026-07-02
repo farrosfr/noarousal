@@ -303,6 +303,90 @@
         transform: scale(0.98);
       }
 
+      .pomodoro-card {
+        background: rgba(29, 35, 45, 0.4);
+        border: 1px solid rgba(247, 242, 234, 0.08);
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 24px;
+        text-align: center;
+      }
+      .section-title {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #b9b0a3;
+        margin-top: 0;
+        margin-bottom: 12px;
+        opacity: 0.8;
+      }
+      .timer-display {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 48px;
+        font-weight: 900;
+        color: #fff;
+        margin: 8px 0 16px;
+        letter-spacing: -0.02em;
+        text-shadow: 0 0 12px rgba(16, 185, 129, 0.15);
+      }
+      .timer-display.active {
+        color: #10b981;
+        text-shadow: 0 0 20px rgba(16, 185, 129, 0.35);
+        animation: pulse-shadow 2s infinite ease-in-out;
+      }
+      @keyframes pulse-shadow {
+        0%, 100% { text-shadow: 0 0 15px rgba(16, 185, 129, 0.3); }
+        50% { text-shadow: 0 0 25px rgba(16, 185, 129, 0.6); }
+      }
+      .timer-controls {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+      .btn-timer {
+        flex: 1;
+        border: 0;
+        border-radius: 8px;
+        padding: 10px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-weight: 700;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .btn-start {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: #fff;
+      }
+      .btn-start:hover:not(:disabled) {
+        background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+      }
+      .btn-stop {
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        color: #ef4444;
+      }
+      .btn-stop:hover:not(:disabled) {
+        background: rgba(239, 68, 68, 0.18);
+        border-color: #ef4444;
+        transform: translateY(-1px);
+      }
+      .btn-timer:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+        transform: none !important;
+        box-shadow: none !important;
+      }
+      .timer-status {
+        font-size: 11px;
+        color: #b9b0a3;
+        opacity: 0.7;
+      }
+
       @media (max-width: 768px) {
         .cinematic-bar {
           height: 13%;
@@ -353,6 +437,17 @@
           <button id="quickPushups10Button" class="btn-main btn-pushup" type="button">+10 reps</button>
           <button id="quickPushups50Button" class="btn-main btn-pushup" type="button">+50 reps</button>
         </div>
+      </section>
+
+      <!-- Focus Pomodoro Timer Section -->
+      <section class="pomodoro-card">
+        <h2 class="section-title">⏱️ Focus Timer</h2>
+        <div class="timer-display" id="timerDisplay">25:00</div>
+        <div class="timer-controls">
+          <button id="btnStartPomodoro" class="btn-timer btn-start" type="button">Start Focus</button>
+          <button id="btnStopPomodoro" class="btn-timer btn-stop" type="button" disabled>Cancel</button>
+        </div>
+        <div class="timer-status" id="timerStatus">Loading focus state...</div>
       </section>
 
       <div class="status-box" id="quickRefuseStatus" role="status" aria-live="polite">
@@ -422,14 +517,181 @@
 
       // Initialize
       updateDashboardStats();
+      syncPomodoroTimer();
 
-      // Periodically check if still 0 (for hot refreshing)
+      // Periodically check if still 0 (for hot refreshing) and sync pomodoro
       setInterval(() => {
-        const refusesEl = document.getElementById("statRefuses");
-        if (refusesEl && (refusesEl.textContent === "-" || refusesEl.textContent === "0")) {
-          updateDashboardStats();
-        }
+        updateDashboardStats();
+        syncPomodoroTimer();
       }, 5000);
+
+      // Pomodoro Timer Logic
+      let timerInterval = null;
+      let activeTimerEnd = null;
+
+      async function syncPomodoroTimer() {
+        try {
+          const token = await getAdminApiKey();
+          if (!token) return;
+
+          const res = await fetch("/api/entries", {
+            headers: { "x-admin-api-key": token }
+          });
+          if (!res.ok) return;
+          const data = await res.json();
+          if (!data || !Array.isArray(data.entries)) return;
+
+          const pomodoroEntries = data.entries.filter(e => e.type === "pomodoro");
+          if (pomodoroEntries.length === 0) {
+            updateTimerUIIdle();
+            return;
+          }
+
+          const latest = pomodoroEntries[0];
+          const isRunning = latest.status === "running";
+
+          if (isRunning) {
+            const startTime = new Date(latest.timestamp).getTime();
+            const durationMinutes = Number(latest.count || 25);
+            const endTime = startTime + durationMinutes * 60 * 1000;
+            const now = Date.now();
+
+            if (now < endTime) {
+              if (activeTimerEnd !== endTime) {
+                activeTimerEnd = endTime;
+                startLocalTimerTick();
+              }
+            } else {
+              updateTimerUIIdle("Focus session completed!");
+            }
+          } else {
+            updateTimerUIIdle("Focus session idle.");
+          }
+        } catch (e) {
+          console.error("Error syncing Pomodoro timer:", e);
+        }
+      }
+
+      function startLocalTimerTick() {
+        if (timerInterval) clearInterval(timerInterval);
+        
+        document.getElementById("btnStartPomodoro").disabled = true;
+        document.getElementById("btnStopPomodoro").disabled = false;
+        document.getElementById("timerDisplay").classList.add("active");
+
+        function tick() {
+          const now = Date.now();
+          const remainingMs = activeTimerEnd - now;
+
+          if (remainingMs <= 0) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            updateTimerUIIdle("Focus session completed!");
+            playCompletionSound();
+            return;
+          }
+
+          const totalSeconds = Math.ceil(remainingMs / 1000);
+          const minutes = Math.floor(totalSeconds / 60);
+          const seconds = totalSeconds % 60;
+          
+          document.getElementById("timerDisplay").textContent = 
+            `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+          document.getElementById("timerStatus").textContent = "Focus session active...";
+        }
+
+        tick();
+        timerInterval = setInterval(tick, 1000);
+      }
+
+      function updateTimerUIIdle(statusText = "Focus session idle.") {
+        if (timerInterval) {
+          clearInterval(timerInterval);
+          timerInterval = null;
+        }
+        activeTimerEnd = null;
+        document.getElementById("btnStartPomodoro").disabled = false;
+        document.getElementById("btnStopPomodoro").disabled = true;
+        document.getElementById("timerDisplay").classList.remove("active");
+        document.getElementById("timerDisplay").textContent = "25:00";
+        document.getElementById("timerStatus").textContent = statusText;
+      }
+
+      function playCompletionSound() {
+        try {
+          const audioCtxClass = window.AudioContext || window.webkitAudioContext;
+          if (!audioCtxClass) return;
+          const audioCtx = new audioCtxClass();
+          
+          function beep(time, freq) {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            osc.type = "sine";
+            osc.frequency.setValueAtTime(freq, time);
+            
+            gain.gain.setValueAtTime(0.3, time);
+            gain.gain.exponentialRampToValueAtTime(0.0001, time + 0.3);
+            
+            osc.start(time);
+            osc.stop(time + 0.3);
+          }
+          
+          beep(audioCtx.currentTime, 880);
+          beep(audioCtx.currentTime + 0.15, 880);
+        } catch (_) {}
+      }
+
+      async function triggerPomodoroState(status) {
+        const startBtn = document.getElementById("btnStartPomodoro");
+        const stopBtn = document.getElementById("btnStopPomodoro");
+        const statusText = document.getElementById("timerStatus");
+
+        startBtn.disabled = true;
+        stopBtn.disabled = true;
+        statusText.textContent = `${status === "running" ? "Starting" : "Stopping"} session...`;
+
+        try {
+          const token = await getAdminApiKey();
+          if (!token) {
+            statusText.textContent = "No API key found.";
+            return;
+          }
+
+          const timestamp = formatJakartaTimestamp();
+          const res = await fetch("/api/entries", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-admin-api-key": token
+            },
+            body: JSON.stringify({
+              type: "pomodoro",
+              count: 25,
+              timestamp,
+              status
+            })
+          });
+
+          if (!res.ok) {
+            const error = await res.json().catch(() => ({}));
+            throw new Error(error.error || `Failed to update timer state`);
+          }
+
+          statusText.textContent = `Timer status set to ${status}. Syncing...`;
+          await syncPomodoroTimer();
+        } catch (err) {
+          console.error(err);
+          statusText.textContent = err.message || "Failed to update timer in database.";
+          startBtn.disabled = status === "running";
+          stopBtn.disabled = status === "stopped";
+        }
+      }
+
+      document.getElementById("btnStartPomodoro")?.addEventListener("click", () => triggerPomodoroState("running"));
+      document.getElementById("btnStopPomodoro")?.addEventListener("click", () => triggerPomodoroState("stopped"));
 
       function formatJakartaTimestamp() {
         const date = new Date();
