@@ -456,7 +456,7 @@
 
       <footer class="admin-footer">
         <button id="cmsResetButton" class="btn-secondary" type="button">Change Admin Key</button>
-        <a href="/arena/" class="btn-secondary">Go to Arena &rarr;</a>
+        <a href="/" class="btn-secondary">Go to Home &rarr;</a>
       </footer>
     </main>
 
@@ -551,7 +551,11 @@
           const isRunning = latest.status === "running";
 
           if (isRunning) {
-            const startTime = new Date(latest.timestamp).getTime();
+            let timeStr = latest.timestamp;
+            if (timeStr && !timeStr.includes("+") && !timeStr.endsWith("Z")) {
+              timeStr += "+07:00"; // Append Jakarta offset if missing
+            }
+            const startTime = new Date(timeStr).getTime();
             const durationMinutes = Number(latest.count || 25);
             const endTime = startTime + durationMinutes * 60 * 1000;
             const now = Date.now();
@@ -702,11 +706,12 @@
           day: "2-digit",
           hour: "2-digit",
           minute: "2-digit",
+          second: "2-digit",
           hour12: false
         }).formatToParts(date);
         const value = (type) => parts.find((part) => part.type === type)?.value || "00";
 
-        return `${value("year")}-${value("month")}-${value("day")}T${value("hour")}:${value("minute")}:00`;
+        return `${value("year")}-${value("month")}-${value("day")}T${value("hour")}:${value("minute")}:${value("second")}+07:00`;
       }
 
       async function getAdminApiKey() {
